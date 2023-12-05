@@ -16,7 +16,7 @@ public class MemberController {
     // Get: /member/join
     @GetMapping("/join")
     public String showJoinForm(){
-        return "domain/member/join";
+        return "domain/member/join_form";
     }
 
     // Post: /member/join
@@ -28,7 +28,7 @@ public class MemberController {
     // Get: /member/login
     @GetMapping("/login")
     public String showLoginForm(){
-        return "domain/member/login";
+        return "domain/member/login_form";
     }
 
     // Post: /member/login (Spring Security)
