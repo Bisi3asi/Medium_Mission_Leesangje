@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>medium-mission</title>
+    <!-- import global.css-->
+    <link rel="stylesheet" href="/global.css">
+</head>
+<body>
+<!-- import daisyUI -->
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.0.8/dist/full.min.css" rel="stylesheet" type="text/css"/>
+<!-- import tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="navbar bg-base-200 border-b border-white">
+    <div class="flex-1">
+        <a href="/" class="btn btn-ghost btn-lg text-2xl font-bold">MEDIUM</a>
+    </div>
+    <div class="flex-none">
+        <ul class="menu menu-horizontal px-1">
+            <li>
+                <div>
+                    <a href="/" class="btn btn-ghost btn-md text-xl">
+                        <svg xmlns="http://www.w3.org/2000/svg" height="16" width="16" viewBox="0 0 512 512">
+                            <path d="M368.4 18.3L312.7 74.1 437.9 199.3l55.7-55.7c21.9-21.9 21.9-57.3 0-79.2L447.6
+                            18.3c-21.9-21.9-57.3-21.9-79.2 0zM288 94.6l-9.2 2.8L134.7 140.6c-19.9 6-35.7 21.2-42.3
+                            41L3.8 445.8c-3.8 11.3-1 23.9 7.3 32.4L164.7 324.7c-3-6.3-4.7-13.3-4.7-20.7c0-26.5 21.5-48
+                            48-48s48 21.5 48 48s-21.5 48-48 48c-7.4 0-14.4-1.7-20.7-4.7L33.7 500.9c8.6 8.3 21.1 11.2
+                            32.4 7.3l264.3-88.6c19.7-6.6 35-22.4 41-42.3l43.2-144.1 2.8-9.2L288 94.6z"
+                                  fill="white"/>
+                        </svg>
+                        Write
+                    </a>
+                </div>
+            </li>
+            <li>
+                <div>
+                    <a href="/" class="btn btn-neutral btn-md text-xl">Sign up</a>
+                </div>
+            </li>
+            <li>
+                <div>
+                    <a href="/" class="btn btn-ghost btn-md text-xl">Sign in</a>
+                </div>
+            </li>
+            <li>
+                <details>
+                    <summary>
+                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                            <div>
+                                <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14" viewBox="0 0 448 512">
+                                    <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0
+                                    383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8
+                                    368.2 304 269.7 304H178.3z"
+                                          fill="white"/>
+                                </svg>
+                            </div>
+                        </div>
+                    </summary>
+                    <ul class="p-2 bg-base-100 rounded-t-none">
+                        <li><a>Link 1</a></li>
+                        <li><a>Link 2</a></li>
+                    </ul>
+                </details>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<th:block layout:fragment="content"></th:block>
+<th:block layout:fragment="script"></th:block>
+</body>
+</html>
