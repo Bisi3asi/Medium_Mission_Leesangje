@@ -1,3 +1,5 @@
+server:
+  port: 8090
 spring:
   output:
     ansi:
@@ -8,6 +10,8 @@ spring:
     hibernate:
       ddl-auto: create
 custom:
+  site:
+    baseUrl: "http://localhost:${server.port}"
   tempDirPath: c:/temp/medium_test/temp
   genFile:
     dirPath: c:/temp/medium_test
