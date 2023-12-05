@@ -1,5 +1,6 @@
 package com.example.medium.domain.post.entity;
 
+import com.example.medium.domain.member.entity.Member;
 import com.example.medium.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
