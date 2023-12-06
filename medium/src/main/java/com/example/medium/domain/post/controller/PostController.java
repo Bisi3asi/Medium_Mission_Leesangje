@@ -3,6 +3,7 @@ package com.example.medium.domain.post.controller;
 import com.example.medium.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,9 +13,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class PostController {
     private final PostService postService;
 
+    // Get : / *최신글 30개 노출
+    @GetMapping("/")
+    public String showRecentList(Model model){
+        model.addAttribute("paging", postService.getList(0));
+        return "domain/home/home";
+    }
+
     // Get : /post/list *전체 글 리스트, 공개된 글만 노출
     @GetMapping("/post/list")
     public String showTotalList(){
+
         return "domain/post/list_total";
     }
 
