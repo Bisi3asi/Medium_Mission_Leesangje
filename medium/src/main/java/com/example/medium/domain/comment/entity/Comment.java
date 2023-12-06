@@ -1,6 +1,7 @@
 package com.example.medium.domain.comment.entity;
 
 import com.example.medium.domain.member.entity.Member;
+import com.example.medium.domain.post.entity.Post;
 import com.example.medium.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,9 +17,12 @@ import lombok.experimental.SuperBuilder;
 @Getter
 @ToString(callSuper = true)
 public class Comment extends BaseEntity {
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member author;
-
     @Column(nullable = false, length = 300)
     private String content;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Post post;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member author;
 }
