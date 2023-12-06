@@ -25,9 +25,9 @@ public class PostControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    @DisplayName("showList")
+    @DisplayName("showRecentList")
     @Test
-    void showListTest() throws Exception {
+    void showRecentListTest() throws Exception {
         // When
         ResultActions resultActions = mvc
                 .perform((get("/")))
@@ -40,6 +40,27 @@ public class PostControllerTest {
                 .andExpect(handler().methodName("showRecentList"))
                 .andExpect(MockMvcResultMatchers.content().string(containsString("""
                         Recent
+                        """.stripIndent().trim())))
+                .andExpect(MockMvcResultMatchers.content().string(containsString("""
+                        테스트
+                        """.stripIndent().trim())));
+    }
+
+    @DisplayName("showTotalList")
+    @Test
+    void showTotalListTest() throws Exception {
+        // When
+        ResultActions resultActions = mvc
+                .perform((get("/")))
+                .andDo(print());
+
+        // Then
+        resultActions
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(handler().handlerType(PostController.class))
+                .andExpect(handler().methodName("showTotalList"))
+                .andExpect(MockMvcResultMatchers.content().string(containsString("""
+                        Total
                         """.stripIndent().trim())))
                 .andExpect(MockMvcResultMatchers.content().string(containsString("""
                         테스트
