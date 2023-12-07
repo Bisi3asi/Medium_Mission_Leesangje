@@ -24,4 +24,7 @@ public class Post extends BaseEntity {
 
     @Column(nullable = false, columnDefinition = "text", length = 1000)
     private String content;
+
+    @Column(nullable = false)
+    private boolean isPublished;
 }

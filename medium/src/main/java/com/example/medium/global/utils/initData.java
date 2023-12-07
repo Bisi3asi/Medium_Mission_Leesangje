@@ -54,12 +54,14 @@ public class initData {
                             .title(String.format("테스트 글 %d", i))
                             .content(String.format("테스트 내용 %d", i))
                             .author(member)
+                            .isPublished(false)
                             .build()
                     :
                     Post.builder()
-                            .title(String.format("테스트 글! %d", i))
-                            .content(String.format("테스트 내용! %d", i))
+                            .title(String.format("테스트 글 %d", i))
+                            .content(String.format("테스트 내용 %d", i))
                             .author(member)
+                            .isPublished(true)
                             .build();
             postRepository.save(post);
 
