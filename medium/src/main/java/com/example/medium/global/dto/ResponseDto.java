@@ -6,12 +6,12 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-public class RsData<T> {
+public class ResponseDto<T> {
     private final String resultCode;
     private final String msg;
     private final T data;
 
-    public static <T> RsData<T> of(String resultCode, String msg, T data){
-        return new RsData<>(resultCode, msg, data);
+    public static <T> ResponseDto<T> of(String resultCode, String msg, T data){
+        return new ResponseDto<>(resultCode, msg, data);
     }
 }
