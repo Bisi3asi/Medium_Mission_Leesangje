@@ -72,10 +72,10 @@ public class PostControllerTest {
                         Total
                         """.stripIndent().trim())))
                 .andExpect(MockMvcResultMatchers.content().string(containsString("""
-                        테스트 글 1
+                        테스트 글 99
                         """.stripIndent().trim())))
                 .andExpect(MockMvcResultMatchers.content().string(not(containsString("""
-                        테스트 글 2
+                        테스트 글 98
                         """.stripIndent().trim()))));
                 ;
     }
