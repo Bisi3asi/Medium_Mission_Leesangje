@@ -45,7 +45,9 @@ public class PostController {
 
     // Get: /post/{id} *글 상세보기
     @GetMapping("/post/{id}")
-    public String showDetail() {
+    public String showDetail(Model model, @PathVariable Long id) {
+        model.addAttribute("post", postService.get(id));
+        model.addAttribute("commentRequestDto", new CommentRequestDto());
         return "domain/post/detail";
     }
 
