@@ -40,7 +40,7 @@
                             </div>
                             <div th:text="${post.author.username}"></div>
                         </div>
-                        <a href="@{|/post/detail/${post.id}|}">
+                        <a th:href="@{|/post/detail/${post.id}|}">
                             <div class="mb-2 text-3xl line-clamp-2"
                                  th:text="${post.title}">
                             </div>
