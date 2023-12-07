@@ -24,6 +24,6 @@ public class PostService {
         sorts.add(Sort.Order.desc("id"));
 
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
-        return postRepository.findAll(pageable);
+        return postRepository.findAllByIsPublishedTrue(pageable);
     }
 }
