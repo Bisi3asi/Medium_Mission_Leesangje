@@ -1,5 +1,6 @@
 package com.example.medium.domain.post.controller;
 
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,8 @@ public class PostControllerTest {
 
     @DisplayName("showRecentList")
     @Test
-    void showRecentListTest() throws Exception {
+    @SneakyThrows
+    void showRecentListTest() {
         // When
         ResultActions resultActions = mvc
                 .perform((get("/")))
@@ -48,10 +50,11 @@ public class PostControllerTest {
 
     @DisplayName("showTotalList")
     @Test
-    void showTotalListTest() throws Exception {
+    @SneakyThrows
+    void showTotalListTest() {
         // When
         ResultActions resultActions = mvc
-                .perform((get("/")))
+                .perform((get("/post/list")))
                 .andDo(print());
 
         // Then
