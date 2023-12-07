@@ -16,7 +16,7 @@
         <h1 class="my-10 pb-2 text-3xl font-bold">Recent on Medium</h1>
         <div class="mx-4">
             <ul id="postList">
-                <li class="my-2 flex" th:each="post, iterStat : ${paging.content}" th:if="${iterStat.index < 10}">
+                <li class="my-2 flex" th:each="post, iterStat : ${paging.content}" th:if="${iterStat.index < 30}">
                     <div class="flex-none w-96 h-44 p-4">
                         <div class="flex mb-2">
                             <div class="pt-1 mr-1">
