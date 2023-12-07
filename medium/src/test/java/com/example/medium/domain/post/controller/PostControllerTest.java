@@ -12,7 +12,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
@@ -33,7 +33,8 @@ public class PostControllerTest {
         // When
         ResultActions resultActions = mvc
                 .perform((get("/")))
-                .andDo(print());
+                .andDo(print())
+                ;
 
         // Then
         resultActions
@@ -44,8 +45,12 @@ public class PostControllerTest {
                         Recent
                         """.stripIndent().trim())))
                 .andExpect(MockMvcResultMatchers.content().string(containsString("""
-                        테스트
-                        """.stripIndent().trim())));
+                        테스트 글 99
+                        """.stripIndent().trim())))
+                .andExpect(MockMvcResultMatchers.content().string(not(containsString("""
+                        테스트 글 98
+                        """.stripIndent().trim()))));
+        ;
     }
 
     @DisplayName("showTotalList")
@@ -55,7 +60,8 @@ public class PostControllerTest {
         // When
         ResultActions resultActions = mvc
                 .perform((get("/post/list")))
-                .andDo(print());
+                .andDo(print())
+                ;
 
         // Then
         resultActions
@@ -66,7 +72,34 @@ public class PostControllerTest {
                         Total
                         """.stripIndent().trim())))
                 .andExpect(MockMvcResultMatchers.content().string(containsString("""
-                        테스트
-                        """.stripIndent().trim())));
+                        테스트 글 1
+                        """.stripIndent().trim())))
+                .andExpect(MockMvcResultMatchers.content().string(not(containsString("""
+                        테스트 글 2
+                        """.stripIndent().trim()))));
+                ;
+    }
+
+    @DisplayName("showDetail")
+    @Test
+    @SneakyThrows
+    void showDetailTest() {
+        // When
+        ResultActions resultActions = mvc
+                .perform((get("/post/detail/1")))
+                .andDo(print());
+
+        // Then
+        resultActions
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(handler().handlerType(PostController.class))
+                .andExpect(handler().methodName("showDetail"))
+                .andExpect(MockMvcResultMatchers.content().string(containsString("""
+                        테스트 글 1
+                        """.stripIndent().trim())))
+                .andExpect(MockMvcResultMatchers.content().string(containsString("""
+                        테스트 내용 1
+                        """.stripIndent().trim())))
+                ;
     }
 }
