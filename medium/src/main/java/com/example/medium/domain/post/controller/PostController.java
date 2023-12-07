@@ -7,6 +7,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -16,14 +17,14 @@ public class PostController {
     // Get : / *최신글 30개 노출
     @GetMapping("/")
     public String showRecentList(Model model){
-        model.addAttribute("paging", postService.getList(0));
+        model.addAttribute("paging", postService.getList(0, 30));
         return "domain/home/home";
     }
 
     // Get : /post/list *전체 글 리스트, 공개된 글만 노출
     @GetMapping("/post/list")
-    public String showTotalList(){
-
+    public String showTotalList(Model model, @RequestParam(defaultValue = "0") int page){
+        model.addAttribute("paging", postService.getList(page, 10));
         return "domain/post/list_total";
     }
 

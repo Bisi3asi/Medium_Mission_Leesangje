@@ -13,6 +13,20 @@
 <script src="https://cdn.tailwindcss.com"></script>
 
 <div class="navbar bg-base-200 border-b border-white">
+    <div class="dropdown flex-none">
+        <button class="btn btn-square btn-ghost">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                 class="inline-block w-5 h-5 stroke-current">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 w-52">
+            <li><a href="/post/write">Recent Post</a></li>
+            <li><a href="/post/list">Total Post</a></li>
+            <li><a href="/post/list">Write Post</a></li>
+        </ul>
+    </div>
     <div class="flex-1">
         <a href="/" class="btn btn-ghost btn-lg text-2xl font-bold">MEDIUM</a>
     </div>
@@ -34,17 +48,17 @@
                 </div>
             </li>
             <li>
-                <div>
-                    <a href="/" class="btn btn-neutral btn-md text-xl">Sign up</a>
-                </div>
-            </li>
-            <li>
-                <div>
+                <div sec:authorize="isAnonymous()">
                     <a href="/" class="btn btn-ghost btn-md text-xl">Sign in</a>
                 </div>
             </li>
             <li>
-                <details>
+                <div sec:authorize="isAnonymous()">
+                    <a href="/" class="btn btn-success btn-md text-xl">Get Started</a>
+                </div>
+            </li>
+            <li>
+                <details sec:authorize="isAuthenticated()">
                     <summary>
                         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                             <div>
