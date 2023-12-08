@@ -1,15 +1,13 @@
 package com.example.medium.domain.post.controller;
 
+import com.example.medium.domain.comment.dto.CommentRequestDto;
 import com.example.medium.domain.post.entity.Post;
 import com.example.medium.domain.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
 
