@@ -36,6 +36,11 @@ public class PostService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
     }
 
+    public Post getLatest(){
+        return postRepository.findTopByOrderByIdDesc()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+    }
+
     @Transactional
     public ResponseDto<Post> create(PostRequestDto req) {
         Post post = Post.builder()
@@ -48,4 +53,5 @@ public class PostService {
         postRepository.save(post);
         return ResponseDto.of("200", "Your work has successfully posted", post);
     }
+
 }

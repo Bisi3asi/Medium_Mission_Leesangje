@@ -1,5 +1,7 @@
 package com.example.medium.domain.post.controller;
 
+import com.example.medium.domain.post.entity.Post;
+import com.example.medium.domain.post.service.PostService;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -12,7 +14,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.hamcrest.Matchers.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -25,6 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class PostControllerTest {
     @Autowired
     private MockMvc mvc;
+    @Autowired
+    private PostService postService;
 
     @DisplayName("showRecentList")
     @Test
@@ -130,12 +137,14 @@ public class PostControllerTest {
     @DisplayName("showWriteForm")
     @Test
     @SneakyThrows
-    void postWrite() {
+    void writePost() {
         // When
         ResultActions resultActions = mvc
                 .perform((post("/post/write"))
+                        .with(csrf())
                         .param("title", "test title")
                         .param("content", "test content")
+                        .param("published", "true")
                 )
                 .andDo(print());
 
@@ -144,13 +153,12 @@ public class PostControllerTest {
                 .andExpect(status().is3xxRedirection()) // 저장 후 redirection 필요
                 .andExpect(handler().handlerType(PostController.class))
                 .andExpect(handler().methodName("write"))
-                .andExpect(redirectedUrlPattern("post/detail/**"))
-                .andExpect(MockMvcResultMatchers.content().string(containsString("""
-                        test title
-                        """.stripIndent().trim())))
-                .andExpect(MockMvcResultMatchers.content().string(containsString("""
-                        test content
-                        """.stripIndent().trim())))
+                .andExpect(redirectedUrlPattern("/post/*"));
+
+                Post post = postService.getLatest();
+                assertThat(post.getTitle()).isEqualTo("test title");
+                assertThat(post.getContent()).isEqualTo("test content");
+                assertThat(post.isPublished()).isEqualTo(true);
         ;
     }
 }
