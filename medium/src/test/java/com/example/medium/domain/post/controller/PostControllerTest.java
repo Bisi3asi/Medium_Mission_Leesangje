@@ -102,4 +102,30 @@ public class PostControllerTest {
                         """.stripIndent().trim())))
                 ;
     }
+
+    @DisplayName("showWriteForm")
+    @Test
+    @SneakyThrows
+    void showWriteFormTest() {
+        // When
+        ResultActions resultActions = mvc
+                .perform((get("/post/write")))
+                .andDo(print());
+
+        // Then
+        resultActions
+                .andExpect(status().is2xxSuccessful())
+                .andExpect(handler().handlerType(PostController.class))
+                .andExpect(handler().methodName("showWriteForm"))
+                .andExpect(MockMvcResultMatchers.content().string(containsString("""
+                        Title
+                        """.stripIndent().trim())))
+                .andExpect(MockMvcResultMatchers.content().string(containsString("""
+                        Tell your story
+                        """.stripIndent().trim())))
+                .andExpect(MockMvcResultMatchers.content().string(containsString("""
+                        Publish
+                        """.stripIndent().trim())))
+        ;
+    }
 }
