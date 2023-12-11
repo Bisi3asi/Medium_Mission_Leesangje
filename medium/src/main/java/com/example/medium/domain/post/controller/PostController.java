@@ -57,7 +57,7 @@ public class PostController {
 
     // Get: /post/write *글 작성 폼
     @GetMapping("/post/write")
-    public String showWriteForm() {
+    public String showWriteForm(@ModelAttribute("postRequestDto") PostRequestDto postRequestDto) {
         return "domain/post/write_form";
     }
 
@@ -69,9 +69,13 @@ public class PostController {
         if (brs.hasErrors()){
             return "domain/post/write_form";
         }
+        // 임시 : member 기능 구현 후 삭제
+        if (postRequestDto.getAuthor() == null){
+            postRequestDto.setAuthor(memberService.findByUsername("testuser1"));
+        }
 
         ResponseDto<Post> resp = postService.create(postRequestDto);
-        return String.format("redirect:/domain/post/%d", resp.getData().getId());
+        return String.format("redirect:/post/%d", resp.getData().getId());
     }
 
     // Get: /post/{id}/modify *글 수정 폼
