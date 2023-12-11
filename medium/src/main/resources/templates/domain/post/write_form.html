@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>New Story - medium-mission</title>
+    <!-- import global.css-->
+    <link rel="stylesheet" href="/global.css">
+    <!-- import fontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+</head>
+<body class="bg-white">
+<!-- import daisyUI -->
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.0.8/dist/full.min.css" rel="stylesheet" type="text/css"/>
+<!-- import tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="bg-white text-black">
+    <!-- navbar -->
+    <div class="navbar">
+        <div class="dropdown flex-none">
+            <button class="btn btn-square btn-ghost">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                     class="inline-block w-5 h-5 stroke-current">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+            <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-white w-52">
+                <li><a href="/">Recent Post</a></li>
+                <li><a href="/post/list">Total Post</a></li>
+                <li><a href="/post/write">Write Post</a></li>
+            </ul>
+        </div>
+        <div class="flex-1 font-bold">
+            <a href="/" class="btn btn-ghost btn-lg text-2xl font-bold">MEDIUM</a>
+            <span class="mr-2">By</span>
+            <span>user1</span>
+        </div>
+        <input class="flex-none btn btn-success" type="submit" value="Publish">
+        <div class="flex-none">
+            <ul class="menu menu-horizontal px-1">
+                <li>
+                    <details>
+                        <summary>
+                            <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                                <div>
+                                    <svg xmlns="http://www.w3.org/2000/svg" height="16" width="14"
+                                         viewBox="0 0 448 512">
+                                        <path d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0
+                                    383.8 0 482.3C0 498.7 13.3 512 29.7 512H418.3c16.4 0 29.7-13.3 29.7-29.7C448 383.8
+                                    368.2 304 269.7 304H178.3z"/>
+                                    </svg>
+                                </div>
+                            </div>
+                        </summary>
+                        <ul class="p-2 bg-white rounded-t-none w-40">
+                            <li><a>My page</a></li>
+                            <li><a>My article</a></li>
+                        </ul>
+                    </details>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- form -->
+    <div class="px-20 bg-white">
+        <form th:action="@{/post/write}" method="post">
+            <div class="form-control mx-auto mb-2">
+                <label class="label">
+                    <span class="label-text"></span>
+                    <span class="label-text-alt" id="titleInputCount">0 / 50</span>
+                </label>
+                <textarea class="form-input w-full p-4 bg-white text-black text-3xl" id="titleTextInput" maxlength=50 placeholder="Title" rows="2"></textarea>
+            </div>
+            <div class="form-control mx-auto">
+                <textarea class="form-input w-full p-4 bg-white text-black" id="contentTextInput" maxlength=1000 placeholder="Tell your story.." rows="20"></textarea>
+                <label class="label">
+                    <span class="label-text"></span>
+                    <span class="label-text-alt" id="contentInputCount">0 / 1000</span>
+                </label>
+            </div>
+        </form>
+        <div class="pb-10 flex items-center">
+            <div class="btn btn-ghost mr-1"><i class="fa-solid fa-circle-plus fas fa-3x"></i></div>
+            <div>Add Preview Image</div>
+        </div>
+    </div>
+</div>
+<script>
+    // title, content 글자수 카운팅
+    const titleTextarea = document.getElementById('titleTextInput');
+    const titleCharCountSpan = document.getElementById('titleInputCount');
+    const contentTextarea = document.getElementById('contentTextInput');
+    const contentCharCountSpan = document.getElementById('contentInputCount');
+
+    function updateCharCount(textarea, charCountSpan, maxLength) {
+        const currentLength = textarea.value.length;
+        charCountSpan.textContent = `${currentLength} / ${maxLength}`;
+    }
+
+    // title
+    titleTextarea.addEventListener('input', function () {
+        updateCharCount(titleTextarea, titleCharCountSpan, 50);
+    });
+
+    // content
+    contentTextarea.addEventListener('input', function () {
+        updateCharCount(contentTextarea, contentCharCountSpan, 1000);
+    });
+</script>
+</body>

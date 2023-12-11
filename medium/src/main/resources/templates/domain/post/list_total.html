@@ -7,7 +7,7 @@
 <div layout:fragment="content">
     <div class="mx-20">
         <div class="flex my-10 pb-2">
-        <h1 class="flex-none mr-20 text-3xl text-yellow-500 font-bold">Total Posts on medium</h1>
+        <h1 class="flex-none mr-20 text-3xl text-yellow-500 font-bold">Total Posts on Medium</h1>
             <div class="flex-none" th:unless="${paging.isEmpty()}">
                 <a th:classappend="${!paging.hasPrevious} ? 'opacity-50 pointer-events-none' : ''"
                    th:href="|?page=${paging.number-1}|"

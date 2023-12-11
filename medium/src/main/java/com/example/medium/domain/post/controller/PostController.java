@@ -64,7 +64,7 @@ public class PostController {
     // Get: /post/{id}/modify *글 수정 폼
     @GetMapping("post/{id}/modify")
     public String showModifyForm() {
-        return "domain/post/write_form";
+        return "domain/post/write_form.html";
     }
 
     // Post: /post/{id}/modify *글 수정 처리
