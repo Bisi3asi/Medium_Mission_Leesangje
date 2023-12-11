@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import static org.hamcrest.Matchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -33,8 +33,7 @@ public class PostControllerTest {
         // When
         ResultActions resultActions = mvc
                 .perform((get("/")))
-                .andDo(print())
-                ;
+                .andDo(print());
 
         // Then
         resultActions
@@ -60,8 +59,7 @@ public class PostControllerTest {
         // When
         ResultActions resultActions = mvc
                 .perform((get("/post/list")))
-                .andDo(print())
-                ;
+                .andDo(print());
 
         // Then
         resultActions
@@ -77,7 +75,7 @@ public class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string(not(containsString("""
                         테스트 글 98
                         """.stripIndent().trim()))));
-                ;
+        ;
     }
 
     @DisplayName("showDetail")
@@ -100,7 +98,7 @@ public class PostControllerTest {
                 .andExpect(MockMvcResultMatchers.content().string(containsString("""
                         테스트 내용 1
                         """.stripIndent().trim())))
-                ;
+        ;
     }
 
     @DisplayName("showWriteForm")
@@ -125,6 +123,33 @@ public class PostControllerTest {
                         """.stripIndent().trim())))
                 .andExpect(MockMvcResultMatchers.content().string(containsString("""
                         Publish
+                        """.stripIndent().trim())))
+        ;
+    }
+
+    @DisplayName("showWriteForm")
+    @Test
+    @SneakyThrows
+    void postWrite() {
+        // When
+        ResultActions resultActions = mvc
+                .perform((post("/post/write"))
+                        .param("title", "test title")
+                        .param("content", "test content")
+                )
+                .andDo(print());
+
+        // Then
+        resultActions
+                .andExpect(status().is3xxRedirection()) // 저장 후 redirection 필요
+                .andExpect(handler().handlerType(PostController.class))
+                .andExpect(handler().methodName("write"))
+                .andExpect(redirectedUrlPattern("post/detail/**"))
+                .andExpect(MockMvcResultMatchers.content().string(containsString("""
+                        test title
+                        """.stripIndent().trim())))
+                .andExpect(MockMvcResultMatchers.content().string(containsString("""
+                        test content
                         """.stripIndent().trim())))
         ;
     }
