@@ -1,6 +1,5 @@
 package com.example.medium.domain.post.service;
 
-import com.example.medium.domain.member.entity.Member;
 import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
 import com.example.medium.domain.post.repository.PostRepository;
@@ -38,9 +37,9 @@ public class PostService {
     }
 
     @Transactional
-    public ResponseDto<Post> create(PostRequestDto req, Member author) {
+    public ResponseDto<Post> create(PostRequestDto req) {
         Post post = Post.builder()
-                .author(author)
+                .author(req.getAuthor())
                 .title(req.getTitle())
                 .content(req.getContent())
                 .isPublished(req.isPublished())
@@ -49,5 +48,4 @@ public class PostService {
         postRepository.save(post);
         return ResponseDto.of("200", "Your work has successfully posted", post);
     }
-
 }

@@ -1,12 +1,17 @@
 package com.example.medium.domain.post.controller;
 
 import com.example.medium.domain.comment.dto.CommentRequestDto;
+import com.example.medium.domain.member.service.MemberService;
+import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
 import com.example.medium.domain.post.service.PostService;
+import com.example.medium.global.dto.ResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Random;
@@ -15,6 +20,7 @@ import java.util.Random;
 @RequiredArgsConstructor
 public class PostController {
     private final PostService postService;
+    private final MemberService memberService;
 
     // Get : / *최신글 30개 노출
     @GetMapping("/")
@@ -57,8 +63,15 @@ public class PostController {
 
     // Post: /post/write *글 작성 처리
     @PostMapping("/post/write")
-    public String write() {
-        return "redirect:/post/list_member";
+    public String write(@ModelAttribute("PostRequestDto")
+                            @Valid PostRequestDto postRequestDto,
+                                BindingResult brs) {
+        if (brs.hasErrors()){
+            return "domain/post/write_form";
+        }
+
+        ResponseDto<Post> resp = postService.create(postRequestDto);
+        return String.format("redirect:/domain/post/%d", resp.getData().getId());
     }
 
     // Get: /post/{id}/modify *글 수정 폼
