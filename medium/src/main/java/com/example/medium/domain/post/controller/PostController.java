@@ -64,13 +64,13 @@ public class PostController {
     // Post: /post/write *글 작성 처리
     @PostMapping("/post/write")
     public String write(@ModelAttribute("PostRequestDto")
-                            @Valid PostRequestDto postRequestDto,
-                                BindingResult brs) {
-        if (brs.hasErrors()){
+                        @Valid PostRequestDto postRequestDto,
+                        BindingResult brs) {
+        if (brs.hasErrors()) {
             return "domain/post/write_form";
         }
         // 임시 : member 기능 구현 후 삭제
-        if (postRequestDto.getAuthor() == null){
+        if (postRequestDto.getAuthor() == null) {
             postRequestDto.setAuthor(memberService.findByUsername("testuser1"));
         }
 
@@ -80,14 +80,34 @@ public class PostController {
 
     // Get: /post/{id}/modify *글 수정 폼
     @GetMapping("post/{id}/modify")
-    public String showModifyForm() {
-        return "domain/post/write_form.html";
+    public String showModifyForm(@PathVariable Long id,
+                                 @ModelAttribute("postRequestDto") PostRequestDto postRequestDto) {
+        Post post = postService.get(id);
+
+        // 빌더 패턴이 아닌, 모델의 postRequestDto는 Setter로 인한 설정 만이 바인딩 값 유지 가능
+        // 빌더 패턴을 사용할 시 매개변수의 postRequestDto 객체가 아닌 다른 객체가 들어가기 때문 = 바인딩 실패
+        postRequestDto.setTitle(post.getTitle());
+        postRequestDto.setContent(post.getContent());
+        postRequestDto.setPublished(post.isPublished());
+
+        return "domain/post/modify_form";
     }
 
     // Post: /post/{id}/modify *글 수정 처리
     @PostMapping("post/{id}/modify")
-    public String modify() {
-        return "redirect:/post/list_member";
+    public String modify(@PathVariable Long id,
+                         @ModelAttribute("postRequestDto") @Valid PostRequestDto postRequestDto,
+                         BindingResult brs) {
+        if (brs.hasErrors()) {
+            return "domain/post/modify_form";
+        }
+        // 임시 : member 기능 구현 후 삭제
+        if (postRequestDto.getAuthor() == null) {
+            postRequestDto.setAuthor(memberService.findByUsername("testuser1"));
+        }
+
+        ResponseDto<Post> resp = postService.modify(postRequestDto, id);
+        return String.format("redirect:/post/%d", id);
     }
 
     // Delete: /post/{id}/delete *글 삭제 처리
