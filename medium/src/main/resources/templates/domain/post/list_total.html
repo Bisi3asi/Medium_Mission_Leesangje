@@ -30,7 +30,7 @@
                 <li class="my-2 flex" th:each="post, iterStat : ${paging.content}" th:if="${iterStat.index < 10}">
                     <div class="flex-none w-96 h-44 p-4">
                         <a th:href="@{|/b/${post.author.username}|}">
-                            <div class="flex items-center mb-2">
+                            <div class="mb-2 flex items-center btn btn-ghost">
                                 <div class="mr-1">
                                     <i class="fa-solid fa-user fas fa-2xl" style="color: white;"></i>
                                 </div>
