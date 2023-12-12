@@ -94,7 +94,7 @@ public class PostController {
     }
 
     // Post: /post/{id}/modify *글 수정 처리
-    @PostMapping("post/{id}/modify")
+    @PutMapping("post/{id}/modify")
     public String modify(@PathVariable Long id,
                          @ModelAttribute("postRequestDto") @Valid PostRequestDto postRequestDto,
                          BindingResult brs) {
