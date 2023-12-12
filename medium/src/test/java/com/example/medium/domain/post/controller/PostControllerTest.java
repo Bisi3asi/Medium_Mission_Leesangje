@@ -18,8 +18,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -134,10 +133,10 @@ public class PostControllerTest {
         ;
     }
 
-    @DisplayName("showWriteForm")
+    @DisplayName("write Post")
     @Test
     @SneakyThrows
-    void writePost() {
+    void writePostTest() {
         // When
         ResultActions resultActions = mvc
                 .perform((post("/post/write"))
@@ -152,13 +151,41 @@ public class PostControllerTest {
         resultActions
                 .andExpect(status().is3xxRedirection()) // 저장 후 redirection 필요
                 .andExpect(handler().handlerType(PostController.class))
-                .andExpect(handler().methodName("write"))
+                .andExpect(handler().methodName("modify"))
                 .andExpect(redirectedUrlPattern("/post/*"));
 
                 Post post = postService.getLatest();
                 assertThat(post.getTitle()).isEqualTo("test title");
                 assertThat(post.getContent()).isEqualTo("test content");
                 assertThat(post.isPublished()).isEqualTo(true);
+        ;
+    }
+
+    @DisplayName("modify Post")
+    @Test
+    @SneakyThrows
+    void modifyPostTest() {
+        // When
+        ResultActions resultActions = mvc
+                .perform((put("/post/1/modify"))
+                        .with(csrf())
+                        .param("title", "test title")
+                        .param("content", "test content")
+                        .param("published", "true")
+                )
+                .andDo(print());
+
+        // Then
+        resultActions
+                .andExpect(status().is3xxRedirection()) // 저장 후 redirection 필요
+                .andExpect(handler().handlerType(PostController.class))
+                .andExpect(handler().methodName("modify"))
+                .andExpect(redirectedUrlPattern("/post/*"));
+
+        Post post = postService.get(1L);
+        assertThat(post.getTitle()).isEqualTo("test title");
+        assertThat(post.getContent()).isEqualTo("test content");
+        assertThat(post.isPublished()).isEqualTo(true);
         ;
     }
 }
