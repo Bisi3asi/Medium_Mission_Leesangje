@@ -33,12 +33,16 @@ public class PostService {
 
     public Post get(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
+                );
     }
 
-    public Post getLatest(){
+    public Post getLatest() {
         return postRepository.findTopByOrderByIdDesc()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found"));
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
+                );
     }
 
     @Transactional
@@ -51,7 +55,23 @@ public class PostService {
                 .build();
 
         postRepository.save(post);
-        return ResponseDto.of("200", "Your work has successfully posted", post);
+        return ResponseDto.of("200", "Your work has been successfully posted", post);
+    }
+
+    @Transactional
+    public ResponseDto<Post> modify(PostRequestDto req, Long id) {
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
+        );
+        post = post.toBuilder()
+                .author(req.getAuthor())
+                .title(req.getTitle())
+                .content(req.getContent())
+                .isPublished(req.isPublished())
+                .build();
+
+        postRepository.save(post);
+        return ResponseDto.of("200", "Your post has been successfully updated", post);
     }
 
 }
