@@ -32,7 +32,14 @@
                         </div>
                         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-40">
                             <li><a th:href="@{'/post/' + ${post.id} + '/modify'}">Update Post</a></li>
-                            <li><a th:href="@{'/post/' + ${post.id} + '/delete'}">Delete Post</a></li>
+                            <li>
+                                <form th:action="@{'/post/' + ${post.id} + '/delete'}" th:method="delete">
+                                    <input type="hidden" name="_method" value="delete"/>
+                                    <button type="submit" onclick="return confirmDelete();">
+                                        Delete Post
+                                </form>
+                                <!--<a th:href="@{'/post/' + ${post.id} + '/delete'}">Delete Post</a>-->
+                            </li>
                         </ul>
                     </div>
                 </div>
@@ -99,7 +106,7 @@
             </div>
             <textarea class="textarea textarea-lg textarea-primary"
                       id="textInput"
-                      maxlength="299" rows="6"
+                      maxlength="300" rows="6"
                       placeholder="What are your thoughts?"></textarea>
             <div class="label">
                 <span class="flex justify-items-center">
@@ -132,6 +139,15 @@
             }
         });
     });
+
+    function confirmDelete() {
+        var result = confirm('Are you sure delete your post?');
+        if (result) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     </script>
 </th:block>
 </body>

@@ -74,4 +74,13 @@ public class PostService {
         return ResponseDto.of("200", "Your post has been successfully updated", post);
     }
 
+    @Transactional
+    public ResponseDto<Post> delete(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
+        );
+
+        postRepository.delete(post);
+        return ResponseDto.of("200", "Your post has been successfully deleted", null);
+    }
 }

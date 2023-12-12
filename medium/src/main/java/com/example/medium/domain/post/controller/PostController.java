@@ -38,13 +38,13 @@ public class PostController {
         // randomValue 추가 : 랜덤 페이지 이동
         int randomValue = new Random().nextInt(paging.getTotalPages() - 1);
         model.addAttribute("randomValue", randomValue);
-        return "domain/post/list_total";
+                return "domain/post/list_total";
     }
 
     // Get : /post/mylist *내 글 리스트
     @GetMapping("/post/mylist")
     public String showMyList() {
-        return "domain/post/list_member";
+        return "domain/post/list_member.html";
     }
 
     // Get: /post/{id} *글 상세보기
@@ -112,8 +112,9 @@ public class PostController {
 
     // Delete: /post/{id}/delete *글 삭제 처리
     @DeleteMapping("post/{id}/delete")
-    public String delete() {
-        return "redirect:/post/list_member";
+    public String delete(@PathVariable Long id) {
+        ResponseDto<Post> resp = postService.delete(id);
+        return "redirect:/post/list";
     }
 
     // Get: /b/{userid} *유저의 전체 글 리스트

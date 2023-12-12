@@ -17,6 +17,7 @@
 <div class="bg-white text-black">
     <!-- navbar -->
     <form th:action="@{|/post/${id}/modify|}" th:object="${postRequestDto}" th:method="put">
+        <input type="hidden" name="_method" value="put"/>
         <div class="navbar">
             <div class="dropdown flex-none">
                 <button class="btn btn-square btn-ghost">
