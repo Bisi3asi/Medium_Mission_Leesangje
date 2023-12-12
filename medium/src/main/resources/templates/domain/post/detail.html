@@ -19,14 +19,16 @@
                     <div class="mr-2">
                         <i class="fa-solid fa-user fas fa-2xl" style="color: black;"></i>
                     </div>
-                    <div>
-                        <div class="text-xl" th:text="${post.author.username}"></div>
-                        <div class="flex text-base">
-                            <div class="mr-1">0 min read</div>
-                            <div class="mr-1">·</div>
-                            <div th:text="${#temporals.format(post.createDate, 'yyyy.MM.dd')}"></div>
+                    <a th:href="@{|/b/${post.author.username}|}">
+                        <div>
+                            <div class="text-xl" th:text="${post.author.username}"></div>
+                            <div class="flex text-base">
+                                <div class="mr-1" th:text="${post.viewCount + ' min read'}"></div>
+                                <div class="mr-1">·</div>
+                                <div th:text="${#temporals.format(post.createDate, 'yyyy.MM.dd')}"></div>
+                            </div>
                         </div>
-                    </div>
+                    </a>
                     <div class="dropdown dropdown-right">
                         <div tabindex="0" role="button" class="btn btn-ghost m-1"><i class="fa-solid fa-ellipsis"></i>
                         </div>
@@ -69,15 +71,17 @@
                         <div class="mr-2">
                             <i class="fa-solid fa-user fas fa-2xl" style="color: white;"></i>
                         </div>
-                        <div>
-                            <div class="text-xl" th:text="${comment.author.username}"></div>
-                            <div class="flex text-base">
-                                <div th:text="${#temporals.format(comment.createDate, 'yyyy.MM.dd')}"></div>
+                        <a th:href="@{|/b/${comment.author.username}|}">
+                            <div>
+                                <div class="text-xl" th:text="${comment.author.username}"></div>
+                                <div class="flex text-base">
+                                    <div th:text="${#temporals.format(comment.createDate, 'yyyy.MM.dd')}"></div>
+                                </div>
                             </div>
-                        </div>
+                        </a>
                         <div class="dropdown dropdown-right">
-                            <div th:attr="tabindex=0, role='button'" class="btn btn-ghost m-1"><i
-                                    class="fa-solid fa-ellipsis"></i></div>
+                            <div th:attr="tabindex=0, role='button'" class="btn btn-ghost m-1">
+                                <i class="fa-solid fa-ellipsis"></i></div>
                             <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-44">
                                 <li><a href="@{|/comment/${comment.id}/modify}|}">Update Comment</a></li>
                                 <li><a href="@{/comment/${comment.id}/delete}|}">Delete Comment</a></li>

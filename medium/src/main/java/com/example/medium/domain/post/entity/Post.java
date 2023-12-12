@@ -27,6 +27,14 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private boolean isPublished;
 
+    @Column(columnDefinition = "int default 0", nullable = false)
+    @Builder.Default
+    private int viewCount = 0;
+
+    public void incrViewCount(){
+        viewCount++;
+    }
+
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Comment> commentList = new ArrayList<>();

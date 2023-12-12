@@ -31,11 +31,15 @@ public class PostService {
         return postRepository.findAllByIsPublishedTrue(pageable);
     }
 
+    @Transactional
     public Post get(Long id) {
-        return postRepository.findById(id)
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
-                );
+        Optional<Post> opPost = postRepository.findById(id);
+        if (opPost.isPresent()){
+            Post post = opPost.get();
+            post.incrViewCount();
+            return post;
+        }
+        else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
     }
 
     public Post getLatest() {
