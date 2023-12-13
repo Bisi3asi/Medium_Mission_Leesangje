@@ -25,20 +25,20 @@ public class PostController {
     // Get : / *최신글 30개 노출
     @GetMapping("/")
     public String showRecentList(Model model) {
-        model.addAttribute("paging", postService.getList(0, 30));
+        model.addAttribute("paging", postService.getTotalList(0, 30));
         return "domain/home/home";
     }
 
     // Get : /post/list *전체 글 리스트, 공개된 글만 노출
     @GetMapping("/post/list")
     public String showTotalList(Model model, @RequestParam(defaultValue = "0") int page) {
-        Page<Post> paging = postService.getList(page, 10);
-        model.addAttribute("paging", postService.getList(page, 10));
+        Page<Post> paging = postService.getTotalList(page, 10);
+        model.addAttribute("paging", postService.getTotalList(page, 10));
 
         // randomValue 추가 : 랜덤 페이지 이동
         int randomValue = new Random().nextInt(paging.getTotalPages() - 1);
         model.addAttribute("randomValue", randomValue);
-                return "domain/post/list_total";
+        return "domain/post/list_total";
     }
 
     // Get : /post/mylist *내 글 리스트
@@ -119,8 +119,12 @@ public class PostController {
 
     // Get: /b/{userid} *유저의 전체 글 리스트
     @GetMapping("/b/{username}")
-    public String showMemberPostList() {
-        return "redirect:/post/list_member";
+    public String showMemberPostList(@PathVariable String username,
+                                     @RequestParam(defaultValue = "0") int page,
+                                     Model model) {
+        model.addAttribute("paging", postService.getMemberList(page, 10, username));
+
+        return "domain/post/list_member";
     }
 
     @GetMapping("/b/{username}/{id}")

@@ -12,5 +12,6 @@ import java.util.Optional;
 public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByIsPublishedTrue(Pageable pageable);
 
+    Page<Post> findAllByAuthorUsernameAndIsPublishedTrue(String username, Pageable pageable);
     Optional<Post> findTopByOrderByIdDesc();
 }

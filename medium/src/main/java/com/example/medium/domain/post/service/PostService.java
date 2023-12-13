@@ -2,6 +2,7 @@ package com.example.medium.domain.post.service;
 
 import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
+import com.example.medium.domain.file.repository.ImageFileRepository;
 import com.example.medium.domain.post.repository.PostRepository;
 import com.example.medium.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,12 +25,20 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
 
-    public Page<Post> getList(int page, int pageSize) {
+    public Page<Post> getTotalList(int page, int pageSize) {
         List<Sort.Order> sorts = new ArrayList<>();
         sorts.add(Sort.Order.desc("id"));
 
         Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
         return postRepository.findAllByIsPublishedTrue(pageable);
+    }
+
+    public Page<Post> getMemberList(int page, int pageSize, String username) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
+        return postRepository.findAllByAuthorUsernameAndIsPublishedTrue(username, pageable);
     }
 
     @Transactional

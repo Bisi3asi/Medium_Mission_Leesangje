@@ -1,6 +1,7 @@
 package com.example.medium.domain.post.entity;
 
 import com.example.medium.domain.comment.entity.Comment;
+import com.example.medium.domain.file.entity.ImageFile;
 import com.example.medium.domain.member.entity.Member;
 import com.example.medium.global.entity.BaseEntity;
 import jakarta.persistence.*;
@@ -34,6 +35,10 @@ public class Post extends BaseEntity {
     public void incrViewCount(){
         viewCount++;
     }
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "file_id", referencedColumnName = "id")
+    private ImageFile imageFile;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
