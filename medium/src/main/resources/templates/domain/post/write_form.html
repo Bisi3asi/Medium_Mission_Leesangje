@@ -16,7 +16,7 @@
 
 <div class="bg-white text-black">
     <!-- navbar -->
-    <form th:action="@{/post/write}" th:object="${postRequestDto}" method="post">
+    <form th:action="@{/post/write}" th:object="${postRequestDto}" method="post" enctype="multipart/form-data">
         <div class="navbar">
             <div class="dropdown flex-none">
                 <button class="btn btn-square btn-ghost">
@@ -88,14 +88,19 @@
                 </label>
             </div>
             <div class="pb-10 flex items-center">
-                <div class="btn btn-ghost mr-1"><i class="fa-solid fa-circle-plus fas fa-3x"></i></div>
-                <div>Add Preview Image</div>
+                <div class="btn btn-ghost mr-1">
+                    <label for="file"><i class="fa-solid fa-circle-plus fas fa-3x"></i></label>
+                    <input type="file" id="file" class="hidden"
+                           th:field="*{multipartFile}"
+                           accept=".jpg, .jpeg, .png"
+                           onchange="displayFileName()"/>
+                </div>
+                <div id="fileNameContainer" style="color: black;">Add Preview Image</div>
             </div>
         </div>
     </form>
 </div>
 <script>
-    // title, content 글자수 카운팅
     const titleTextarea = document.getElementById('titleTextInput');
     const titleCharCountSpan = document.getElementById('titleInputCount');
     const contentTextarea = document.getElementById('contentTextInput');
@@ -115,5 +120,19 @@
     contentTextarea.addEventListener('input', function () {
         updateCharCount(contentTextarea, contentCharCountSpan, 1000);
     });
+
+    // 파일이 선택되었을 때 파일 이름을 표시
+    function displayFileName() {
+        var fileInput = document.getElementById('file');
+        var fileNameContainer = document.getElementById('fileNameContainer');
+
+        if (fileInput.value) {
+            fileNameContainer.innerHTML = 'File Selected: ' + fileInput.files[0].name;
+            fileNameContainer.style.color = 'green';
+        } else {
+            fileNameContainer.innerHTML = 'Add Preview Image';
+            fileNameContainer.style.color = 'black';
+        }
+    }
 </script>
 </body>

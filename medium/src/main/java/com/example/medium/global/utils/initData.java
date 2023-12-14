@@ -50,7 +50,8 @@ public class initData {
                                         memberService.findByUsername("testuser1"),
                                         false,
                                         String.format("테스트 글 %d", i),
-                                        String.format("테스트 내용 %d", i)
+                                        String.format("테스트 내용 %d", i),
+                                        null
                                 )
                         );
                     } else {
@@ -58,7 +59,8 @@ public class initData {
                                         memberService.findByUsername("testuser1"),
                                         true,
                                         String.format("테스트 글 %d", i),
-                                        String.format("테스트 내용 %d", i)
+                                        String.format("테스트 내용 %d", i),
+                                        null
                                 )
                         );
                     }

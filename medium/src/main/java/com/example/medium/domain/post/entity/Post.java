@@ -36,14 +36,16 @@ public class Post extends BaseEntity {
         viewCount++;
     }
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "file_id", referencedColumnName = "id")
-    private ImageFile imageFile;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Member author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
     private List<Comment> commentList = new ArrayList<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Member author;
+    // OnetoOne 양방향은 LAZY 로딩 적용 X
+    // 연관관계 주인이 mappedBy = post에 있음을 알림
+    @OneToOne(mappedBy = "post", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "image_file_id")
+    private ImageFile imageFile;
 }

@@ -1,6 +1,8 @@
 package com.example.medium.domain.post.controller;
 
 import com.example.medium.domain.comment.dto.CommentRequestDto;
+import com.example.medium.domain.file.entity.ImageFile;
+import com.example.medium.domain.file.service.ImageFileService;
 import com.example.medium.domain.member.service.MemberService;
 import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Random;
 
@@ -21,6 +24,7 @@ import java.util.Random;
 public class PostController {
     private final PostService postService;
     private final MemberService memberService;
+    private final ImageFileService imageFileService;
 
     // Get : / *최신글 30개 노출
     @GetMapping("/")
@@ -34,6 +38,7 @@ public class PostController {
     public String showTotalList(Model model, @RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = postService.getTotalList(page, 10);
         model.addAttribute("paging", postService.getTotalList(page, 10));
+        model.addAttribute("fileStorePath", imageFileService.getFILESTORE_PATH());
 
         // randomValue 추가 : 랜덤 페이지 이동
         int randomValue = new Random().nextInt(paging.getTotalPages() - 1);
@@ -65,7 +70,8 @@ public class PostController {
     @PostMapping("/post/write")
     public String write(@ModelAttribute("PostRequestDto")
                         @Valid PostRequestDto postRequestDto,
-                        BindingResult brs) {
+                        BindingResult brs,
+                        @RequestPart("multipartFile") MultipartFile multipartFile) {
         if (brs.hasErrors()) {
             return "domain/post/write_form";
         }
@@ -73,9 +79,15 @@ public class PostController {
         if (postRequestDto.getAuthor() == null) {
             postRequestDto.setAuthor(memberService.findByUsername("testuser1"));
         }
-
         ResponseDto<Post> resp = postService.create(postRequestDto);
+
+        // MultiPartFile은 자동적으로 데이터 바인딩이 안되므로 @RequestPart로 받아온 후 직접 처리
+        if (!multipartFile.isEmpty()) {
+            ResponseDto<ImageFile> imageFileResponseDto = imageFileService.create(multipartFile, resp.getData());
+        }
+
         return String.format("redirect:/post/%d", resp.getData().getId());
+
     }
 
     // Get: /post/{id}/modify *글 수정 폼

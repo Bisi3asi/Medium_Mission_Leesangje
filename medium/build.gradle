@@ -34,6 +34,8 @@ dependencies {
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
     // validation
     implementation 'org.springframework.boot:spring-boot-starter-validation'
+    // file-upload
+    implementation 'commons-fileupload:commons-fileupload:1.4'
     // lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
