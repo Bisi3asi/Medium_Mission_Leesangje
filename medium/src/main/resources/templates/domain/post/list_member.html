@@ -36,16 +36,18 @@
                                     </div>
                                 </a>
                             </div>
-                            <div th:if="${post.imageFile == null}"
-                                 class="w-64 h-44 border border-gray-400 flex items-center justify-center">
-                                <h2 class="text-3xl">No images</h2>
-                            </div>
-                            <div th:unless="${post.imageFile == null}"
-                                 class="flex-none w-64 h-44 border border-gray-400">
-                                <img class="w-full h-full object-cover"
-                                     th:src="@{|/images/${post.imageFile.filename}|}"
-                                     alt="Post Image">
-                            </div>
+                            <a th:href="@{|/post/${post.id}|}">
+                                <div th:if="${post.imageFile == null}"
+                                     class="w-64 h-44 border border-gray-400 flex items-center justify-center">
+                                    <h2 class="text-3xl">No images</h2>
+                                </div>
+                                <div th:unless="${post.imageFile == null}"
+                                     class="flex-none w-64 h-44 border border-gray-400">
+                                    <img class="w-full h-full object-cover"
+                                         th:src="@{|/images/${post.imageFile.filename}|}"
+                                         alt="Post Image">
+                                </div>
+                            </a>
                         </li>
                     </ul>
                 </div>

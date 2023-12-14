@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.Random;
 
@@ -71,6 +72,7 @@ public class PostController {
     public String write(@ModelAttribute("PostRequestDto")
                         @Valid PostRequestDto postRequestDto,
                         BindingResult brs,
+                        RedirectAttributes attr,
                         @RequestPart("multipartFile") MultipartFile multipartFile) {
         if (brs.hasErrors()) {
             return "domain/post/write_form";
@@ -80,6 +82,7 @@ public class PostController {
             postRequestDto.setAuthor(memberService.findByUsername("testuser1"));
         }
         ResponseDto<Post> resp = postService.create(postRequestDto);
+        attr.addFlashAttribute("msg", resp.getMsg());
 
         // MultiPartFile은 자동적으로 데이터 바인딩이 안되므로 @RequestPart로 받아온 후 직접 처리
         if (!multipartFile.isEmpty()) {
@@ -109,7 +112,8 @@ public class PostController {
     @PutMapping("post/{id}/modify")
     public String modify(@PathVariable Long id,
                          @ModelAttribute("postRequestDto") @Valid PostRequestDto postRequestDto,
-                         BindingResult brs) {
+                         BindingResult brs,
+                         RedirectAttributes attr) {
         if (brs.hasErrors()) {
             return "domain/post/modify_form";
         }
@@ -119,13 +123,17 @@ public class PostController {
         }
 
         ResponseDto<Post> resp = postService.modify(postRequestDto, id);
+        attr.addFlashAttribute("msg", resp.getMsg());
+
         return String.format("redirect:/post/%d", id);
     }
 
     // Delete: /post/{id}/delete *글 삭제 처리
     @DeleteMapping("post/{id}/delete")
-    public String delete(@PathVariable Long id) {
+    public String delete(@PathVariable Long id, RedirectAttributes attr) {
         ResponseDto<Post> resp = postService.delete(id);
+        attr.addFlashAttribute("msg", resp.getMsg());
+
         return "redirect:/post/list";
     }
 
@@ -139,8 +147,8 @@ public class PostController {
         return "domain/post/list_member";
     }
 
-    @GetMapping("/b/{username}/{id}")
-    public String showMemberPostDetail() {
-        return "redirect:/post/detail";
-    }
+//    @GetMapping("/b/{username}/{id}")
+//    public String showMemberPostDetail(@PathVariable Long id) {
+//        return "redirect:/post/detail";
+//    }
 }

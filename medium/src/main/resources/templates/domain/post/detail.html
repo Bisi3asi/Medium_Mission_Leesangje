@@ -4,6 +4,13 @@
 </head>
 <body>
 <div layout:fragment="content">
+    <!-- message -->
+    <div th:unless="${msg == null}"
+         class="toast toast-top toast-end">
+        <div class="alert alert-success">
+            <span th:text="${msg}"></span>
+        </div>
+    </div>
     <!-- title container -->
     <div class="w-full bg-white">
         <div class="py-24 px-20 pb-2 text-black font-bold">
@@ -61,7 +68,21 @@
         </div>
         <div th:text="${post.commentList.size}"></div>
     </div>
-    <div class="px-20 mt-10 pb-32 text-2xl border-b-2 border-gray-400" th:text="${post.content}"></div>
+
+    <div class="px-20 mt-10 pb-32 text-2xl">
+        <div class=mx-auto th:unless="${post.imageFile == null}">
+            <img class="mb-10 w-3/4 h-1/2 self-center mx-auto"
+                 th:src="@{|/images/${post.imageFile.filename}|}"
+                 alt="Post Image">
+        </div>
+        <div th:unless="${post.imageFile == null}"
+             class="w-3/4 h-1/2 self-center mx-auto"
+             th:text="${post.content}">
+        </div>
+        <div th:if="${post.imageFile == null}"
+             th:text="${post.content}">
+        </div>
+    </div>
 
     <!-- comment -->
     <div class="px-20 border-b-2 border-gray-400 bg-gray-700">
@@ -153,6 +174,20 @@
             return false;
         }
     }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var messageDiv = document.querySelector('.toast.toast-top.toast-end');
+
+            if (messageDiv) {
+                setTimeout(function () {
+                    messageDiv.classList.add('fade-out');
+                    setTimeout(function () {
+                        messageDiv.style.display = 'none';
+                    }, 3000);
+                }, 3000);
+            }
+        });
     </script>
 </th:block>
 </body>

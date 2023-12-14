@@ -2,7 +2,6 @@ package com.example.medium.domain.post.service;
 
 import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
-import com.example.medium.domain.file.repository.ImageFileRepository;
 import com.example.medium.domain.post.repository.PostRepository;
 import com.example.medium.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -49,18 +48,19 @@ public class PostService {
             post.incrViewCount();
             return post;
         }
-        else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found");
+        else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found.");
     }
 
     public Post getLatest() {
         return postRepository.findTopByOrderByIdDesc()
                 .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found.")
                 );
     }
 
     @Transactional
     public ResponseDto<Post> create(PostRequestDto req) {
+
         Post post = Post.builder()
                 .author(req.getAuthor())
                 .title(req.getTitle())
@@ -69,7 +69,7 @@ public class PostService {
                 .build();
 
         postRepository.save(post);
-        return ResponseDto.of("200", "Your work has been successfully posted", post);
+        return ResponseDto.of("200", "Your work has been successfully posted.", post);
     }
 
     @Transactional
@@ -85,16 +85,16 @@ public class PostService {
                 .build();
 
         postRepository.save(post);
-        return ResponseDto.of("200", "Your post has been successfully updated", post);
+        return ResponseDto.of("200", "Your post has been successfully updated.", post);
     }
 
     @Transactional
     public ResponseDto<Post> delete(Long id) {
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found.")
         );
 
         postRepository.delete(post);
-        return ResponseDto.of("200", "Your post has been successfully deleted", null);
+        return ResponseDto.of("200", "Your post has been successfully deleted.", null);
     }
 }

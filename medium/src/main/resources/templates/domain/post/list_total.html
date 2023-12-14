@@ -5,6 +5,13 @@
 </head>
 <body>
 <div layout:fragment="content">
+    <!-- message -->
+    <div th:unless="${msg == null}"
+         class="toast toast-top toast-end">
+        <div class="alert alert-success">
+            <span th:text="${msg}"></span>
+        </div>
+    </div>
     <div class="mx-20">
         <div class="flex my-10 pb-2">
             <h1 class="flex-none mr-20 text-3xl text-yellow-500 font-bold">Total Posts on Medium</h1>
@@ -52,16 +59,18 @@
                             </div>
                         </a>
                     </div>
-                    <div th:if="${post.imageFile == null}"
-                         class="w-64 h-44 border border-gray-400 flex items-center justify-center">
-                        <h2 class="text-3xl">No images</h2>
-                    </div>
-                    <div th:unless="${post.imageFile == null}"
-                         class="flex-none w-64 h-44 border border-gray-400">
-                        <img class="w-full h-full object-cover"
-                             th:src="@{|/images/${post.imageFile.filename}|}"
-                             alt="Post Image">
-                    </div>
+                    <a th:href="@{|/post/${post.id}|}">
+                        <div th:if="${post.imageFile == null}"
+                             class="w-64 h-44 border border-gray-400 flex items-center justify-center">
+                            <h2 class="text-3xl">No images</h2>
+                        </div>
+                        <div th:unless="${post.imageFile == null}"
+                             class="flex-none w-64 h-44 border border-gray-400">
+                            <img class="w-full h-full object-cover"
+                                 th:src="@{|/images/${post.imageFile.filename}|}"
+                                 alt="Post Image">
+                        </div>
+                    </a>
                 </li>
             </ul>
         </div>
@@ -98,5 +107,21 @@
     </div>
     <!-- 페이징처리 끝 -->
 </div>
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var messageDiv = document.querySelector('.toast.toast-top.toast-end');
+
+            if (messageDiv) {
+                setTimeout(function () {
+                    messageDiv.classList.add('fade-out');
+                    setTimeout(function () {
+                        messageDiv.style.display = 'none';
+                    }, 3000);
+                }, 3000);
+            }
+        });
+    </script>
+</th:block>
 </body>
 </html>
