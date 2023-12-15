@@ -6,11 +6,11 @@ import com.example.medium.domain.member.repository.MemberRepository;
 import com.example.medium.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Controller
 @RequiredArgsConstructor
@@ -37,7 +37,9 @@ public class MemberService {
         Member member = Member.builder()
                 .username(memberRequestDto.getUsername())
                 .password(passwordEncoder.encode(memberRequestDto.getPassword()))
+                .authorities("admin".equals(memberRequestDto.getUsername()) ? "ROLE_ADMIN" : "ROLE_USER")
                 .build();
+
         memberRepository.save(member);
         return ResponseDto.of("200", "you have successfully joined", member);
     }

@@ -27,19 +27,19 @@ public class initData {
 
     @Bean
     public ApplicationRunner run() {
-        return new ApplicationRunner(){
+        return new ApplicationRunner() {
             @Override
             @Transactional
             @SneakyThrows
             public void run(ApplicationArguments args) {
                 memberService.create(new MemberRequestDto(
-                        "sbbadmin"
-                        , "12345678",
+                        "sbbadmin",
+                        "12345678",
                         "12345678")
                 );
                 memberService.create(new MemberRequestDto(
-                        "testuser1"
-                        , "12345678",
+                        "testuser1",
+                        "12345678",
                         "12345678")
                 );
 
