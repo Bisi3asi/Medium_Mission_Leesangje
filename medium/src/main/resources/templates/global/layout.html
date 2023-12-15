@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>medium-mission</title>
+    <!-- import global.css-->
+    <link rel="stylesheet" href="/global.css">
+    <!-- import fontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <!-- message fade-out -->
+    <style>
+        .fade-out {
+            transition: opacity 5s ease-out;
+            opacity: 0;
+        }
+    </style>
+</head>
+<body>
+<!-- import daisyUI -->
+<link href="https://cdn.jsdelivr.net/npm/daisyui@4.0.8/dist/full.min.css" rel="stylesheet" type="text/css"/>
+<!-- import tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div class="navbar bg-base-200 border-b border-white">
+    <div class="dropdown flex-none">
+        <button class="btn btn-square btn-ghost">
+            <i class="fa-solid fa-bars" style="color: white;"></i>
+        </button>
+        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 w-52">
+            <li><a href="/">Recent Post</a></li>
+            <li><a href="/post/list">Total Post</a></li>
+            <li><a href="/post/write">Write Post</a></li>
+        </ul>
+    </div>
+    <div class="flex-1">
+        <a href="/" class="btn btn-ghost btn-lg text-2xl font-bold">MEDIUM</a>
+    </div>
+    <div class="flex-none">
+        <ul class="menu menu-horizontal px-1">
+            <li>
+                <div>
+                    <a href="/post/write" class="btn btn-ghost btn-md text-xl">
+                        <i class="fa-solid fa-pen-nib" style="color: white;"></i>
+                        Write
+                    </a>
+                </div>
+            </li>
+            <li>
+                <div sec:authorize="isAnonymous()">
+                    <a href="/" class="btn btn-ghost btn-md text-xl">Sign in</a>
+                </div>
+            </li>
+            <li>
+                <div sec:authorize="isAnonymous()">
+                    <a href="/" class="btn btn-success btn-md text-xl">Get Started</a>
+                </div>
+            </li>
+            <li>
+                <details sec:authorize="isAuthenticated()">
+                    <summary>
+                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
+                            <div>
+                                <i class="fa-solid fa-user" style="color: white;"></i>
+                            </div>
+                        </div>
+                    </summary>
+                    <ul class="p-2 bg-base-100 rounded-t-none">
+                        <li><a>Link 1</a></li>
+                        <li><a>Link 2</a></li>
+                    </ul>
+                </details>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<th:block layout:fragment="content"></th:block>
+<th:block layout:fragment="script"></th:block>
+</body>
+</html>

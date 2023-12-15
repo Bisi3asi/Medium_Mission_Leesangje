@@ -1,0 +1,127 @@
+<html lang="ko" layout:decorate="~{global/layout}">
+<head>
+    <meta charset="UTF-8">
+    <title>Medium</title>
+</head>
+<body>
+<div layout:fragment="content">
+    <!-- message -->
+    <div th:unless="${msg == null}"
+         class="toast toast-top toast-end">
+        <div class="alert alert-success">
+            <span th:text="${msg}"></span>
+        </div>
+    </div>
+    <div class="mx-20">
+        <div class="flex my-10 pb-2">
+            <h1 class="flex-none mr-20 text-3xl text-yellow-500 font-bold">Total Posts on Medium</h1>
+            <div class="flex-none" th:unless="${paging.isEmpty()}">
+                <a th:classappend="${!paging.hasPrevious} ? 'opacity-50 pointer-events-none' : ''"
+                   th:href="|?page=${paging.number-1}|"
+                   class="page-link join-item btn btn-lg hover:text-blue-500"
+                   th:text="prev">
+                </a>
+                <a th:classappend="${!paging.hasNext} ? 'opacity-50 pointer-events-none' : ''"
+                   th:href="|?page=${paging.number+1}|"
+                   class="page-link join-item btn btn-lg hover:text-blue-500"
+                   th:text="next">
+                </a>
+                <a th:href="|?page=${randomValue}|"
+                   class="page-link join-item btn btn-primary btn-lg hover:text-blue-500"
+                   th:text="jump">
+                </a>
+            </div>
+        </div>
+        <div class="mx-4">
+            <ul id="postList">
+                <li class="my-2 flex" th:each="post, iterStat : ${paging.content}" th:if="${iterStat.index < 10}">
+                    <div class="flex-none w-96 h-44 p-4">
+                        <a th:href="@{|/b/${post.author.username}|}">
+                            <div class="mb-2 flex items-center btn btn-ghost">
+                                <div class="mr-1">
+                                    <i class="fa-solid fa-user fas fa-2xl" style="color: white;"></i>
+                                </div>
+                                <div th:text="${post.author.username}"></div>
+                            </div>
+                        </a>
+                        <a th:href="@{|/post/${post.id}|}">
+                            <div class="mb-2 text-3xl line-clamp-2"
+                                 th:text="${post.title}">
+                            </div>
+                            <div class="mb-1 text-gray-400 line-clamp-1"
+                                 th:text="${post.content}">
+                            </div>
+                            <div class="flex text-xs text-gray-400">
+                                <div class="mr-1"
+                                     th:text="${#temporals.format(post.createDate, 'yyyy.MM.dd')}"></div>
+                                <div class="mr-1">·</div>
+                                <div th:text="${post.viewCount + ' min read'}"></div>
+                            </div>
+                        </a>
+                    </div>
+                    <a th:href="@{|/post/${post.id}|}">
+                        <div th:if="${post.imageFile == null}"
+                             class="w-64 h-44 border border-gray-400 flex items-center justify-center">
+                            <h2 class="text-3xl">No images</h2>
+                        </div>
+                        <div th:unless="${post.imageFile == null}"
+                             class="flex-none w-64 h-44 border border-gray-400">
+                            <img class="w-full h-full object-cover"
+                                 th:src="@{|/images/${post.imageFile.filename}|}"
+                                 alt="Post Image">
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- 페이징처리 시작 -->
+    <div class="flex justify-center mt-4" th:unless="${paging.isEmpty()}">
+        <a th:classappend="${!paging.hasPrevious} ? 'opacity-50 pointer-events-none' : ''"
+           th:href="|?page=0|"
+           class="page-link join-item btn hover:text-blue-500"
+           th:text="first">
+        </a>
+        <a th:classappend="${!paging.hasPrevious} ? 'opacity-50 pointer-events-none' : ''"
+           th:href="|?page=${paging.number-1}|"
+           class="page-link join-item btn hover:text-blue-500"
+           th:text="prev">
+        </a>
+        <a th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
+           th:if="${page >= paging.number-2 and page <= paging.number+2}"
+           th:classappend="${page == paging.number} ? 'opacity-50 pointer-events-none' : ''"
+           th:text="${page}"
+           th:href="|?page=${page}|"
+           class="page-link join-item btn hover:text-blue-500">
+        </a>
+        <a th:classappend="${!paging.hasNext} ? 'opacity-50 pointer-events-none' : ''"
+           th:href="|?page=${paging.number+1}|"
+           class="page-link join-item btn hover:text-blue-500"
+           th:text="next">
+        </a>
+        <a th:classappend="${!paging.hasNext} ? 'opacity-50 pointer-events-none' : ''"
+           th:href="|?page=${paging.totalPages-1}|"
+           class="page-link join-item btn hover:text-blue-500"
+           th:text="end">
+        </a>
+    </div>
+    <!-- 페이징처리 끝 -->
+</div>
+<th:block layout:fragment="script">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var messageDiv = document.querySelector('.toast.toast-top.toast-end');
+
+            if (messageDiv) {
+                setTimeout(function () {
+                    messageDiv.classList.add('fade-out');
+                    setTimeout(function () {
+                        messageDiv.style.display = 'none';
+                    }, 3000);
+                }, 3000);
+            }
+        });
+    </script>
+</th:block>
+</body>
+</html>
