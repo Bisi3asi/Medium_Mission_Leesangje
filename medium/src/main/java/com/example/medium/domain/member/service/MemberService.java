@@ -1,6 +1,6 @@
 package com.example.medium.domain.member.service;
 
-import com.example.medium.domain.member.dto.MemberRequestDto;
+import com.example.medium.domain.member.dto.MemberJoinRequestDto;
 import com.example.medium.domain.member.entity.Member;
 import com.example.medium.domain.member.repository.MemberRepository;
 import com.example.medium.global.dto.ResponseDto;
@@ -8,13 +8,14 @@ import com.example.medium.global.security.SecurityUser;
 import com.example.medium.global.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.springframework.dao.DuplicateKeyException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -34,12 +35,12 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseDto<Member> create(MemberRequestDto memberRequestDto) {
-        if (!memberRequestDto.getPassword().equals(memberRequestDto.getPasswordConfirm())) {
-            throw new IllegalArgumentException("please check out password, password confirm.");
-        }
+    public ResponseDto create(MemberJoinRequestDto memberRequestDto, BindingResult brs) {
         if (memberRepository.findByUsername(memberRequestDto.getUsername()).isPresent()) {
-            throw new DuplicateKeyException("username already exists, please choose another one.");
+            brs.addError(
+                    new ObjectError(
+                            "username", "username already exists, please try another one."));
+            return ResponseDto.of("400", "join failed", brs);
         }
 
         Member member = Member.builder()
@@ -53,7 +54,7 @@ public class MemberService {
     }
 
     public SecurityUser getUserFromAccessToken(String accessToken) {
-        Claims claims = JwtUtil.decode(accessToken);
+        Claims claims = JwtUtil.decodeAccessToken(accessToken);
 
         Map<String, Object> data = (Map<String, Object>) claims.get("data");
         long id = Long.parseLong((String) data.get("id"));
