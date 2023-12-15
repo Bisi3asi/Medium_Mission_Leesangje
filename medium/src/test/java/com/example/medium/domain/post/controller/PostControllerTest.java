@@ -182,7 +182,7 @@ public class PostControllerTest {
                 .andExpect(handler().methodName("modify"))
                 .andExpect(redirectedUrlPattern("/post/*"));
 
-        Post post = postService.get(1L);
+        Post post = postService.findById(1L);
         assertThat(post.getTitle()).isEqualTo("test title");
         assertThat(post.getContent()).isEqualTo("test content");
         assertThat(post.isPublished()).isEqualTo(true);

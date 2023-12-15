@@ -41,7 +41,7 @@ public class PostService {
     }
 
     @Transactional
-    public Post get(Long id) {
+    public Post findById(Long id) {
         Optional<Post> opPost = postRepository.findById(id);
         if (opPost.isPresent()){
             Post post = opPost.get();

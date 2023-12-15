@@ -20,12 +20,9 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     public Member findByUsername(String username){
-        Optional<Member> opMember = memberRepository.findByUsername(username);
-
-        if (opMember.isEmpty()){
-            throw new IllegalArgumentException("Member not found");
-        }
-        return opMember.get();
+        return memberRepository.findByUsername(username).orElseThrow(
+            () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Member not found")
+        );
     }
 
     @Transactional

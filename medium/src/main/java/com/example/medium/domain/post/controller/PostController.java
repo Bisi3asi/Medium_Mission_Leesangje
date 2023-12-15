@@ -56,7 +56,7 @@ public class PostController {
     // Get: /post/{id} *글 상세보기
     @GetMapping("/post/{id}")
     public String showDetail(Model model, @PathVariable Long id) {
-        model.addAttribute("post", postService.get(id));
+        model.addAttribute("post", postService.findById(id));
         model.addAttribute("commentRequestDto", new CommentRequestDto());
         return "domain/post/detail";
     }
@@ -97,7 +97,7 @@ public class PostController {
     @GetMapping("post/{id}/modify")
     public String showModifyForm(@PathVariable Long id,
                                  @ModelAttribute("postRequestDto") PostRequestDto postRequestDto) {
-        Post post = postService.get(id);
+        Post post = postService.findById(id);
 
         // 빌더 패턴이 아닌, 모델의 postRequestDto는 Setter로 인한 설정 만이 바인딩 값 유지 가능
         // 빌더 패턴을 사용할 시 매개변수의 postRequestDto 객체가 아닌 다른 객체가 들어가기 때문 = 바인딩 실패
