@@ -2,7 +2,7 @@ package com.example.medium.global.utils;
 
 import com.example.medium.domain.comment.entity.Comment;
 import com.example.medium.domain.comment.repository.CommentRepository;
-import com.example.medium.domain.member.dto.MemberRequestDto;
+import com.example.medium.domain.member.dto.MemberJoinRequestDto;
 import com.example.medium.domain.member.service.MemberService;
 import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 
 @Profile("!dev")
 @Configuration
@@ -28,19 +29,22 @@ public class initData {
     @Bean
     public ApplicationRunner run() {
         return new ApplicationRunner() {
+            BindingResult brs;
             @Override
             @Transactional
             @SneakyThrows
             public void run(ApplicationArguments args) {
-                memberService.create(new MemberRequestDto(
+                memberService.create(new MemberJoinRequestDto(
                         "sbbadmin",
                         "12345678",
                         "12345678")
+                        ,brs
                 );
-                memberService.create(new MemberRequestDto(
+                memberService.create(new MemberJoinRequestDto(
                         "testuser1",
                         "12345678",
                         "12345678")
+                        ,brs
                 );
 
                 for (int i = 1; i < 100; i++) {

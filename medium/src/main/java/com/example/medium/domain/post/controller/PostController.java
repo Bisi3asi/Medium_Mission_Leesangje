@@ -69,7 +69,7 @@ public class PostController {
 
     // Post: /post/write *글 작성 처리
     @PostMapping("/post/write")
-    public String write(@ModelAttribute("PostRequestDto")
+    public String write(@ModelAttribute("postRequestDto")
                         @Valid PostRequestDto postRequestDto,
                         BindingResult brs,
                         RedirectAttributes attr,

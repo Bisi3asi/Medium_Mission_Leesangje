@@ -75,6 +75,21 @@
 </div>
 
 <th:block layout:fragment="content"></th:block>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var messageDiv = document.querySelector('.toast.toast-top.toast-end');
+
+        if (messageDiv) {
+            setTimeout(function () {
+                messageDiv.classList.add('fade-out');
+                setTimeout(function () {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            }, 3000);
+        }
+    });
+</script>
 <th:block layout:fragment="script"></th:block>
 </body>
 </html>

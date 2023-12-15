@@ -6,7 +6,7 @@
 <div layout:fragment="content">
     <!-- message -->
     <div th:unless="${msg == null}"
-         class="toast toast-top toast-end">
+         class="toast toast-top toast-end mt-24">
         <div class="alert alert-success">
             <span th:text="${msg}"></span>
         </div>
@@ -141,10 +141,17 @@
                 </span>
                 <span class="label-text-alt">
                     <div class="btn btn-primary h-12">Respond</div>
+                    <!-- error -->
+<!--                        <div th:if="${#fields.hasAnyErrors()}">-->
+<!--                            <div th:each="error : ${#fields.allErrors()}" class="toast toast-top toast-end">-->
+<!--                                <span th:text="${error}"></span>-->
+<!--                            </div>-->
+<!--                        </div>-->
                 </span>
             </div>
         </label>
     </div>
+</div>
 </div>
 <th:block layout:fragment="script">
     <script> // comment form 글자수 세기 script
@@ -174,20 +181,6 @@
             return false;
         }
     }
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var messageDiv = document.querySelector('.toast.toast-top.toast-end');
-
-            if (messageDiv) {
-                setTimeout(function () {
-                    messageDiv.classList.add('fade-out');
-                    setTimeout(function () {
-                        messageDiv.style.display = 'none';
-                    }, 3000);
-                }, 3000);
-            }
-        });
     </script>
 </th:block>
 </body>
