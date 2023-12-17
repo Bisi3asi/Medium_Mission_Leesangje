@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.util.Objects;
+
 @Controller
 @RequiredArgsConstructor
 @RequestMapping("/member")
@@ -31,17 +33,17 @@ public class MemberController {
                        BindingResult brs) {
 
         // 1차 : 비밀번호와 비밀번호 확인 일치 검증 (Controller)
-        if (memberJoinRequestDto.getPassword() != memberJoinRequestDto.getPasswordConfirm()){
+        if (!Objects.equals(memberJoinRequestDto.getPassword(), memberJoinRequestDto.getPasswordConfirm())){
             brs.addError(new ObjectError("password", "please check match of the password and password Confirm"));
+            return "domain/member/join_form";
         }
-        // 2차 : 동일 id 검증(Service)
+        // 2차 : 동일 id 존재 여부 검증(Service)
         memberService.create(memberJoinRequestDto, brs);
-
         if (brs.hasErrors()){
             return "domain/member/join_form";
         }
 
-        return "redirect:/";
+        return "redirect:/member/login";
     }
 
     // Get: /member/login

@@ -9,14 +9,14 @@ import lombok.Getter;
 @AllArgsConstructor
 public class MemberJoinRequestDto {
     @NotBlank(message = "please input username.")
-    @Size(max = 20, min = 8, message = "username length should be 8 ~ 20.")
+    @Size(min = 8, max = 20, message = "username length should be 8 ~ 20.")
     private final String username;
 
     @NotBlank(message = "please input password.")
-    @Size(max = 20, min = 8, message = "password length should be 8 ~ 20.")
+    @Size(min = 8, max = 20, message = "password length should be 8 ~ 20.")
     private final String password;
 
-    @NotBlank(message = "please input password.")
-    @Size(max = 20, min = 8, message = "password length should be 8 ~ 20.")
+    @NotBlank(message = "please input password confirm.")
+    @Size(min = 8, max = 20, message = "password length should be 8 ~ 20.")
     private final String passwordConfirm;
 }
