@@ -29,7 +29,8 @@
         <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 w-52">
             <li><a href="/">Recent Post</a></li>
             <li><a href="/post/list">Total Post</a></li>
-            <li><a href="/post/write">Write Post</a></li>
+            <li><a sec:authorize="isAuthenticated()"
+                   href="/post/write">Write Post</a></li>
         </ul>
     </div>
     <div class="flex-1">
@@ -39,7 +40,9 @@
         <ul class="menu menu-horizontal px-1">
             <li>
                 <div>
-                    <a href="/post/write" class="btn btn-ghost btn-md text-xl">
+                    <a sec:authorize="isAuthenticated()"
+                       href="/post/write"
+                       class="btn btn-ghost btn-md text-xl">
                         <i class="fa-solid fa-pen-nib" style="color: white;"></i>
                         Write
                     </a>
@@ -47,12 +50,12 @@
             </li>
             <li>
                 <div sec:authorize="isAnonymous()">
-                    <a href="/" class="btn btn-ghost btn-md text-xl">Sign in</a>
+                    <a href="/member/login" class="btn btn-ghost btn-md text-xl">Sign in</a>
                 </div>
             </li>
             <li>
                 <div sec:authorize="isAnonymous()">
-                    <a href="/" class="btn btn-success btn-md text-xl">Get Started</a>
+                    <a href="/member/join" class="btn btn-success btn-md text-xl">Get Started</a>
                 </div>
             </li>
             <li>
