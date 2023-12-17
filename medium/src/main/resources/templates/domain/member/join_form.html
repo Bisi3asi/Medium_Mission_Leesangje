@@ -1,0 +1,58 @@
+<html lang="ko" layout:decorate="~{global/layout}">
+<head>
+    <title>Join Medium</title>
+</head>
+<body>
+<div layout:fragment="content" class="flex items-center justify-center h-screen mx-4">
+    <div class="form-control mx-auto w-96">
+        <h1 class="text-5xl font-bold text-center mb-10 text-yellow-500">Join Medium</h1>
+        <form th:action="@{/member/join}" th:object="${memberJoinRequestDto}" method="post">
+            <!-- error -->
+            <div th:if="${#fields.hasAnyErrors()}">
+                <div class="toast toast-top toast-end mt-20">
+                    <div th:each="error : ${#fields.allErrors()}" class="alert alert-error mb-1">
+                        <span th:text="${error}"></span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-control mx-auto m-6">
+                <label class="label">
+                    <span class="label-text">Username</span>
+                    <span class="label-text-alt">length : 8 ~ 20</span>
+                </label>
+                <input type="text" th:field="*{username}" placeholder="input username"
+                       class="form-input w-full p-4"/>
+            </div>
+            <div class="form-control mx-auto m-6">
+                <label class="label">
+                    <span class="label-text">Password</span>
+                    <span class="label-text-alt">length : 8 ~ 20</span>
+                </label>
+                <input type="password" th:field="*{password}" placeholder="input password"
+                       class="form-input w-full p-4"/>
+            </div>
+            <div class="form-control mx-auto m-10">
+                <label class="label">
+                    <span class="label-text">Password (repeat)</span>
+                    <span class="label-text-alt">length : 8 ~ 20</span>
+                </label>
+                <input type="password" th:field="*{passwordConfirm}" placeholder="repeat password"
+                       class="form-input w-full p-4"/>
+            </div>
+            <label class="label">
+                <span class="label-text">&nbsp;</span>
+                <span class="label-text-alt">already joined medium?</span>
+            </label>
+            <div class="flex">
+                <input type="submit" value="Join Medium" class="flex-1 btn btn-primary mr-1">
+                <a href="/member/login"
+                   class="flex-1 btn btn-success">
+                    Login Medium
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+<th:block layout:fragment="script"></th:block>
+</body>
+</html>

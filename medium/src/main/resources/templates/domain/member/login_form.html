@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{global/layout}">
+
+<head>
+    <title>Login Medium</title>
+</head>
+<body>
+<div layout:fragment="content" class="flex items-center justify-center h-screen mx-4">
+    <form th:action="@{/member/signin}" method="post">
+        <h1 class="text-5xl font-bold text-center mb-10 text-yellow-500">Login Medium</h1>
+        <div class="form-control mx-auto w-96 mb-6">
+            <label for="signInId" class="form-label mb-2">
+                <span class="label-text">Username</span>
+            </label>
+            <input type="text" id="signInId" name="signInId" placeholder="username"
+                   class="form-input w-100 p-4"/>
+        </div>
+        <div class="form-control mx-auto w-96 mb-6">
+            <label for="password" class="form-label mb-2">
+                <span class="label-text">Password</span>
+            </label>
+            <input type="password" id="password" name="password" placeholder="password"
+                   class="form-input w-96 p-4"/>
+        </div>
+        <label class="label">
+            <span>&nbsp;</span>
+            <span class="label-text-alt">Not a member yet?</span>
+        </label>
+        <div class="flex">
+            <input type="submit" class="flex-1 btn btn-primary mr-1" value="Login Medium">
+            <a href="/member/join" class="flex-1 btn btn-success">
+                Join Medium
+            </a>
+        </div>
+    </form>
+</div>
+<th:block layout:fragment="script"></th:block>
+</body>
+</html>
