@@ -107,15 +107,8 @@ public class MemberService {
         return new SecurityUser(id, username, "", authorities);
     }
 
-    public ResponseDto<Member> checkUsernameAndPassword(String username, String password) {
-        Member member = memberRepository.findByUsername(username).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "login failed: check Id or password")
-        );
-
-        if(!passwordEncoder.matches(password, member.getPassword())){
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "login failed: check Id or password");
-        }
-
-        return ResponseDto.of("200", String.format("welcome, %s!", username), member);
+    @Transactional
+    public void setRefreshToken(Member member, String refreshToken) {
+        member.setRefreshToken(refreshToken);
     }
 }
