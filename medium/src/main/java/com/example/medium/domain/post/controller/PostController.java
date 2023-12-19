@@ -7,7 +7,7 @@ import com.example.medium.domain.member.service.MemberService;
 import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
 import com.example.medium.domain.post.service.PostService;
-import com.example.medium.global.dto.ResponseDto;
+import com.example.medium.global.response.ResponseData;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -77,16 +77,14 @@ public class PostController {
         if (brs.hasErrors()) {
             return "domain/post/write_form";
         }
-        // 임시 : member 기능 구현 후 삭제
-        if (postRequestDto.getAuthor() == null) {
-            postRequestDto.setAuthor(memberService.findByUsername("testuser1"));
-        }
-        ResponseDto<Post> resp = postService.create(postRequestDto);
+        ResponseData<Post> resp = postService.create(
+                postRequestDto, memberService.findByUsername(principal.getName())
+        );
         attr.addFlashAttribute("msg", resp.getMsg());
 
         // MultiPartFile은 자동적으로 데이터 바인딩이 안되므로 @RequestPart로 받아온 후 직접 처리
         if (!multipartFile.isEmpty()) {
-            ResponseDto<ImageFile> imageFileResponseDto = imageFileService.create(multipartFile, resp.getData());
+            ResponseData<ImageFile> imageFileResponseData = imageFileService.create(multipartFile, resp.getData());
         }
 
         return String.format("redirect:/post/%d", resp.getData().getId());
@@ -117,10 +115,11 @@ public class PostController {
         if (brs.hasErrors()) {
             return "domain/post/modify_form";
         }
-        // 임시 : member 기능 구현 후 삭제
-        if (postRequestDto.getAuthor() == null) {
-            postRequestDto.setAuthor(memberService.findByUsername("testuser1"));
-        }
+        ResponseData<Post> resp = postService.modify(
+                postRequestDto,
+                id,
+                memberService.findByUsername(principal.getName())
+        );
 
         ResponseDto<Post> resp = postService.modify(postRequestDto, id);
         attr.addFlashAttribute("msg", resp.getMsg());
@@ -130,8 +129,14 @@ public class PostController {
 
     // Delete: /post/{id}/delete *글 삭제 처리
     @DeleteMapping("post/{id}/delete")
-    public String delete(@PathVariable Long id, RedirectAttributes attr) {
-        ResponseDto<Post> resp = postService.delete(id);
+    public String delete(@PathVariable Long id,
+                         RedirectAttributes attr,
+                         Principal principal) {
+        ResponseData<Post> resp = postService.delete(
+                id,
+                memberService.findByUsername(principal.getName())
+        );
+
         attr.addFlashAttribute("msg", resp.getMsg());
 
         return "redirect:/post/list";
