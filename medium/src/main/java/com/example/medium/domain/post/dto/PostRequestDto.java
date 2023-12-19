@@ -1,6 +1,5 @@
 package com.example.medium.domain.post.dto;
 
-import com.example.medium.domain.member.entity.Member;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -14,8 +13,6 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PostRequestDto {
-    private Member author;
-
     @NotNull
     private boolean isPublished = true; // default
 
