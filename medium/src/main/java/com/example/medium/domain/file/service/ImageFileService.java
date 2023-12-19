@@ -3,7 +3,7 @@ package com.example.medium.domain.file.service;
 import com.example.medium.domain.file.entity.ImageFile;
 import com.example.medium.domain.file.repository.ImageFileRepository;
 import com.example.medium.domain.post.entity.Post;
-import com.example.medium.global.dto.ResponseDto;
+import com.example.medium.global.response.ResponseData;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,7 +29,7 @@ public class ImageFileService {
     private final String FILESTORE_PATH = System.getProperty("user.dir") +"/images/";
 
     @Transactional
-    public ResponseDto<ImageFile> create(MultipartFile multipartFile, Post post) {
+    public ResponseData<ImageFile> create(MultipartFile multipartFile, Post post) {
         String storeFilename = storeAndGetFilename(multipartFile);
         ImageFile imageFile = ImageFile.builder()
                 .filename(storeFilename)
@@ -38,7 +38,7 @@ public class ImageFileService {
                 .build();
         imageFileRepository.save(imageFile);
 
-        return ResponseDto.of("200", "Image has been successfully uploaded", imageFile);
+        return ResponseData.of("200", "Image has been successfully uploaded", imageFile);
     }
 
     public ImageFile get(Long id){

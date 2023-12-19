@@ -17,6 +17,15 @@
 <div class="bg-white text-black">
     <!-- navbar -->
     <form th:action="@{/post/write}" th:object="${postRequestDto}" method="post" enctype="multipart/form-data">
+        <!-- error -->
+        <div th:if="${#fields.hasAnyErrors()}">
+            <div class="toast toast-top toast-end mt-20">
+                <div th:each="error : ${#fields.allErrors()}" class="alert alert-error mb-1">
+                    <span th:text="${error}"></span>
+                </div>
+            </div>
+        </div>
+
         <div class="navbar">
             <div class="dropdown flex-none">
                 <button class="btn btn-square btn-ghost">
@@ -35,7 +44,7 @@
             <div class="flex-1 font-bold">
                 <a href="/" class="btn btn-ghost btn-lg text-2xl font-bold">MEDIUM</a>
                 <span class="mr-2">By</span>
-                <span>user1</span>
+                <span th:text="${currentUser.username}"></span>
             </div>
             <input class="flex-none btn btn-success" type="submit" value="Publish">
             <div class="flex-none">
@@ -67,6 +76,7 @@
                     <span class="label-text flex items-center">
                         <input type="checkbox"
                                class="checkbox checkbox-success checkbox-sm mr-2"
+                               checked="checked"
                                th:field="*{published}"
                         />
                         I'll show this post public
@@ -134,5 +144,17 @@
             fileNameContainer.style.color = 'black';
         }
     }
+    document.addEventListener("DOMContentLoaded", function () {
+        var messageDiv = document.querySelector('.toast.toast-top.toast-end');
+
+        if (messageDiv) {
+            setTimeout(function () {
+                messageDiv.classList.add('fade-out');
+                setTimeout(function () {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            }, 3000);
+        }
+    });
 </script>
 </body>

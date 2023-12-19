@@ -8,10 +8,17 @@
     <div class="flex mx-20">
         <div class="mr-5">
             <div>
-                <h1 class="my-16 pb-2 text-3xl text-yellow-500 font-bold" th:text="${username}"></h1>
+                <h1 class="my-16 pb-2 text-3xl text-yellow-500 font-bold" th:text="${currentUser.username}"></h1>
                 <h2 class="mb-5 pb-3 text-xl text-white border-b border-gray-700">Posts</h2>
                 <div>
                     <ul id="postList">
+                        <li class="flex justify-center h-screen" th:if="${paging.isEmpty()}">
+                            <div class="text-5xl">TUNG!</div>
+                            <div class="flex">
+                                <div class="w-48"></div>
+                                <div class="w-48"></div>
+                            </div>
+                        </li>
                         <li class="my-2 flex" th:each="post, iterStat : ${paging.content}"
                             th:if="${iterStat.index < 10}">
                             <div class="flex-none w-96 h-44">

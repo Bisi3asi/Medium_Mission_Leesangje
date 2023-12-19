@@ -2,12 +2,12 @@ package com.example.medium.global.utils;
 
 import com.example.medium.domain.comment.entity.Comment;
 import com.example.medium.domain.comment.repository.CommentRepository;
-import com.example.medium.domain.member.dto.MemberRequestDto;
+import com.example.medium.domain.member.dto.MemberJoinRequestDto;
 import com.example.medium.domain.member.service.MemberService;
 import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
 import com.example.medium.domain.post.service.PostService;
-import com.example.medium.global.dto.ResponseDto;
+import com.example.medium.global.response.ResponseData;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.ApplicationArguments;
@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 
 @Profile("!dev")
 @Configuration
@@ -28,40 +29,49 @@ public class initData {
     @Bean
     public ApplicationRunner run() {
         return new ApplicationRunner() {
+            BindingResult brs;
             @Override
             @Transactional
             @SneakyThrows
             public void run(ApplicationArguments args) {
-                memberService.create(new MemberRequestDto(
-                        "sbbadmin",
+                memberService.create(new MemberJoinRequestDto(
+                        "mediumadmin",
                         "12345678",
                         "12345678")
+                        ,brs
                 );
-                memberService.create(new MemberRequestDto(
+                memberService.create(new MemberJoinRequestDto(
                         "testuser1",
                         "12345678",
                         "12345678")
+                        ,brs
+                );
+                memberService.create(new MemberJoinRequestDto(
+                                "testuser2",
+                                "12345678",
+                                "12345678")
+                        ,brs
                 );
 
                 for (int i = 1; i < 100; i++) {
-                    ResponseDto<Post> postResp;
+                    ResponseData<Post> postResp;
                     if (i % 2 == 0) {
                         postResp = postService.create(new PostRequestDto(
-                                        memberService.findByUsername("testuser1"),
                                         false,
                                         String.format("테스트 글 %d", i),
                                         String.format("테스트 내용 %d", i),
                                         null
-                                )
+                                ),
+                                memberService.findByUsername("testuser1")
                         );
                     } else {
                         postResp = postService.create(new PostRequestDto(
-                                        memberService.findByUsername("testuser1"),
                                         true,
                                         String.format("테스트 글 %d", i),
                                         String.format("테스트 내용 %d", i),
                                         null
-                                )
+                                ),
+                                memberService.findByUsername("testuser2")
                         );
                     }
                     for (int j = 0; j < 3; j++) {

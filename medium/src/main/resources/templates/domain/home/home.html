@@ -4,27 +4,39 @@
 </head>
 <body>
 <div layout:fragment="content">
+    <!-- message -->
+    <div th:unless="${msg == null}"
+         class="toast toast-top toast-end mt-24">
+        <div class="alert alert-success">
+            <span th:text="${msg}"></span>
+        </div>
+    </div>
     <div class="w-full h-96 bg-yellow-500 justify-items-center">
         <div class="py-20 px-20 pb-2 text-black font-bold">
             <div class="mb-6 text-8xl">Stay Curious.</div>
             <div class="text-3xl">discover stories, thinking, and expertise</div>
             <div class="mb-6 text-3xl">from writers on any topic.</div>
-            <button class="btn btn-lg btn-active rounded-sm">Start reading</button>
+            <a sec:authorize="isAnonymous()"
+               href="/member/login"
+               class="btn btn-lg btn-active rounded-sm">Start reading</a>
+            <a sec:authorize="isAuthenticated()"
+               href="/post/list"
+               class="btn btn-lg btn-active rounded-sm">Start reading</a>
         </div>
     </div>
     <div class="mx-20">
         <h1 class="my-10 pb-2 text-3xl font-bold">Recent on Medium</h1>
         <div class="mx-4">
             <ul id="postList">
-                <li class="my-2 flex" th:each="post, iterStat : ${paging.content}" th:if="${iterStat.index < 30}">
+                <li class="my-2 flex" th:each="post, iterStat : ${paging.content}" th:if="${iterStat.index < 10}">
                     <div class="flex-none w-96 h-44 p-4">
                         <a th:href="@{|/b/${post.author.username}|}">
-                        <div class="mb-2 btn btn-ghost flex items-center">
-                            <div class="mr-1">
-                                <i class="fa-solid fa-user" style="color: white;"></i>
+                            <div class="mb-2 btn btn-ghost flex items-center">
+                                <div class="mr-1">
+                                    <i class="fa-solid fa-user" style="color: white;"></i>
+                                </div>
+                                <div th:text="${post.author.username}"></div>
                             </div>
-                            <div th:text="${post.author.username}"></div>
-                        </div>
                         </a>
                         <a th:href="@{|/post/${post.id}|}">
                             <div class="mb-2 text-3xl line-clamp-2"
@@ -58,40 +70,42 @@
         </div>
     </div>
 </div>
-<script th:inline="javascript">
-    document.addEventListener('DOMContentLoaded', function() {
-        console.log('Script loaded!');  // 확인을 위한 로그 출력
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('Script loaded!');  // 확인을 위한 로그 출력
 
-        var listItems = document.querySelectorAll('#postList li');
-        var currentIndex = 10;
+            var listItems = document.querySelectorAll('#postList li');
+            var currentIndex = 10;
 
-        // 초기에는 10개의 아이템만 보이도록 설정
-        for (var i = 10; i < listItems.length; i++) {
-            listItems[i].style.display = 'none';
-        }
+            // 초기에는 10개의 아이템만 보이도록 설정
+            for (var i = 10; i < listItems.length; i++) {
+                listItems[i].style.display = 'none';
+            }
 
-        // 스크롤 이벤트 리스너 등록
-        window.addEventListener('scroll', function() {
-            if (isScrollAtBottom()) {
-                loadMoreItems();
+            // 스크롤 이벤트 리스너 등록
+            window.addEventListener('scroll', function () {
+                if (isScrollAtBottom()) {
+                    loadMoreItems();
+                }
+            });
+
+            // 스크롤이 맨 아래에 도달했는지 확인하는 함수
+            function isScrollAtBottom() {
+                return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+            }
+
+            // 추가 아이템을 로드하고 화면에 보이게 하는 함수
+            function loadMoreItems() {
+                console.log('Scroll at bottom!');  // 확인을 위한 로그 출력
+
+                for (var i = currentIndex; i < currentIndex + 10 && i < listItems.length; i++) {
+                    listItems[i].style.display = 'block';
+                }
+                currentIndex += 10;
             }
         });
-
-        // 스크롤이 맨 아래에 도달했는지 확인하는 함수
-        function isScrollAtBottom() {
-            return window.innerHeight + window.scrollY >= document.body.offsetHeight;
-        }
-
-        // 추가 아이템을 로드하고 화면에 보이게 하는 함수
-        function loadMoreItems() {
-            console.log('Scroll at bottom!');  // 확인을 위한 로그 출력
-
-            for (var i = currentIndex; i < currentIndex + 10 && i < listItems.length; i++) {
-                listItems[i].style.display = 'block';
-            }
-            currentIndex += 10;
-        }
-    });
-</script>
+    </script>
+</th:block>
 </body>
 </html>

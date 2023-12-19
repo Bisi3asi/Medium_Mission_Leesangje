@@ -7,7 +7,7 @@
 <div layout:fragment="content">
     <!-- message -->
     <div th:unless="${msg == null}"
-         class="toast toast-top toast-end">
+         class="toast toast-top toast-end mt-24">
         <div class="alert alert-success">
             <span th:text="${msg}"></span>
         </div>
@@ -107,21 +107,6 @@
     </div>
     <!-- 페이징처리 끝 -->
 </div>
-<th:block layout:fragment="script">
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var messageDiv = document.querySelector('.toast.toast-top.toast-end');
-
-            if (messageDiv) {
-                setTimeout(function () {
-                    messageDiv.classList.add('fade-out');
-                    setTimeout(function () {
-                        messageDiv.style.display = 'none';
-                    }, 3000);
-                }, 3000);
-            }
-        });
-    </script>
-</th:block>
+<th:block layout:fragment="script"></th:block>
 </body>
 </html>

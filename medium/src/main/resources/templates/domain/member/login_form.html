@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{global/layout}">
+
+<head>
+    <title>Login Medium</title>
+</head>
+<body>
+<div layout:fragment="content" class="flex items-center justify-center h-screen mx-4">
+    <!-- message -->
+    <div th:unless="${msg == null}"
+         class="toast toast-top toast-end mt-24">
+        <div class="alert alert-success">
+            <span th:text="${msg}"></span>
+        </div>
+    </div>
+    <form th:action="@{/member/login}" th:object="${memberLoginRequestDto}" method="post">
+        <!-- error -->
+        <div th:if="${#fields.hasAnyErrors()}">
+            <div class="toast toast-top toast-end mt-20">
+                <div th:each="error : ${#fields.allErrors()}" class="alert alert-error mb-1">
+                    <span th:text="${error}"></span>
+                </div>
+            </div>
+        </div>
+
+        <h1 class="text-5xl font-bold text-center mb-10 text-yellow-500">Login Medium</h1>
+        <div class="form-control mx-auto w-96 mb-6">
+            <label for="username" class="form-label mb-2">
+                <span class="label-text">Username</span>
+            </label>
+            <input type="text" id="username" name="username" placeholder="username"
+                   class="form-input w-100 p-4"/>
+        </div>
+        <div class="form-control mx-auto w-96 mb-6">
+            <label for="password" class="form-label mb-2">
+                <span class="label-text">Password</span>
+            </label>
+            <input type="password" id="password" name="password" placeholder="password"
+                   class="form-input w-96 p-4"/>
+        </div>
+        <label class="label">
+            <span>&nbsp;</span>
+            <span class="label-text-alt">Not a member yet?</span>
+        </label>
+        <div class="flex">
+            <input type="submit" class="flex-1 btn btn-primary mr-1" value="Login Medium">
+            <a href="/member/join" class="flex-1 btn btn-success">
+                Join Medium
+            </a>
+        </div>
+    </form>
+</div>
+<th:block layout:fragment="script"></th:block>
+</body>
+</html>

@@ -6,7 +6,7 @@
 <div layout:fragment="content">
     <!-- message -->
     <div th:unless="${msg == null}"
-         class="toast toast-top toast-end">
+         class="toast toast-top toast-end mt-24">
         <div class="alert alert-success">
             <span th:text="${msg}"></span>
         </div>
@@ -47,8 +47,8 @@
                                     <input type="hidden" name="_method" value="delete"/>
                                     <button type="submit" onclick="return confirmDelete();">
                                         Delete Post
+                                    </button>
                                 </form>
-                                <!--<a th:href="@{'/post/' + ${post.id} + '/delete'}">Delete Post</a>-->
                             </li>
                         </ul>
                     </div>
@@ -125,25 +125,25 @@
             </li>
         </ul>
         <!-- comment form -->
-        <label class="form-control">
+        <!--        <form th:action="${/comment/write}" method="post">-->
+        <div class="form-control">
             <div class="label">
                 <span class="label-text">&nbsp;</span>
                 <span class="label-text-alt" id="charCount">0 / 300</span>
             </div>
-            <textarea class="textarea textarea-lg textarea-primary"
+            <textarea class="mb-2 textarea textarea-lg textarea-primary"
                       id="textInput"
                       maxlength="300" rows="6"
                       placeholder="What are your thoughts?"></textarea>
-            <div class="label">
-                <span class="flex justify-items-center">
+            <div class="flex justify-between pb-10">
+                <div class="flex justify-items-center">
                     <input type="checkbox" checked="checked" class="checkbox mr-2"/>
                     <span>Also publish to my profile</span>
-                </span>
-                <span class="label-text-alt">
-                    <div class="btn btn-primary h-12">Respond</div>
-                </span>
+                </div>
+                <input class="btn btn-primary" value="Respond" type="submit">
             </div>
-        </label>
+        </div>
+        <!--        </form>-->
     </div>
 </div>
 <th:block layout:fragment="script">
@@ -174,20 +174,6 @@
             return false;
         }
     }
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            var messageDiv = document.querySelector('.toast.toast-top.toast-end');
-
-            if (messageDiv) {
-                setTimeout(function () {
-                    messageDiv.classList.add('fade-out');
-                    setTimeout(function () {
-                        messageDiv.style.display = 'none';
-                    }, 3000);
-                }, 3000);
-            }
-        });
     </script>
 </th:block>
 </body>
