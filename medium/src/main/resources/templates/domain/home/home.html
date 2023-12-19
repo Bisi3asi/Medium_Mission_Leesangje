@@ -4,6 +4,13 @@
 </head>
 <body>
 <div layout:fragment="content">
+    <!-- message -->
+    <div th:unless="${msg == null}"
+         class="toast toast-top toast-end mt-24">
+        <div class="alert alert-success">
+            <span th:text="${msg}"></span>
+        </div>
+    </div>
     <div class="w-full h-96 bg-yellow-500 justify-items-center">
         <div class="py-20 px-20 pb-2 text-black font-bold">
             <div class="mb-6 text-8xl">Stay Curious.</div>
