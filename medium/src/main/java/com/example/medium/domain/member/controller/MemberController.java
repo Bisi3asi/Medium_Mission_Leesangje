@@ -22,7 +22,12 @@ public class MemberController {
 
     // Get: /member/join
     @GetMapping("/join")
-    public String showJoinForm(MemberJoinRequestDto memberJoinRequestDto) {
+    public String showJoinForm(MemberJoinRequestDto memberJoinRequestDto,
+                               Principal principal
+    ) {
+        if (principal != null) {
+            return "redirect:/";
+        }
         return "domain/member/join_form";
     }
 
@@ -48,7 +53,11 @@ public class MemberController {
 
     // Get: /member/login
     @GetMapping("/login")
-    public String showLoginForm() {
+    public String showLoginForm(@ModelAttribute("memberLoginRequestDto") MemberLoginRequestDto memberloginRequestDto,
+                                Principal principal) {
+        if (principal != null) {
+            return "redirect:/";
+        }
         return "domain/member/login_form";
     }
 
