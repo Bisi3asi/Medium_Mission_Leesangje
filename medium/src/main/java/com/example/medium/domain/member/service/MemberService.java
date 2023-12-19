@@ -34,6 +34,12 @@ public class MemberService {
         );
     }
 
+    public Member findByRefreshToken(String refreshToken) {
+        return memberRepository.findByRefreshToken(refreshToken).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST)
+        );
+    }
+
     @Transactional
     public ResponseDto create(MemberJoinRequestDto memberRequestDto, BindingResult brs) {
         if (memberRepository.findByUsername(memberRequestDto.getUsername()).isPresent()) {
