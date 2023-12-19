@@ -1,9 +1,10 @@
 package com.example.medium.domain.member.service;
 
 import com.example.medium.domain.member.dto.MemberJoinRequestDto;
+import com.example.medium.domain.member.dto.MemberLoginRequestDto;
 import com.example.medium.domain.member.entity.Member;
 import com.example.medium.domain.member.repository.MemberRepository;
-import com.example.medium.global.dto.ResponseDto;
+import com.example.medium.global.response.ResponseData;
 import com.example.medium.global.security.SecurityUser;
 import com.example.medium.global.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -41,12 +42,12 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseDto create(MemberJoinRequestDto memberRequestDto, BindingResult brs) {
+    public ResponseData create(MemberJoinRequestDto memberRequestDto, BindingResult brs) {
         if (memberRepository.findByUsername(memberRequestDto.getUsername()).isPresent()) {
             brs.addError(
                     new ObjectError(
                             "username", "username already exists, please try another one."));
-            return ResponseDto.of("400", "join failed", brs);
+            return ResponseData.of("400", "join failed");
         }
 
         Member member = Member.builder()
@@ -56,7 +57,36 @@ public class MemberService {
                 .build();
 
         memberRepository.save(member);
-        return ResponseDto.of("200", "you have successfully joined", member);
+        return ResponseData.of("200", "you have successfully joined", member);
+    }
+
+    public ResponseData checkUsernameAndPassword(MemberLoginRequestDto memberLoginRequestDto, BindingResult brs) {
+        Optional<Member> opMember = memberRepository.findByUsername(memberLoginRequestDto.getUsername());
+        if (opMember.isEmpty()) {
+            brs.addError(
+                    new ObjectError(
+                            "login error", "login failed, please check username and password."));
+            return ResponseData.of("400", "login failed");
+        }
+
+        Member member = opMember.get();
+        if (!passwordEncoder.matches(memberLoginRequestDto.getPassword(), member.getPassword())) {
+            brs.addError(
+                    new ObjectError(
+                            "login error", "login failed, please check username and password."));
+            return ResponseData.of("400", "login failed");
+        }
+
+        return ResponseData.of("200", String.format("welcome, %s!", member.getUsername()), member);
+    }
+
+    public String makeToken(Member member, int minute) {
+        return JwtUtil.encodeToken(
+                Map.of(
+                        "id", member.getId().toString(),
+                        "username", member.getUsername(),
+                        "authorities", member.getAuthoritiesAsStrList()
+                ), minute);
     }
 
     public SecurityUser getUserFromAccessToken(String accessToken) {
