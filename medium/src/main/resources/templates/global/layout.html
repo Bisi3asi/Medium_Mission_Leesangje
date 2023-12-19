@@ -50,7 +50,7 @@
             </li>
             <li>
                 <div sec:authorize="isAnonymous()">
-                    <a href="/member/login" class="btn btn-ghost btn-md text-xl">Sign in</a>
+                    <a href="/member/login" class="btn btn-ghost btn-md text-xl">Login</a>
                 </div>
             </li>
             <li>
@@ -59,17 +59,25 @@
                 </div>
             </li>
             <li>
+                <div sec:authorize="isAuthenticated()">
+                    <a href="/member/logout" class="btn btn-ghost btn-md text-xl">Logout</a>
+                </div>
+            </li>
+            <li>
                 <details sec:authorize="isAuthenticated()">
-                    <summary>
+                    <summary class="flex">
+                        <div>
+                            <span th:text="${currentUser.username}"></span>
+                        </div>
                         <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
                             <div>
                                 <i class="fa-solid fa-user" style="color: white;"></i>
                             </div>
                         </div>
                     </summary>
-                    <ul class="p-2 bg-base-100 rounded-t-none">
-                        <li><a>Link 1</a></li>
-                        <li><a>Link 2</a></li>
+                    <ul class="p-2 w-full bg-base-100 rounded-t-none">
+                        <li><a href="/post/mylist">My Blog</a></li>
+                        <li><a>My Profile</a></li>
                     </ul>
                 </details>
             </li>
