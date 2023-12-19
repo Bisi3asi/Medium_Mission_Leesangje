@@ -21,6 +21,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Controller
 @RequiredArgsConstructor
@@ -96,7 +97,7 @@ public class MemberService {
         }
 
         Map<String, Object> data = (Map<String, Object>) claims.get("data");
-        long id = Long.parseLong((String) data.get("id"));
+        long id = Long.parseLong((data.get("id").toString()));
         String username = (String) data.get("username");
         List<? extends GrantedAuthority> authorities =
                 ((List<String>) data.get("authorities")).stream()
