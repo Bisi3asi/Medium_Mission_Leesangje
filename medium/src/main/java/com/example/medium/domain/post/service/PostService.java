@@ -1,9 +1,10 @@
 package com.example.medium.domain.post.service;
 
+import com.example.medium.domain.member.entity.Member;
 import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
 import com.example.medium.domain.post.repository.PostRepository;
-import com.example.medium.global.dto.ResponseDto;
+import com.example.medium.global.response.ResponseData;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -16,6 +17,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -48,53 +50,64 @@ public class PostService {
             post.incrViewCount();
             return post;
         }
-        else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found.");
+        else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR: Post not found.");
     }
 
     public Post getLatest() {
         return postRepository.findTopByOrderByIdDesc()
                 .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found.")
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR: Post not found.")
                 );
     }
 
     @Transactional
-    public ResponseDto<Post> create(PostRequestDto req) {
+    public ResponseData<Post> create(PostRequestDto req, Member member) {
 
         Post post = Post.builder()
-                .author(req.getAuthor())
+                .author(member)
                 .title(req.getTitle())
                 .content(req.getContent())
                 .isPublished(req.isPublished())
                 .build();
 
         postRepository.save(post);
-        return ResponseDto.of("200", "Your work has been successfully posted.", post);
+        return ResponseData.of("200", "Your work has been successfully posted.", post);
     }
 
     @Transactional
-    public ResponseDto<Post> modify(PostRequestDto req, Long id) {
+    public ResponseData<Post> modify(PostRequestDto req, Long id, Member member) {
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
+                () -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "ERROR: Post not found.")
         );
+        if (!Objects.equals(post.getAuthor().getUsername(), member.getUsername())){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "ERROR: you are not authorized to modify this post."
+            );
+        }
         post = post.toBuilder()
-                .author(req.getAuthor())
+                .author(member)
                 .title(req.getTitle())
                 .content(req.getContent())
                 .isPublished(req.isPublished())
                 .build();
 
         postRepository.save(post);
-        return ResponseDto.of("200", "Your post has been successfully updated.", post);
+        return ResponseData.of("200", "Your post has been successfully updated.", post);
     }
 
     @Transactional
-    public ResponseDto<Post> delete(Long id) {
+    public ResponseData<Post> delete(Long id, Member member) {
         Post post = postRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found.")
+                () -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Post not found.")
         );
-
+        if (!Objects.equals(post.getAuthor().getUsername(), member.getUsername())){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST, "ERROR: you are not authorized to modify this post"
+            );
+        }
         postRepository.delete(post);
-        return ResponseDto.of("200", "Your post has been successfully deleted.", null);
+        return ResponseData.of("200", "Your post has been successfully deleted.", null);
     }
 }
