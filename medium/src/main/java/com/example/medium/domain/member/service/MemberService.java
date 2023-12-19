@@ -90,7 +90,10 @@ public class MemberService {
     }
 
     public SecurityUser getUserFromAccessToken(String accessToken) {
-        Claims claims = JwtUtil.decodeAccessToken(accessToken);
+        Claims claims = JwtUtil.decodeToken(accessToken);
+        if (claims == null) {
+            return null;
+        }
 
         Map<String, Object> data = (Map<String, Object>) claims.get("data");
         long id = Long.parseLong((String) data.get("id"));
