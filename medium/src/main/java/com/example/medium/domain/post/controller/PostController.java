@@ -11,13 +11,18 @@ import com.example.medium.global.response.ResponseData;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.security.Principal;
+import java.util.Objects;
 import java.util.Random;
 
 @Controller
@@ -38,6 +43,7 @@ public class PostController {
     @GetMapping("/post/list")
     public String showTotalList(Model model, @RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = postService.getTotalList(page, 10);
+
         model.addAttribute("paging", postService.getTotalList(page, 10));
         model.addAttribute("fileStorePath", imageFileService.getFILESTORE_PATH());
 
@@ -48,32 +54,44 @@ public class PostController {
     }
 
     // Get : /post/mylist *내 글 리스트
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/post/mylist")
-    public String showMyList() {
-        return "domain/post/list_member.html";
+    public String showMyList(Model model,
+                             @RequestParam(defaultValue = "0") int page,
+                             Principal principal) {
+
+        model.addAttribute(
+                "paging",
+                postService.getMemberList(page, 10, principal.getName())
+        );
+        return "domain/post/list_member";
     }
 
     // Get: /post/{id} *글 상세보기
     @GetMapping("/post/{id}")
     public String showDetail(Model model, @PathVariable Long id) {
+
         model.addAttribute("post", postService.findById(id));
         model.addAttribute("commentRequestDto", new CommentRequestDto());
         return "domain/post/detail";
     }
 
     // Get: /post/write *글 작성 폼
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/post/write")
     public String showWriteForm(@ModelAttribute("postRequestDto") PostRequestDto postRequestDto) {
         return "domain/post/write_form";
     }
 
     // Post: /post/write *글 작성 처리
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/post/write")
     public String write(@ModelAttribute("postRequestDto")
                         @Valid PostRequestDto postRequestDto,
                         BindingResult brs,
                         RedirectAttributes attr,
-                        @RequestPart("multipartFile") MultipartFile multipartFile) {
+                        @RequestPart("multipartFile") MultipartFile multipartFile,
+                        Principal principal) {
         if (brs.hasErrors()) {
             return "domain/post/write_form";
         }
@@ -88,14 +106,22 @@ public class PostController {
         }
 
         return String.format("redirect:/post/%d", resp.getData().getId());
-
     }
 
     // Get: /post/{id}/modify *글 수정 폼
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("post/{id}/modify")
     public String showModifyForm(@PathVariable Long id,
-                                 @ModelAttribute("postRequestDto") PostRequestDto postRequestDto) {
+                                 @ModelAttribute("postRequestDto") PostRequestDto postRequestDto,
+                                 Principal principal) {
         Post post = postService.findById(id);
+
+        if (!Objects.equals(post.getAuthor().getUsername(), principal.getName())){
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "you are unauthorized to modify this post."
+            );
+        }
 
         // 빌더 패턴이 아닌, 모델의 postRequestDto는 Setter로 인한 설정 만이 바인딩 값 유지 가능
         // 빌더 패턴을 사용할 시 매개변수의 postRequestDto 객체가 아닌 다른 객체가 들어가기 때문 = 바인딩 실패
@@ -107,11 +133,13 @@ public class PostController {
     }
 
     // Post: /post/{id}/modify *글 수정 처리
+    @PreAuthorize("isAuthenticated()")
     @PutMapping("post/{id}/modify")
     public String modify(@PathVariable Long id,
                          @ModelAttribute("postRequestDto") @Valid PostRequestDto postRequestDto,
                          BindingResult brs,
-                         RedirectAttributes attr) {
+                         RedirectAttributes attr,
+                         Principal principal) {
         if (brs.hasErrors()) {
             return "domain/post/modify_form";
         }
@@ -121,13 +149,12 @@ public class PostController {
                 memberService.findByUsername(principal.getName())
         );
 
-        ResponseDto<Post> resp = postService.modify(postRequestDto, id);
         attr.addFlashAttribute("msg", resp.getMsg());
-
         return String.format("redirect:/post/%d", id);
     }
 
     // Delete: /post/{id}/delete *글 삭제 처리
+    @PreAuthorize("isAuthenticated()")
     @DeleteMapping("post/{id}/delete")
     public String delete(@PathVariable Long id,
                          RedirectAttributes attr,
@@ -138,7 +165,6 @@ public class PostController {
         );
 
         attr.addFlashAttribute("msg", resp.getMsg());
-
         return "redirect:/post/list";
     }
 
@@ -151,9 +177,4 @@ public class PostController {
 
         return "domain/post/list_member";
     }
-
-//    @GetMapping("/b/{username}/{id}")
-//    public String showMemberPostDetail(@PathVariable Long id) {
-//        return "redirect:/post/detail";
-//    }
 }
