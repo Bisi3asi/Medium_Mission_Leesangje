@@ -3,16 +3,12 @@ package com.example.medium.domain.member.entity;
 import com.example.medium.global.entity.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.Collection;
-import java.util.stream.Stream;
+import java.util.List;
 
 @Entity
 @SuperBuilder(toBuilder = true)
@@ -31,9 +27,17 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String authorities;
 
-    public Collection<? extends GrantedAuthority> getAuthorities(){
-        return Stream.of(authorities)
+    @Setter
+    @Column(columnDefinition = "TEXT")
+    private String refreshToken;
+
+    public List<? extends GrantedAuthority> getAuthorities(){
+        return getAuthoritiesAsStrList().stream()
                 .map(SimpleGrantedAuthority::new)
                 .toList();
+    }
+
+    public List<String> getAuthoritiesAsStrList(){
+        return List.of(authorities);
     }
 }
