@@ -7,7 +7,7 @@ import com.example.medium.domain.member.service.MemberService;
 import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
 import com.example.medium.domain.post.service.PostService;
-import com.example.medium.global.dto.ResponseDto;
+import com.example.medium.global.response.ResponseData;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.boot.ApplicationArguments;
@@ -35,7 +35,7 @@ public class initData {
             @SneakyThrows
             public void run(ApplicationArguments args) {
                 memberService.create(new MemberJoinRequestDto(
-                        "sbbadmin",
+                        "mediumadmin",
                         "12345678",
                         "12345678")
                         ,brs
@@ -46,26 +46,32 @@ public class initData {
                         "12345678")
                         ,brs
                 );
+                memberService.create(new MemberJoinRequestDto(
+                                "testuser2",
+                                "12345678",
+                                "12345678")
+                        ,brs
+                );
 
                 for (int i = 1; i < 100; i++) {
-                    ResponseDto<Post> postResp;
+                    ResponseData<Post> postResp;
                     if (i % 2 == 0) {
                         postResp = postService.create(new PostRequestDto(
-                                        memberService.findByUsername("testuser1"),
                                         false,
                                         String.format("테스트 글 %d", i),
                                         String.format("테스트 내용 %d", i),
                                         null
-                                )
+                                ),
+                                memberService.findByUsername("testuser1")
                         );
                     } else {
                         postResp = postService.create(new PostRequestDto(
-                                        memberService.findByUsername("testuser1"),
                                         true,
                                         String.format("테스트 글 %d", i),
                                         String.format("테스트 내용 %d", i),
                                         null
-                                )
+                                ),
+                                memberService.findByUsername("testuser2")
                         );
                     }
                     for (int j = 0; j < 3; j++) {
