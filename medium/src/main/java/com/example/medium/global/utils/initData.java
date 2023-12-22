@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
-@Profile("!dev")
+@Profile("!prod")
 @Configuration
 @RequiredArgsConstructor
 public class initData {
