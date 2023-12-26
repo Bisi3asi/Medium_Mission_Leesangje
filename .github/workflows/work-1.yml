@@ -3,9 +3,9 @@ on:
   push:
     paths:
       - '.github/workflows/**'
-      - 'src/**'
-      - '/medium/build.gradle'
-      - '/medium/Dockerfile'
+      - 'medium/src/**'
+      - 'medium/build.gradle'
+      - 'medium/Dockerfile'
     branches:
       - main
 jobs:
