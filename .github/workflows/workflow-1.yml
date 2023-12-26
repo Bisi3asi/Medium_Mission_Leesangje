@@ -1,6 +1,6 @@
-name: work-1
+name: workflow-1
 on:
-  push:
+  push: # 해당 경로의 파일이 변경되었을 때만 워크플로우가 실행
     paths:
       - '.github/workflows/**'
       - 'medium/src/**'
@@ -54,6 +54,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
+          dockerfile: medium/Dockerfile #Dockerfile 경로 설정
           push: true
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/deploy:${{ needs.makeTagAndRelease.outputs.tag_name }},
