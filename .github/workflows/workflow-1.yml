@@ -61,5 +61,5 @@ jobs:
           file: ./medium/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ env.OWNER_LC }}/deploy:${{ needs.makeTagAndRelease.outputs.tag_name }},
-            ghcr.io/${{ env.OWNER_LC }}/deploy:latest
+            ghcr.io/${{ env.OWNER_LC }}/medium-deploy:${{ needs.makeTagAndRelease.outputs.tag_name }},
+            ghcr.io/${{ env.OWNER_LC }}/medium-deploy:latest
