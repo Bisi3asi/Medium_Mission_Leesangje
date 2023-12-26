@@ -1,3 +1,4 @@
+# 멀티 스테이지 1 : 빌드 스테이지
 # GraalVm을 기반 이미지로 사용
 FROM ghcr.io/graalvm/graalvm-community:17
 
@@ -19,7 +20,13 @@ RUN chmod +x ./gradlew
 # 애플리케이션 빌드
 # daemon 충돌 가능성으로 인해 노 데몬으로 실행
 RUN ./gradlew clean build --no-daemon
-RUN mv build/libs/*.jar /app/app.jar
+
+# 멀티 스테이지 2 : 실행 스테이지
+FROM ghcr.io/graalvm/graalvm-community:17
+WORKDIR /app
+
+# 빌드 스테이지에서 빌드된 Jar 파일만을 복사
+COPY --from=builder /app/build/libs/*.jar app.jar
 
 #실행할 JAR 파일 지정
 #여러 파일이 있는 경우 실행할 특정 파일을 지정
