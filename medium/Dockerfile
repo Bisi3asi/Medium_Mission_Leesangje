@@ -1,31 +1,38 @@
+# DOCKER RUN : 기존의 작업 내역에 변경이 없으면 캐싱된 내역으로 대체
 # 멀티 스테이지 1 : 빌드 스테이지
 # GraalVm을 기반 이미지로 사용
+FROM ghcr.io/graalvm/graalvm-community:17 as builder
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# Gradle 래퍼 복사
+COPY gradlew .
+COPY gradle gradle
+COPY build.gradle .
+COPY settings.gradle .
+
+# Gradle 래퍼에 실행 권한 부여
+RUN chmod +x ./gradlew
+
+# 의존성 설치
+# 이 단계에서 변경사항이 없다면, 다음 빌드에서 캐시
+RUN ./gradlew dependencies --no-daemon
+
+# 소스 코드 복사
+COPY src src
+
+# 애플리케이션 빌드
+# daemon 충돌 가능성으로 인해 노 데몬으로 빌드
+RUN ./gradlew clean build --no-daemon
+
+# 멀티 스테이지 2 : 실행 스테이지
 FROM ghcr.io/graalvm/graalvm-community:17
 
 # 작업 디렉토리 설정
 WORKDIR /app
 
-# 소스 코드와 Gradle 래퍼 복사
-# 호스트 시스템의 build/libs 디렉토리 내의 모든 .jar 파일을
-# 컨테이너의 /app 디렉토리로 복사
-COPY gradlew .
-COPY gradle gradle
-COPY build.gradle .
-COPY settings.gradle .
-COPY src src
-
-#Gradle 래퍼에 실행 권한 부여
-RUN chmod +x ./gradlew
-
-# 애플리케이션 빌드
-# daemon 충돌 가능성으로 인해 노 데몬으로 실행
-RUN ./gradlew clean build --no-daemon
-
-# 멀티 스테이지 2 : 실행 스테이지
-FROM ghcr.io/graalvm/graalvm-community:17
-WORKDIR /app
-
-# 빌드 스테이지에서 빌드된 Jar 파일만을 복사
+# 첫번째 빌드 스테이지에서 빌드된 Jar 파일만을 복사
 COPY --from=builder /app/build/libs/*.jar app.jar
 
 #실행할 JAR 파일 지정
