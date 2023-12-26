@@ -3,9 +3,9 @@ on:
   push: # 해당 경로의 파일이 변경되었을 때만 워크플로우가 실행
     paths:
       - '.github/workflows/**'
-      - 'medium/src/**'
-      - 'medium/build.gradle'
-      - 'medium/Dockerfile'
+      - './medium/src/**'
+      - './medium/build.gradle'
+      - './medium/Dockerfile'
     branches:
       - main
 jobs:
@@ -53,13 +53,20 @@ jobs:
       # 테스트용 코드
       - name: 디렉토리 구조 확인
         run: ls -R
+      - name: Dockerfile 존재 확인
+        run: |
+          if [ -f "./medium/Dockerfile" ]; then
+            echo "Dockerfile이 존재합니다."
+          else
+            echo "Dockerfile이 존재하지 않습니다."
+          fi
       # 테스트용 코드
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
           context: .
           # 빌드 할 도커파일 경로 지정
-          dockerfile: ./medium/Dockerfile
+          file: ./medium/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/deploy:${{ needs.makeTagAndRelease.outputs.tag_name }},
