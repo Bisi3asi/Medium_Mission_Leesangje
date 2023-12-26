@@ -50,12 +50,17 @@ jobs:
           echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
         env:
           OWNER: '${{ github.repository_owner }}'
+      # 테스트용 코드
+      - name: Print Dockerfile Path
+        run: |
+          echo "Dockerfile Path: ${{ github.workspace }}/../../../medium/Dockerfile"
+      # 테스트용 코드
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
           context: .
           # 빌드 할 도커파일 경로 지정 : 현재 work.yml의 상위 디렉토리 -> medium/Dockerfile
-          dockerfile: ${{ github.workspace }}/../medium/Dockerfile
+          dockerfile: ${{ github.workspace }}/../../../medium/Dockerfile
           push: true
           tags: |
             ghcr.io/${{ env.OWNER_LC }}/deploy:${{ needs.makeTagAndRelease.outputs.tag_name }},
