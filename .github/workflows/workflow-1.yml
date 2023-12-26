@@ -5,7 +5,7 @@ on:
       - '.github/workflows/**'
       - 'medium/src/**'
       - 'medium/build.gradle'
-      - 'Dockerfile'
+      - 'medium/Dockerfile'
     branches:
       - main
 jobs:
