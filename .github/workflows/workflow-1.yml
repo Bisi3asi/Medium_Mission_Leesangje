@@ -32,7 +32,6 @@ jobs:
           draft: false
           prerelease: false
   buildImageAndPush:
-    runs-on: ubuntu-latest
     permissions: #403 error 해결 위한 explicit permission 추가
       contents: read
       packages: write
