@@ -53,22 +53,11 @@ jobs:
           echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
         env:
           OWNER: '${{ github.repository_owner }}'
-      # 테스트용 코드
-      - name: 디렉토리 구조 확인
-        run: ls -R
-      - name: Dockerfile 존재 확인
-        run: |
-          if [ -f "./medium/Dockerfile" ]; then
-            echo "Dockerfile이 존재합니다."
-          else
-            echo "Dockerfile이 존재하지 않습니다."
-          fi
-      # 테스트용 코드
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
+          # 빌드시 사용할 도커파일 경로와 컨텍스트 지정
           context: ./medium
-          # 빌드 할 도커파일 경로 지정
           file: ./medium/Dockerfile
           push: true
           tags: |
