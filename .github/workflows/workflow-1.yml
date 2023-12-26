@@ -64,7 +64,7 @@ jobs:
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
-          context: .
+          context: ./medium
           # 빌드 할 도커파일 경로 지정
           file: ./medium/Dockerfile
           push: true
