@@ -1,7 +1,3 @@
-#403 error 해결 위한 explicit permission 추가
-permissions:
-      contents: read
-      packages: write
 name: workflow-1
 on:
   push: # 해당 경로의 파일이 변경되었을 때만 워크플로우가 실행
@@ -36,6 +32,10 @@ jobs:
           draft: false
           prerelease: false
   buildImageAndPush:
+    runs-on: ubuntu-latest
+    permissions: #403 error 해결 위한 explicit permission 추가
+      contents: read
+      packages: write
     name: 도커 이미지 빌드와 푸시
     needs: makeTagAndRelease
     runs-on: ubuntu-latest
