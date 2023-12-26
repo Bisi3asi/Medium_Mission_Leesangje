@@ -1,3 +1,7 @@
+#403 error 해결 위한 explicit permission 추가
+permissions:
+      contents: read
+      packages: write
 name: workflow-1
 on:
   push: # 해당 경로의 파일이 변경되었을 때만 워크플로우가 실행
