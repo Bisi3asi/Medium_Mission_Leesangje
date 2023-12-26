@@ -55,10 +55,13 @@ dependencies {
 }
 
 tasks.named('test') {
+    // 빌드 테스트 시 메모리 제한 (1GB)
     maxHeapSize = "1024m"
     useJUnitPlatform()
 }
 
+// plain jar 생성 억제
+// plain jar : 소스 코드의 클래스 파일과 리소스 파일 포함(의존성 X)
 jar {
     enabled = false
 }
