@@ -88,7 +88,7 @@ public class PostService {
     }
 
     @Transactional
-    public void incrViewcount(Post post) {
+    public void incrViewCount(Post post) {
         post.incrViewCount();
         postRepository.save(post);
     }
