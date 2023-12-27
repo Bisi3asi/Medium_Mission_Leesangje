@@ -71,7 +71,7 @@ public class PostController {
     @GetMapping("/post/{id}")
     public String showDetail(Model model, @PathVariable Long id) {
 
-        model.addAttribute("post", postService.findById(id));
+        model.addAttribute("post", postService.get(id));
         model.addAttribute("commentRequestDto", new CommentRequestDto());
         return "domain/post/detail";
     }
@@ -114,7 +114,8 @@ public class PostController {
     public String showModifyForm(@PathVariable Long id,
                                  @ModelAttribute("postRequestDto") PostRequestDto postRequestDto,
                                  Principal principal) {
-        Post post = postService.findById(id);
+        Post post = postService.get(id);
+        postService.incrViewcount(post);
 
         if (!Objects.equals(post.getAuthor().getUsername(), principal.getName())){
             throw new ResponseStatusException(
