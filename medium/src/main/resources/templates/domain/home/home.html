@@ -13,19 +13,19 @@
     </div>
     <div class="w-full h-96 bg-yellow-500 justify-items-center">
         <div class="py-20 px-20 pb-2 text-black font-bold">
-            <div class="mb-6 text-8xl">Stay Curious.</div>
-            <div class="text-3xl">discover stories, thinking, and expertise</div>
-            <div class="mb-6 text-3xl">from writers on any topic.</div>
+            <div class="mb-6 text-8xl">긴장하시라,</div>
+            <div class="text-3xl">최고의 플랫폼이 다가오고 있습니다.</div>
+            <div class="mb-6 text-3xl">이제는 받아들일 준비만 하면 됩니다.</div>
             <a sec:authorize="isAnonymous()"
                href="/member/login"
-               class="btn btn-lg btn-active rounded-sm">Start reading</a>
+               class="btn btn-lg btn-active rounded-sm">시작하기</a>
             <a sec:authorize="isAuthenticated()"
                href="/post/list"
-               class="btn btn-lg btn-active rounded-sm">Start reading</a>
+               class="btn btn-lg btn-active rounded-sm">시작하기</a>
         </div>
     </div>
     <div class="mx-20">
-        <h1 class="my-10 pb-2 text-3xl font-bold">Recent on Medium</h1>
+        <h1 class="my-10 pb-2 text-3xl font-bold">최근 게시글</h1>
         <div class="mx-4">
             <ul id="postList">
                 <li class="my-2 flex" th:each="post, iterStat : ${paging.content}" th:if="${iterStat.index < 10}">
@@ -56,7 +56,7 @@
                     <a th:href="@{|/post/${post.id}|}">
                         <div th:if="${post.imageFile == null}"
                              class="w-64 h-44 border border-gray-400 flex items-center justify-center">
-                            <h2 class="text-3xl">No images</h2>
+                            <h2 class="text-3xl text-gray-500">이미지 없음</h2>
                         </div>
                         <div th:unless="${post.imageFile == null}"
                              class="flex-none w-64 h-44 border border-gray-400">

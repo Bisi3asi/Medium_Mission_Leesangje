@@ -36,9 +36,8 @@
                     </svg>
                 </button>
                 <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-white w-52">
-                    <li><a href="/">Recent Post</a></li>
-                    <li><a href="/post/list">Total Post</a></li>
-                    <li><a href="/post/write">Write Post</a></li>
+                    <li><a href="/">최신 게시글</a></li>
+                    <li><a href="/post/list">모든 게시글</a></li>
                 </ul>
             </div>
             <div class="flex-1 font-bold">
@@ -46,26 +45,7 @@
                 <span class="mr-2">By</span>
                 <span th:text="${currentUser.username}"></span>
             </div>
-            <input class="flex-none btn btn-success" type="submit" value="Publish">
-            <div class="flex-none">
-                <ul class="menu menu-horizontal px-1">
-                    <li>
-                        <details>
-                            <summary>
-                                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-                                    <div>
-                                        <i class="fa-solid fa-bars"></i>
-                                    </div>
-                                </div>
-                            </summary>
-                            <ul class="p-2 bg-white rounded-t-none w-40">
-                                <li><a>My page</a></li>
-                                <li><a>My article</a></li>
-                            </ul>
-                        </details>
-                    </li>
-                </ul>
-            </div>
+            <input class="mr-16 flex-none btn btn-success" type="submit" value="등록하기">
         </div>
 
         <!-- form -->
@@ -79,18 +59,17 @@
                                checked="checked"
                                th:field="*{published}"
                         />
-                        I'll show this post public
+                        게시글을 공개하겠습니다
                     </span>
-
                     <span class="label-text-alt" id="titleInputCount">0 / 50</span>
                 </label>
                 <textarea class="form-input w-full p-4 bg-white text-black text-3xl" id="titleTextInput" maxlength=50
-                          placeholder="Title" rows="2"
+                          placeholder="글 제목" rows="2"
                           th:field="*{title}"></textarea>
             </div>
             <div class="form-control mx-auto">
             <textarea class="form-input w-full p-4 bg-white text-black" id="contentTextInput" maxlength=1000
-                      placeholder="Tell your story.." rows="20"
+                      placeholder="글 내용" rows="20"
                       th:field="*{content}"></textarea>
                 <label class="label">
                     <span class="label-text"></span>
@@ -105,7 +84,10 @@
                            accept=".jpg, .jpeg, .png"
                            onchange="displayFileName()"/>
                 </div>
-                <div id="fileNameContainer" style="color: black;">Add Preview Image</div>
+                <div>
+                    <div id="fileNameContainer" style="color: black;">미리보기 이미지를 등록해보세요!</div>
+                    <div class="label-text-alt">미리보기 이미지는 1개만 등록 가능하며, 이미지는 jpg, jpeg, gif, png 확장자를 지원합니다.</div>
+                </div>
             </div>
         </div>
     </form>
@@ -144,6 +126,7 @@
             fileNameContainer.style.color = 'black';
         }
     }
+
     document.addEventListener("DOMContentLoaded", function () {
         var messageDiv = document.querySelector('.toast.toast-top.toast-end');
 

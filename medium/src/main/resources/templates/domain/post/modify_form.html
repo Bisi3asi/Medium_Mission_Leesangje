@@ -28,36 +28,16 @@
                     </svg>
                 </button>
                 <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-white w-52">
-                    <li><a href="/">Recent Post</a></li>
-                    <li><a href="/post/list">Total Post</a></li>
-                    <li><a href="/post/write">Write Post</a></li>
+                    <li><a href="/">최근 게시글</a></li>
+                    <li><a href="/post/list">모든 게시글</a></li>
                 </ul>
             </div>
             <div class="flex-1 font-bold">
                 <a href="/" class="btn btn-ghost btn-lg text-2xl font-bold">MEDIUM</a>
                 <span class="mr-2">By</span>
-                <span>user1</span>
+                <span th:text="${currentUser.username}"></span>
             </div>
-            <input class="flex-none btn btn-success" type="submit" value="Publish">
-            <div class="flex-none">
-                <ul class="menu menu-horizontal px-1">
-                    <li>
-                        <details>
-                            <summary>
-                                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-                                    <div>
-                                        <i class="fa-solid fa-bars"></i>
-                                    </div>
-                                </div>
-                            </summary>
-                            <ul class="p-2 bg-white rounded-t-none w-40">
-                                <li><a>My page</a></li>
-                                <li><a>My article</a></li>
-                            </ul>
-                        </details>
-                    </li>
-                </ul>
-            </div>
+            <input class="mr-16 flex-none btn btn-success" type="submit" value="등록하기">
         </div>
 
         <!-- form -->
@@ -69,7 +49,7 @@
                                class="checkbox checkbox-success checkbox-sm mr-2"
                                th:field="*{published}"
                                th:checked="${postRequestDto.published}"/>
-                        I'll show this post public
+                        게시글을 공개하겠습니다
                     </span>
                     <span class="label-text-alt" id="titleInputCount">0 / 50</span>
                 </label>
@@ -87,8 +67,17 @@
                 </label>
             </div>
             <div class="pb-10 flex items-center">
-                <div class="btn btn-ghost mr-1"><i class="fa-solid fa-circle-plus fas fa-3x"></i></div>
-                <div>Add Preview Image</div>
+                <div class="btn btn-ghost mr-1">
+                    <label for="file"><i class="fa-solid fa-circle-plus fas fa-3x"></i></label>
+                    <input type="file" id="file" class="hidden"
+                           th:field="*{multipartFile}"
+                           accept=".jpg, .jpeg, .png"
+                           onchange="displayFileName()"/>
+                </div>
+                <div>
+                    <div id="fileNameContainer" style="color: black;">미리보기 이미지를 등록해보세요!</div>
+                    <div class="label-text-alt">미리보기 이미지는 1개만 등록 가능하며, 이미지는 jpg, jpeg, gif, png 확장자를 지원합니다.</div>
+                </div>
             </div>
         </div>
     </form>

@@ -27,10 +27,10 @@
             <i class="fa-solid fa-bars" style="color: white;"></i>
         </button>
         <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 w-52">
-            <li><a href="/">Recent Post</a></li>
-            <li><a href="/post/list">Total Post</a></li>
+            <li><a href="/">최근 게시글</a></li>
+            <li><a href="/post/list">모든 게시글</a></li>
             <li><a sec:authorize="isAuthenticated()"
-                   href="/post/write">Write Post</a></li>
+                   href="/post/write">글쓰기</a></li>
         </ul>
     </div>
     <div class="flex-1">
@@ -44,42 +44,33 @@
                        href="/post/write"
                        class="btn btn-ghost btn-md text-xl">
                         <i class="fa-solid fa-pen-nib" style="color: white;"></i>
-                        Write
+                        글쓰기
                     </a>
                 </div>
             </li>
             <li>
                 <div sec:authorize="isAnonymous()">
-                    <a href="/member/login" class="btn btn-ghost btn-md text-xl">Login</a>
+                    <a href="/member/login" class="btn btn-ghost btn-md text-xl">로그인</a>
                 </div>
             </li>
             <li>
                 <div sec:authorize="isAnonymous()">
-                    <a href="/member/join" class="btn btn-success btn-md text-xl">Get Started</a>
+                    <a href="/member/join" class="btn btn-success btn-md text-xl">시작하기</a>
                 </div>
             </li>
             <li>
-                <div sec:authorize="isAuthenticated()">
-                    <a href="/member/logout" class="btn btn-ghost btn-md text-xl">Logout</a>
-                </div>
-            </li>
-            <li>
-                <details sec:authorize="isAuthenticated()">
-                    <summary class="flex">
-                        <div>
-                            <span th:text="${currentUser.username}"></span>
-                        </div>
-                        <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-                            <div>
-                                <i class="fa-solid fa-user" style="color: white;"></i>
-                            </div>
-                        </div>
-                    </summary>
-                    <ul class="p-2 w-full bg-base-100 rounded-t-none">
-                        <li><a href="/post/mylist">My Blog</a></li>
-                        <li><a>My Profile</a></li>
+                <div sec:authorize="isAuthenticated()"
+                     class="dropdown dropdown-bottom dropdown-end">
+                    <span th:text="${currentUser.username}"></span>
+                    <div tabindex="0" class="flex btn-ghost btn no-animation">
+                        <i class="fa-solid fa-user" style="color: white;"></i>
+                    </div>
+                    <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-100 w-52">
+                        <li><a href="/post/mylist">내 활동</a></li>
+                        <li><a>내 프로필</a></li>
+                        <li><a href="/member/logout">로그아웃</a></li>
                     </ul>
-                </details>
+                </div>
             </li>
         </ul>
     </div>

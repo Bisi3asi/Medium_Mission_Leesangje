@@ -41,12 +41,12 @@
                         <div tabindex="0" role="button" class="btn btn-ghost m-1"><i class="fa-solid fa-ellipsis"></i>
                         </div>
                         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-40">
-                            <li><a th:href="@{'/post/' + ${post.id} + '/modify'}">Update Post</a></li>
+                            <li><a th:href="@{'/post/' + ${post.id} + '/modify'}">글 수정</a></li>
                             <li>
                                 <form th:action="@{'/post/' + ${post.id} + '/delete'}" th:method="delete">
                                     <input type="hidden" name="_method" value="delete"/>
                                     <button type="submit" onclick="return confirmDelete();">
-                                        Delete Post
+                                        글 삭제
                                     </button>
                                 </form>
                             </li>
@@ -105,12 +105,12 @@
                             <div th:attr="tabindex=0, role='button'" class="btn btn-ghost m-1">
                                 <i class="fa-solid fa-ellipsis"></i></div>
                             <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-44">
-                                <li><a href="@{|/comment/${comment.id}/modify}|}">Update Comment</a></li>
-                                <li><a href="@{/comment/${comment.id}/delete}|}">Delete Comment</a></li>
+                                <li><a href="@{|/comment/${comment.id}/modify}|}">댓글 수정</a></li>
+                                <li><a href="@{/comment/${comment.id}/delete}|}">댓글 삭제</a></li>
                             </ul>
                         </div>
                     </div>
-                    <div th:text="${comment.content}" class="mb-2"></div>
+                    <div th:text="${comment.content}" class="mb-2 text-white"></div>
                     <div class="flex items-center w-full h-10 text-lg">
                         <div class="mr-2">
                             <i class="fa-solid fa-hands-clapping" style="color: white;"></i>
@@ -126,7 +126,7 @@
         </ul>
         <!-- comment form -->
         <!--        <form th:action="${/comment/write}" method="post">-->
-        <div class="form-control">
+        <div sec:authorize="isAuthenticated()" class="form-control">
             <div class="label">
                 <span class="label-text">&nbsp;</span>
                 <span class="label-text-alt" id="charCount">0 / 300</span>
@@ -134,15 +134,24 @@
             <textarea class="mb-2 textarea textarea-lg textarea-primary"
                       id="textInput"
                       maxlength="300" rows="6"
-                      placeholder="What are your thoughts?"></textarea>
+                      placeholder="댓글을 남겨주세요!"></textarea>
             <div class="flex justify-between pb-10">
                 <div class="flex justify-items-center">
                     <input type="checkbox" checked="checked" class="checkbox mr-2"/>
-                    <span>Also publish to my profile</span>
+                    <span>공개 댓글로 등록</span>
                 </div>
-                <input class="btn btn-primary" value="Respond" type="submit">
+                <input class="btn btn-primary" value="등록하기" type="submit">
             </div>
         </div>
+        <div sec:authorize="isAnonymous()" class="form-control">
+            <textarea class="mb-2 textarea textarea-lg textarea-primary"
+                      maxlength="300" rows="6" disabled
+                      placeholder="로그인 후 댓글 작성이 가능합니다."></textarea>
+            <div class="flex justify-end pb-10">
+                <a href="/member/login" class="btn btn-primary mr-1">로그인</a>
+            </div>
+        </div>
+
         <!--        </form>-->
     </div>
 </div>

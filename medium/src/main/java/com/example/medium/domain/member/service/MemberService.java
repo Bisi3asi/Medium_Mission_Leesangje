@@ -32,13 +32,13 @@ public class MemberService {
 
     public Member findByUsername(String username) {
         return memberRepository.findByUsername(username).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Member not found")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR : 해당 회원을 찾을 수 없습니다.")
         );
     }
 
     public Member findByRefreshToken(String refreshToken) {
         return memberRepository.findByRefreshToken(refreshToken).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST)
+                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ERROR: 해당 회원을 찾을 수 없습니다.")
         );
     }
 
@@ -47,7 +47,7 @@ public class MemberService {
         if (memberRepository.findByUsername(memberRequestDto.getUsername()).isPresent()) {
             brs.addError(
                     new ObjectError(
-                            "username", "username already exists, please try another one."));
+                            "username", "동일한 ID가 존재합니다. 다른 ID로 시도해주세요."));
             return ResponseData.of("400", "join failed");
         }
 
@@ -58,7 +58,7 @@ public class MemberService {
                 .build();
 
         memberRepository.save(member);
-        return ResponseData.of("200", "you have successfully joined", member);
+        return ResponseData.of("200", "회원가입이 완료되었습니다.", member);
     }
 
     public ResponseData checkUsernameAndPassword(MemberLoginRequestDto memberLoginRequestDto, BindingResult brs) {
@@ -66,7 +66,7 @@ public class MemberService {
         if (opMember.isEmpty()) {
             brs.addError(
                     new ObjectError(
-                            "login error", "login failed, please check username and password."));
+                            "login error", "로그인에 실패했습니다, ID와 PW를 확인해주세요."));
             return ResponseData.of("400", "login failed");
         }
 
@@ -74,11 +74,11 @@ public class MemberService {
         if (!passwordEncoder.matches(memberLoginRequestDto.getPassword(), member.getPassword())) {
             brs.addError(
                     new ObjectError(
-                            "login error", "login failed, please check username and password."));
+                            "login error", "로그인에 실패했습니다, ID와 PW를 확인해주세요."));
             return ResponseData.of("400", "login failed");
         }
 
-        return ResponseData.of("200", String.format("welcome, %s!", member.getUsername()), member);
+        return ResponseData.of("200", String.format("환영합니다, %s님!", member.getUsername()), member);
     }
 
     public String makeToken(Member member, int minute) {
