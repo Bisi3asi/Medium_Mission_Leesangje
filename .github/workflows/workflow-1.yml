@@ -48,11 +48,16 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: set lower case owner name
+      - name: username 대문자 소문자로 변환
         run: |
           echo "OWNER_LC=${OWNER,,}" >> ${GITHUB_ENV}
         env:
           OWNER: '${{ github.repository_owner }}'
+      - name: application-secret.properties 생성
+      - env:
+          ACTIONS_STEP_DEBUG: true
+          APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET_PROPERTIES }}
+      - run: echo "$APPLICATION_SECRET" > ./medium/src/main/resources/application-secret.properties
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
