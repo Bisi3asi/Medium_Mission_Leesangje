@@ -1,11 +1,11 @@
 <html lang="ko" layout:decorate="~{global/layout}">
 <head>
-    <title>Join Medium</title>
+    <title>Medium</title>
 </head>
 <body>
 <div layout:fragment="content" class="flex items-center justify-center h-screen mx-4">
     <div class="form-control mx-auto w-96">
-        <h1 class="text-5xl font-bold text-center mb-10 text-yellow-500">Join Medium</h1>
+        <h1 class="text-5xl font-bold text-center mb-10 text-yellow-500">We, Medium</h1>
         <form th:action="@{/member/join}" th:object="${memberJoinRequestDto}" method="post">
             <!-- error -->
             <div th:if="${#fields.hasAnyErrors()}">
@@ -17,37 +17,37 @@
             </div>
             <div class="form-control mx-auto m-6">
                 <label class="label">
-                    <span class="label-text">Username</span>
-                    <span class="label-text-alt">length : 8 ~ 20</span>
+                    <span class="label-text">사용자 ID</span>
+                    <span class="label-text-alt">길이 : 8 ~ 20자</span>
                 </label>
-                <input type="text" th:field="*{username}" placeholder="input username"
+                <input type="text" th:field="*{username}" placeholder="사용자 ID를 입력해주세요."
                        class="form-input w-full p-4"/>
             </div>
             <div class="form-control mx-auto m-6">
                 <label class="label">
-                    <span class="label-text">Password</span>
-                    <span class="label-text-alt">length : 8 ~ 20</span>
+                    <span class="label-text">비밀번호</span>
+                    <span class="label-text-alt">길이 : 8 ~ 20자</span>
                 </label>
-                <input type="password" th:field="*{password}" placeholder="input password"
+                <input type="password" th:field="*{password}" placeholder="비밀번호를 입력해주세요."
                        class="form-input w-full p-4"/>
             </div>
-            <div class="form-control mx-auto m-10">
+            <div class="form-control mx-auto m-6">
                 <label class="label">
-                    <span class="label-text">Password (repeat)</span>
-                    <span class="label-text-alt">length : 8 ~ 20</span>
+                    <span class="label-text">비밀번호 확인</span>
+                    <span class="label-text-alt">길이 : 8 ~ 20자</span>
                 </label>
-                <input type="password" th:field="*{passwordConfirm}" placeholder="repeat password"
+                <input type="password" th:field="*{passwordConfirm}" placeholder="비밀번호를 한번 더 입력해주세요."
                        class="form-input w-full p-4"/>
             </div>
             <label class="label">
                 <span class="label-text">&nbsp;</span>
-                <span class="label-text-alt">already joined medium?</span>
+                <span class="label-text-alt">이미 medium에 가입하셨나요?</span>
             </label>
             <div class="flex">
-                <input type="submit" value="Join Medium" class="flex-1 btn btn-primary mr-1">
+                <input type="submit" value="회원가입" class="flex-1 btn btn-primary mr-1">
                 <a href="/member/login"
                    class="flex-1 btn btn-success">
-                    Login Medium
+                    로그인
                 </a>
             </div>
         </form>
