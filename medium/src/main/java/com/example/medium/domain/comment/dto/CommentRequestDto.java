@@ -18,5 +18,4 @@ public class CommentRequestDto {
     @NotBlank(message = "댓글을 입력해주세요.")
     @Size(max = 300, message = "댓글은 300자를 초과할 수 없습니다.")
     private String content;
-
 }

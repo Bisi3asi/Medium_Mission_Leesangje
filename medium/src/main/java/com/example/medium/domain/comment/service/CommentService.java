@@ -32,6 +32,7 @@ public class CommentService {
                 .content(commentRequestDto.getContent().trim())
                 .post(post)
                 .author(member)
+                .isPublished(commentRequestDto.isPublished())
                 .build();
 
         commentRepository.save(comment);
@@ -44,6 +45,7 @@ public class CommentService {
 
         comment = comment.toBuilder()
                 .content(commentRequestDto.getContent())
+                .isPublished(commentRequestDto.isPublished())
                 .build();
 
         commentRepository.save(comment);
