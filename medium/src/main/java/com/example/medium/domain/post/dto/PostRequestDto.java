@@ -16,12 +16,12 @@ public class PostRequestDto {
     @NotNull
     private boolean isPublished = true; // default
 
-    @NotBlank(message = "title can not be blank.")
-    @Size(max = 50, message = "title can not exceed 50 length.")
+    @NotBlank(message = "제목은 공백일 수 없습니다.")
+    @Size(max = 50, message = "제목은 50자를 초과할 수 없습니다.")
     private String title;
 
-    @NotBlank(message = "content can not be blank.")
-    @Size(max = 1000, message = "content can not exceed 1000 length.")
+    @NotBlank(message = "내용은 공백일 수 없습니다.")
+    @Size(max = 1000, message = "내용은 1000자를 초과할 수 없습니다.")
     private String content;
 
     private MultipartFile multipartFile;

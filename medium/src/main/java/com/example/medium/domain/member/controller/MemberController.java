@@ -47,7 +47,7 @@ public class MemberController {
 
         // 1차 : 비밀번호와 비밀번호 확인 일치 검증 (Controller)
         if (!Objects.equals(memberJoinRequestDto.getPassword(), memberJoinRequestDto.getPasswordConfirm())) {
-            brs.addError(new ObjectError("password", "please check match of the password and password Confirm"));
+            brs.addError(new ObjectError("password", "비밀번호와 비밀번호 확인이 일치하지 않습니다."));
             return "domain/member/join_form";
         }
         // 2차 : 동일 id 존재 여부 검증(Service)
@@ -112,7 +112,7 @@ public class MemberController {
         if (rq.getAccessTokenFromCookie(null) != null) {
             rq.removeAccessTokenFromCookie();
         }
-        attr.addFlashAttribute("msg", "I hope you back soon!");
+        attr.addFlashAttribute("msg", "로그아웃 되었습니다.");
         return "redirect:/";
     }
 }
