@@ -20,12 +20,12 @@ import java.util.Objects;
 public class CommentService {
     private final CommentRepository commentRepository;
 
-    public Comment get(long id){
+    public Comment get(long id) {
         return commentRepository.findById(id).orElseThrow(
                 () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다.")
         );
     }
-    
+
     @Transactional
     public ResponseData<Comment> create(Post post, CommentRequestDto commentRequestDto, Member member) {
         Comment comment = Comment.builder()
@@ -38,9 +38,9 @@ public class CommentService {
         commentRepository.save(comment);
         return ResponseData.of("200", "댓글이 등록되었습니다.", comment);
     }
-    
+
     @Transactional
-    public ResponseData<Comment> update(Comment comment, CommentRequestDto commentRequestDto, Member member){
+    public ResponseData<Comment> update(Comment comment, CommentRequestDto commentRequestDto, Member member) {
         validateAuthor(comment, member);
 
         comment = comment.toBuilder()
@@ -53,15 +53,15 @@ public class CommentService {
     }
 
     @Transactional
-    public ResponseData delete(Comment comment, Member member){
+    public ResponseData delete(Comment comment, Member member) {
         validateAuthor(comment, member);
 
         commentRepository.delete(comment);
         return ResponseData.of("200", "댓글이 삭제되었습니다.");
     }
 
-    public void validateAuthor(Comment comment, Member member){
-        if (!Objects.equals(comment.getAuthor().getUsername(), member.getUsername())){
+    public void validateAuthor(Comment comment, Member member) {
+        if (!Objects.equals(comment.getAuthor().getUsername(), member.getUsername())) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "error : 권한이 없는 사용자입니다.");
         }
     }

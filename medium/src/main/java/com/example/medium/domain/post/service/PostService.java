@@ -101,7 +101,7 @@ public class PostService {
 
     public void validateAuthor(Post post, Member member) {
         if (!Objects.equals(post.getAuthor().getUsername(), member.getUsername())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "error : 권한이 없는 사용자입니다.");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ERROR : 권한이 없는 사용자입니다.");
         }
     }
 }
