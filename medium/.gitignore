@@ -167,4 +167,4 @@ gradle-app.setting
 ### Custom ###
 medium_dev.mv.db
 medium_dev.trace.db
-application-secret.yaml
+application-secret.properties
