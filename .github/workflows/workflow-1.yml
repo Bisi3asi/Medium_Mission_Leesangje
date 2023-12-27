@@ -54,10 +54,10 @@ jobs:
         env:
           OWNER: '${{ github.repository_owner }}'
       - name: application-secret.properties 생성
-      - env:
+        env:
           ACTIONS_STEP_DEBUG: true
           APPLICATION_SECRET: ${{ secrets.APPLICATION_SECRET_PROPERTIES }}
-      - run: echo "$APPLICATION_SECRET" > ./medium/src/main/resources/application-secret.properties
+        run: echo "$APPLICATION_SECRET" > ./medium/src/main/resources/application-secret.properties
       - name: 빌드 앤 푸시
         uses: docker/build-push-action@v3
         with:
