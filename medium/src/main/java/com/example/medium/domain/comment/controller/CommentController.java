@@ -82,6 +82,6 @@ public class CommentController {
 
         ResponseData resp = commentService.delete(comment, member);
         attr.addFlashAttribute("msg", resp.getMsg());
-        return "redirect:/post/list";
+        return String.format("redirect:/post/%s", comment.getPost().getId());
     }
 }
