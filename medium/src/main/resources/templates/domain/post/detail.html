@@ -151,8 +151,13 @@
                           th:method="PUT"
                           th:id="'commentModifyForm-'+${comment.id}"
                           class="flex-col hidden">
+                        <div class="label">
+                            <span class="label-text">&nbsp;</span>
+                            <span class="label-text-alt" id="charCount2">0 / 300</span>
+                        </div>
                         <div class="form-control">
                             <textarea th:field="*{content}"
+                                      id="textInput2"
                                       class="mb-2 textarea textarea-lg textarea-primary"
                                       maxlength="300" rows="6"></textarea>
                             <div class="flex justify-end">
@@ -184,11 +189,11 @@
             <div sec:authorize="isAuthenticated()" class="form-control">
                 <div class="label">
                     <span class="label-text">&nbsp;</span>
-                    <span class="label-text-alt" id="charCount">0 / 300</span>
+                    <span class="label-text-alt" id="charCount1">0 / 300</span>
                 </div>
                 <textarea th:field="*{content}"
                           class="mb-2 textarea textarea-lg textarea-primary"
-                          id="textInput"
+                          id="textInput1"
                           maxlength="300" rows="6"
                           placeholder="댓글을 남겨주세요!"></textarea>
                 <div class="flex justify-between pb-10">
@@ -216,9 +221,11 @@
 <th:block layout:fragment="script">
     <script>
         // comment form 글자수 세기 script
-        document.addEventListener("DOMContentLoaded", function () {
-            const textarea = document.getElementById('textInput');
-            const charCountSpan = document.getElementById('charCount');
+        document.querySelectorAll('textarea[id^="textInput"]').forEach(function (textarea) {
+            const textareaId = textarea.id;
+            // id에서 "textInput" 이후 부분을 추출
+            const charCountSpanId = 'charCount' + textareaId.substring(9);
+            const charCountSpan = document.getElementById(charCountSpanId);
 
             textarea.addEventListener('input', function () {
                 const currentLength = textarea.value.length;
