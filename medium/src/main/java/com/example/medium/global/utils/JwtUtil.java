@@ -4,13 +4,22 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
 import java.util.Date;
 import java.util.Map;
 
+@Component
+@PropertySource("classpath:application-secret.properties")
 public class JwtUtil {
-    private static final String SECRET_KEY =
-            "greatbisi3asichallengegreatbisi3asichallengegreatbisi3asichallengegreatbisi3asichallenge";
+    private static String SECRET_KEY;
+
+    @Value("${jwt.secret-key}")
+    public void setSECRET_Key(String value){
+        SECRET_KEY = value;
+    }
 
     public static String encodeToken(Map<String, Object> data, int minute){
         Date now = new Date();
