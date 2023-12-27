@@ -37,14 +37,16 @@
                         </div>
                     </div>
                     </a>
-                    <div class="dropdown dropdown-right">
-                        <div tabindex="0" role="button" class="btn btn-ghost m-1"><i class="fa-solid fa-ellipsis"></i>
+                    <div th:if="${currentUser != null and currentUser.username == post.author.username}"
+                         class="dropdown dropdown-right">
+                        <div tabindex="0" role="button" class="btn btn-ghost m-1">
+                            <i class="fa-solid fa-ellipsis"></i>
                         </div>
                         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-40">
                             <li><a th:href="@{'/post/' + ${post.id} + '/modify'}">글 수정</a></li>
                             <li>
                                 <form th:action="@{'/post/' + ${post.id} + '/delete'}" th:method="delete">
-                                    <input type="hidden" name="_method" value="delete"/>
+                                    <input type="hidden" name="_method" value="DELETE"/>
                                     <button type="submit" onclick="return confirmDelete();">
                                         글 삭제
                                     </button>
@@ -76,11 +78,13 @@
                  alt="Post Image">
         </div>
         <div th:unless="${post.imageFile == null}"
-             class="w-3/4 h-1/2 self-center mx-auto"
              th:text="${post.content}">
+            class="w-3/4 h-1/2 self-center mx-auto break-words"
         </div>
         <div th:if="${post.imageFile == null}"
-             th:text="${post.content}">
+             th:text="${post.content}"
+             class="break-words">
+
         </div>
     </div>
 
@@ -89,7 +93,7 @@
         <ul th:each="comment : ${post.commentList}">
             <li class="py-2 text-xl">
                 <div class="text-gray-400">
-                    <div class="pt-1 mr-1 mb-2 flex items-center">
+                    <div class="pt-1 mr-1 mb-6 flex items-center">
                         <a th:href="@{|/b/${comment.author.username}|}">
                             <div class="mr-2 btn btn-ghost">
                                 <i class="fa-solid fa-user fas fa-2xl" style="color: white;"></i>
@@ -101,16 +105,67 @@
                                 <div th:text="${#temporals.format(comment.createDate, 'yyyy.MM.dd')}"></div>
                             </div>
                         </div>
-                        <div class="dropdown dropdown-right">
+                        <div th:if="${currentUser != null and comment.author.username == currentUser.username}"
+                             class="dropdown dropdown-right">
                             <div th:attr="tabindex=0, role='button'" class="btn btn-ghost m-1">
                                 <i class="fa-solid fa-ellipsis"></i></div>
                             <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-44">
-                                <li><a href="@{|/comment/${comment.id}/modify}|}">댓글 수정</a></li>
-                                <li><a href="@{/comment/${comment.id}/delete}|}">댓글 삭제</a></li>
+                                <li>
+                                    <button th:onclick="toggleCommentModifyForm([[${comment.id}]])">댓글 수정</button>
+                                </li>
+                                <li>
+                                    <form th:action="@{'/comment/delete/' + ${comment.id}}" th:method="delete">
+                                        <button type="submit" onclick="return confirmDelete();">댓글 삭제</button>
+                                    </form>
+                                </li>
                             </ul>
                         </div>
                     </div>
-                    <div th:text="${comment.content}" class="mb-2 text-white"></div>
+                    <div th:id="'commentTextArea-'+${comment.id}">
+                        <!-- 비공개 댓글 (작성자, 본인인 경우)-->
+                        <div th:if="${currentUser != null
+                        and comment.published == false
+                        and (comment.author.username == currentUser.username
+                        or post.author.username == currentUser.username)}"
+                             class="flex">
+                            <i class="fa-solid fa-lock" style="color:grey"></i>
+                            <div th:text="${comment.content}" class="pl-4 mb-4 text-gray-400 break-words"></div>
+                        </div>
+                        <!-- 비공개 댓글 (작성자, 본인 외)-->
+                        <div th:if="${(comment.published == false and currentUser == null)
+                        or (comment.published == false and currentUser != null
+                            and comment.author.username != currentUser.username
+                            and post.author.username != currentUser.username)}"
+                             class="flex">
+                            <i class="fa-solid fa-lock" style="color:grey"></i>
+                            <div class="pl-4 mb-4 text-gray-400">비공개 댓글입니다.</div>
+                        </div>
+                        <!-- 공개 댓글 -->
+                        <div th:if="${comment.published == true}"
+                             th:text="${comment.content}"
+                             class="pl-4 mb-4 text-white break-words"></div>
+                    </div>
+                    <!-- 토글 시 활성화 댓글 수정 영역 -->
+                    <form th:action="@{|/comment/modify/${comment.id}|}"
+                          th:object="${commentRequestDto}"
+                          th:method="PUT"
+                          th:id="'commentModifyForm-'+${comment.id}"
+                          class="flex-col hidden">
+                        <div class="form-control">
+                            <textarea th:field="*{content}"
+                                      class="mb-2 textarea textarea-lg textarea-primary"
+                                      maxlength="300" rows="6"></textarea>
+                            <div class="flex justify-end">
+                                <div class="btn btn-sm btn-ghost mr-1"
+                                     th:onclick="toggleCommentModifyForm([[${comment.id}]])">
+                                    수정 취소
+                                </div>
+                                <input class="btn btn-sm btn-primary" value="수정 완료" type="submit">
+                            </div>
+                        </div>
+
+                    </form>
+                    <!-- 댓글 추천, 대댓글 todo  -->
                     <div class="flex items-center w-full h-10 text-lg">
                         <div class="mr-2">
                             <i class="fa-solid fa-hands-clapping" style="color: white;"></i>
@@ -125,64 +180,87 @@
             </li>
         </ul>
         <!-- comment form -->
-        <!--        <form th:action="${/comment/write}" method="post">-->
-        <div sec:authorize="isAuthenticated()" class="form-control">
-            <div class="label">
-                <span class="label-text">&nbsp;</span>
-                <span class="label-text-alt" id="charCount">0 / 300</span>
-            </div>
-            <textarea class="mb-2 textarea textarea-lg textarea-primary"
-                      id="textInput"
-                      maxlength="300" rows="6"
-                      placeholder="댓글을 남겨주세요!"></textarea>
-            <div class="flex justify-between pb-10">
-                <div class="flex justify-items-center">
-                    <input type="checkbox" checked="checked" class="checkbox mr-2"/>
-                    <span>공개 댓글로 등록</span>
+        <form th:action="@{|/comment/write/${post.id}|}" th:object="${commentRequestDto}" method="post">
+            <div sec:authorize="isAuthenticated()" class="form-control">
+                <div class="label">
+                    <span class="label-text">&nbsp;</span>
+                    <span class="label-text-alt" id="charCount">0 / 300</span>
                 </div>
-                <input class="btn btn-primary" value="등록하기" type="submit">
+                <textarea th:field="*{content}"
+                          class="mb-2 textarea textarea-lg textarea-primary"
+                          id="textInput"
+                          maxlength="300" rows="6"
+                          placeholder="댓글을 남겨주세요!"></textarea>
+                <div class="flex justify-between pb-10">
+                    <div class="flex justify-items-center">
+                        <input th:field="*{published}"
+                               type="checkbox"
+                               checked="checked"
+                               class="checkbox mr-2"/>
+                        <span>공개 댓글로 등록</span>
+                    </div>
+                    <input class="btn btn-primary" value="등록하기" type="submit">
+                </div>
             </div>
-        </div>
-        <div sec:authorize="isAnonymous()" class="form-control">
+            <div sec:authorize="isAnonymous()" class="form-control">
             <textarea class="mb-2 textarea textarea-lg textarea-primary"
                       maxlength="300" rows="6" disabled
                       placeholder="로그인 후 댓글 작성이 가능합니다."></textarea>
-            <div class="flex justify-end pb-10">
-                <a href="/member/login" class="btn btn-primary mr-1">로그인</a>
+                <div class="flex justify-end pb-10">
+                    <a href="/member/login" class="btn btn-primary mr-1">로그인</a>
+                </div>
             </div>
-        </div>
-
-        <!--        </form>-->
+        </form>
     </div>
 </div>
 <th:block layout:fragment="script">
-    <script> // comment form 글자수 세기 script
-    document.addEventListener("DOMContentLoaded", function () {
-        const textarea = document.getElementById('textInput');
-        const charCountSpan = document.getElementById('charCount');
+    <script>
+        // comment form 글자수 세기 script
+        document.addEventListener("DOMContentLoaded", function () {
+            const textarea = document.getElementById('textInput');
+            const charCountSpan = document.getElementById('charCount');
 
-        textarea.addEventListener('input', function () {
-            const currentLength = textarea.value.length;
-            const maxLength = 300;
+            textarea.addEventListener('input', function () {
+                const currentLength = textarea.value.length;
+                const maxLength = 300;
 
-            charCountSpan.textContent = `${currentLength} / ${maxLength}`;
+                charCountSpan.textContent = `${currentLength} / ${maxLength}`;
 
-            if (currentLength > maxLength) {
-                charCountSpan.classList.add('text-red-500');
-            } else {
-                charCountSpan.classList.remove('text-red-500');
-            }
+                if (currentLength > maxLength) {
+                    charCountSpan.classList.add('text-red-500');
+                } else {
+                    charCountSpan.classList.remove('text-red-500');
+                }
+            });
         });
-    });
 
-    function confirmDelete() {
-        var result = confirm('Are you sure delete your post?');
-        if (result) {
-            return true;
-        } else {
-            return false;
+        function confirmDelete() {
+            var result = confirm('정말로 삭제하시겠습니까?');
+            if (result) {
+                return true;
+            } else {
+                return false;
+            }
         }
-    }
+
+        // 댓글 수정 폼 토글 함수
+        function toggleCommentModifyForm(commentId) {
+            var commentTextArea = document.getElementById('commentTextArea-' + commentId);
+            var commentModifyForm = document.getElementById('commentModifyForm-' + commentId);
+
+            if (commentTextArea && commentModifyForm) {
+                // 댓글 표시 영역과 댓글 수정 폼의 표시 여부를 토글에 따라 번갈아가면서 변경
+                commentTextArea.classList.toggle('hidden');
+                commentModifyForm.classList.toggle('hidden');
+
+                var textareaInForm = commentModifyForm.querySelector('textarea');
+                var contentInTextArea = commentTextArea.querySelector('.break-words'); // 실제 HTML 구조에 따라 선택자를 조정해야 할 수 있습니다.
+
+                if (textareaInForm && contentInTextArea) {
+                    textareaInForm.value = contentInTextArea.innerText;
+                }
+            }
+        }
     </script>
 </th:block>
 </body>
