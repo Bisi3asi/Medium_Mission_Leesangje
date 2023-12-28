@@ -3,6 +3,7 @@ package com.example.medium.domain.member.service;
 import com.example.medium.domain.member.dto.MemberJoinRequestDto;
 import com.example.medium.domain.member.dto.MemberLoginRequestDto;
 import com.example.medium.domain.member.entity.Member;
+import com.example.medium.domain.member.entity.Role;
 import com.example.medium.domain.member.repository.MemberRepository;
 import com.example.medium.global.response.ResponseData;
 import com.example.medium.global.security.SecurityUser;
@@ -54,11 +55,29 @@ public class MemberService {
         Member member = Member.builder()
                 .username(memberRequestDto.getUsername())
                 .password(passwordEncoder.encode(memberRequestDto.getPassword()))
-                .authorities("admin".equals(memberRequestDto.getUsername()) ? "ROLE_ADMIN" : "ROLE_USER")
+                .isPaid(false)
                 .build();
-
         memberRepository.save(member);
+
+        member.addAuthority(Role.USER);
+
         return ResponseData.of("200", "회원가입이 완료되었습니다.", member);
+    }
+
+    @Transactional
+    public void setRefreshToken(Member member, String refreshToken) {
+        member.setRefreshToken(refreshToken);
+    }
+
+    @Transactional
+    public void setAuthority(Member member, Role role){
+        member.addAuthority(role);
+    }
+
+    @Transactional
+    public void setPrime(Member member) {
+        member.setPaid(true);
+        setAuthority(member, Role.PAID);
     }
 
     public ResponseData checkUsernameAndPassword(MemberLoginRequestDto memberLoginRequestDto, BindingResult brs) {
@@ -105,10 +124,5 @@ public class MemberService {
                         .toList();
 
         return new SecurityUser(id, username, "", authorities);
-    }
-
-    @Transactional
-    public void setRefreshToken(Member member, String refreshToken) {
-        member.setRefreshToken(refreshToken);
     }
 }

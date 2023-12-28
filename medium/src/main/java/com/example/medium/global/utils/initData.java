@@ -1,8 +1,10 @@
 package com.example.medium.global.utils;
 
-import com.example.medium.domain.comment.entity.Comment;
-import com.example.medium.domain.comment.repository.CommentRepository;
+import com.example.medium.domain.comment.dto.CommentRequestDto;
+import com.example.medium.domain.comment.service.CommentService;
 import com.example.medium.domain.member.dto.MemberJoinRequestDto;
+import com.example.medium.domain.member.entity.Member;
+import com.example.medium.domain.member.entity.Role;
 import com.example.medium.domain.member.service.MemberService;
 import com.example.medium.domain.post.dto.PostRequestDto;
 import com.example.medium.domain.post.entity.Post;
@@ -18,39 +20,44 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 
-@Profile("!prod")
+
 @Configuration
 @RequiredArgsConstructor
 public class initData {
     private final PostService postService;
-    private final CommentRepository commentRepository;
+    private final CommentService commentService;
     private final MemberService memberService;
 
     @Bean
-    public ApplicationRunner run() {
+    public ApplicationRunner initTestData() {
         return new ApplicationRunner() {
             BindingResult brs;
+
             @Override
             @Transactional
             @SneakyThrows
             public void run(ApplicationArguments args) {
                 memberService.create(new MemberJoinRequestDto(
-                        "mediumadmin",
-                        "12345678",
-                        "12345678")
-                        ,brs
+                                "mediumadmin",
+                                "12345678",
+                                "12345678")
+                        , brs
                 );
+                Member admin = memberService.findByUsername("mediumadmin");
+                memberService.setAuthority(admin, Role.ADMIN);
+                memberService.setPrime(admin);
+
                 memberService.create(new MemberJoinRequestDto(
-                        "testuser1",
-                        "12345678",
-                        "12345678")
-                        ,brs
+                                "testuser1",
+                                "12345678",
+                                "12345678")
+                        , brs
                 );
                 memberService.create(new MemberJoinRequestDto(
                                 "testuser2",
                                 "12345678",
                                 "12345678")
-                        ,brs
+                        , brs
                 );
 
                 for (int i = 1; i < 100; i++) {
@@ -76,12 +83,13 @@ public class initData {
                     }
                     for (int j = 0; j < 3; j++) {
                         Post post = postResp.getData();
-                        Comment comment = Comment.builder()
-                                .post(post)
-                                .author(post.getAuthor())
-                                .content(String.format("테스트 댓글 %d", i))
-                                .build();
-                        commentRepository.save(comment);
+                        commentService.create(post, new CommentRequestDto(
+                                        "testuser1",
+                                        true,
+                                        String.format("테스트 댓글 %d", j)
+                                ),
+                                memberService.findByUsername("testuser1")
+                        );
                     }
                 }
             }

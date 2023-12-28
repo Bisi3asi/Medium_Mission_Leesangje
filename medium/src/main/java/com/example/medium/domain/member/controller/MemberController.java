@@ -115,4 +115,9 @@ public class MemberController {
         attr.addFlashAttribute("msg", "로그아웃 되었습니다.");
         return "redirect:/";
     }
+
+    @GetMapping("/prime")
+    public String showPrime() {
+        return "domain/member/prime";
+    }
 }

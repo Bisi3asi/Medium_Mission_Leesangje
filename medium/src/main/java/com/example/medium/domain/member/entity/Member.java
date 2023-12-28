@@ -1,14 +1,15 @@
 package com.example.medium.domain.member.entity;
 
 import com.example.medium.global.entity.BaseEntity;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @SuperBuilder(toBuilder = true)
@@ -23,21 +24,27 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
-    // "ROLE_USER", "ROLE_ADMIN"
+    @Setter
     @Column(nullable = false)
-    private String authorities;
+    private boolean isPaid;
+
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private Set<Role> authorities = new HashSet<>();
 
     @Setter
     @Column(columnDefinition = "TEXT")
     private String refreshToken;
 
-    public List<? extends GrantedAuthority> getAuthorities(){
+    public List<? extends GrantedAuthority> getAuthorities() {
         return getAuthoritiesAsStrList().stream()
                 .map(SimpleGrantedAuthority::new)
                 .toList();
     }
 
-    public List<String> getAuthoritiesAsStrList(){
-        return List.of(authorities);
+    public List<String> getAuthoritiesAsStrList() {
+        return authorities.stream()
+                .map(Role::getValue)
+                .toList();
     }
 }
