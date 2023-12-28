@@ -60,7 +60,7 @@
                 </a>
                 <form sec:authorize="isAuthenticated()"
                       th:if="${currentUser != null and currentUser.paid == false}"
-                      th:action="@{/member/prime/join}" th:method="PUT">
+                      th:action="@{/prime/join}" th:method="PUT">
                     <button type="submit" class="btn btn-lg btn-outline btn-warning">월 2000원으로 시작하기</button>
                 </form>
                 <div sec:authorize="isAuthenticated()"
@@ -88,7 +88,7 @@
                         </div>
                     </div>
                     <form th:if="${currentUser != null and currentUser.paid != false}"
-                          th:action="@{/member/prime/cancel}" th:method="PUT">
+                          th:action="@{/prime/cancel}" th:method="PUT">
                         <button class="justify-center w-full btn btn-ghost">해지하기</button>
                     </form>
                 </div>
