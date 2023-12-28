@@ -16,7 +16,7 @@
 
 <div class="bg-white text-black">
     <!-- navbar -->
-    <form th:action="@{|/post/${id}/modify|}" th:object="${postRequestDto}" th:method="put">
+    <form th:action="@{|/post/${id}/modify|}" th:object="${postRequestDto}" th:method="put" enctype="multipart/form-data">
         <input type="hidden" name="_method" value="put"/>
         <div class="navbar">
             <div class="dropdown flex-none">
@@ -102,6 +102,33 @@
     // content
     contentTextarea.addEventListener('input', function () {
         updateCharCount(contentTextarea, contentCharCountSpan, 1000);
+    });
+
+    // 파일이 선택되었을 때 파일 이름을 표시
+    function displayFileName() {
+        var fileInput = document.getElementById('file');
+        var fileNameContainer = document.getElementById('fileNameContainer');
+
+        if (fileInput.value) {
+            fileNameContainer.innerHTML = 'File Selected: ' + fileInput.files[0].name;
+            fileNameContainer.style.color = 'green';
+        } else {
+            fileNameContainer.innerHTML = 'Add Preview Image';
+            fileNameContainer.style.color = 'black';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var messageDiv = document.querySelector('.toast.toast-top.toast-end');
+
+        if (messageDiv) {
+            setTimeout(function () {
+                messageDiv.classList.add('fade-out');
+                setTimeout(function () {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            }, 3000);
+        }
     });
 </script>
 </body>

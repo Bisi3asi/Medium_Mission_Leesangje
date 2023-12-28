@@ -26,11 +26,12 @@ import java.util.UUID;
 public class ImageFileService {
     private final ImageFileRepository imageFileRepository;
     // 프로젝트 루트 디렉토리 / 하위 폴더 images에 이미지 저장
-    private final String FILESTORE_PATH = System.getProperty("user.dir") +"/images/";
+    private final String FILESTORE_PATH = System.getProperty("user.dir") + "/images/";
 
     @Transactional
     public ResponseData<ImageFile> create(MultipartFile multipartFile, Post post) {
         String storeFilename = storeAndGetFilename(multipartFile);
+
         ImageFile imageFile = ImageFile.builder()
                 .filename(storeFilename)
                 .filesize(multipartFile.getSize())
@@ -38,19 +39,37 @@ public class ImageFileService {
                 .build();
         imageFileRepository.save(imageFile);
 
-        return ResponseData.of("200", "Image has been successfully uploaded", imageFile);
+        return ResponseData.of("200", "이미지가 성공적으로 업로드 되었습니다.", imageFile);
     }
 
-    public ImageFile get(Long id){
+    @Transactional
+    @SneakyThrows
+    public ResponseData<ImageFile> modify(MultipartFile multipartFile, Post post) {
+        ImageFile imageFile = post.getImageFile();
+        File file = new File(FILESTORE_PATH + imageFile.getFilename());
+        file.delete();
+
+        String storeFilename = storeAndGetFilename(multipartFile);
+
+        imageFile = imageFile.toBuilder()
+                .filename(storeFilename)
+                .filesize(multipartFile.getSize())
+                .build();
+        imageFileRepository.save(imageFile);
+
+        return ResponseData.of("200", "이미지가 성공적으로 수정되었습니다.");
+    }
+
+    public ImageFile get(Long id) {
         return imageFileRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Post not found")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "이미지를 찾을 수 없습니다.")
         );
     }
 
     @SneakyThrows
     public String storeAndGetFilename(MultipartFile multipartFile) {
         if (getFileType(multipartFile).contentEquals("")) {
-            throw new HttpMediaTypeNotSupportedException("Unsupported Image File type");
+            throw new HttpMediaTypeNotSupportedException("지원하지 않는 이미지 형식입니다.");
         }
 
         // ex) <randomUUID> + .jpg
@@ -61,8 +80,8 @@ public class ImageFileService {
 
         // 파일 경로가 없을 시 이미지 파일 생성
         if (!file.exists()) {
-            if (!file.mkdirs()){
-                throw new IOException("Failed to create directory");
+            if (!file.mkdirs()) {
+                throw new IOException("디렉토리 생성 실패");
             }
         }
 

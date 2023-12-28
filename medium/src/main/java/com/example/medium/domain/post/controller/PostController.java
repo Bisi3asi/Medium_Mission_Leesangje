@@ -89,8 +89,8 @@ public class PostController {
     public String write(@ModelAttribute("postRequestDto")
                         @Valid PostRequestDto postRequestDto,
                         BindingResult brs,
-                        RedirectAttributes attr,
                         @RequestPart("multipartFile") MultipartFile multipartFile,
+                        RedirectAttributes attr,
                         Principal principal) {
 
         if (brs.hasErrors()) {
@@ -100,7 +100,6 @@ public class PostController {
         ResponseData<Post> resp = postService.create(
                 postRequestDto, memberService.findByUsername(principal.getName())
         );
-
 
         // MultiPartFile은 자동적으로 데이터 바인딩이 안되므로 @RequestPart로 받아온 후 직접 처리
         if (!multipartFile.isEmpty()) {
@@ -134,6 +133,7 @@ public class PostController {
     public String modify(@PathVariable Long id,
                          @ModelAttribute("postRequestDto") @Valid PostRequestDto postRequestDto,
                          BindingResult brs,
+                         @RequestPart("multipartFile") MultipartFile multipartFile,
                          RedirectAttributes attr,
                          Principal principal) {
 
@@ -146,6 +146,10 @@ public class PostController {
                 id,
                 memberService.findByUsername(principal.getName())
         );
+
+        if (!multipartFile.isEmpty()) {
+            ResponseData<ImageFile> imageFileResponseData = imageFileService.modify(multipartFile, resp.getData());
+        }
 
         attr.addFlashAttribute("msg", resp.getMsg());
         return String.format("redirect:/post/%d", id);
