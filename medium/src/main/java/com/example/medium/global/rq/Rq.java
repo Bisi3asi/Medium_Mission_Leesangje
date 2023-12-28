@@ -15,6 +15,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
 
+import java.time.LocalDateTime;
+
 @Component
 @RequestScope
 @RequiredArgsConstructor
@@ -26,6 +28,18 @@ public class Rq {
     private final EntityManager entityManager;
     private Member member;
     private SecurityUser securityUser;
+
+    public boolean isLogin(){
+        return getSecurityUser() != null;
+    }
+    public Member getMember(){
+        if (!isLogin()) return null;
+
+        if (member == null){
+            member = entityManager.find(Member.class, getSecurityUser().getId());
+        }
+        return member;
+    }
 
     public void setAccessTokenToCookie(String accessToken) {
         Cookie cookie = new Cookie("accessToken", accessToken);
@@ -81,5 +95,11 @@ public class Rq {
         );
         // Security 상에서 getContext.setAuthentication으로 Principal 사용 가능(권한 부여)
         SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
+    public boolean isPrimeExpired(){
+        if (!isLogin()) return false;
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        return currentDateTime.isAfter(member.getPrimeExpirationDate());
     }
 }
