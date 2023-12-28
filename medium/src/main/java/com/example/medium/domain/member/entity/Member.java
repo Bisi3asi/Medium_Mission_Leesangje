@@ -1,12 +1,16 @@
 package com.example.medium.domain.member.entity;
 
 import com.example.medium.global.entity.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,6 +32,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private boolean isPaid;
 
+    @Setter
+    private LocalDateTime primeExpirationDate;
+
     @Enumerated(EnumType.STRING)
     @Builder.Default
     private Set<Role> authorities = new HashSet<>();
@@ -36,13 +43,13 @@ public class Member extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String refreshToken;
 
-    public List<? extends GrantedAuthority> getAuthorities() {
-        return getAuthoritiesAsStrList().stream()
+    public List<? extends GrantedAuthority> getGrantedAuthorities() {
+        return getGrantedAuthoritiesAsStrList().stream()
                 .map(SimpleGrantedAuthority::new)
                 .toList();
     }
 
-    public List<String> getAuthoritiesAsStrList() {
+    public List<String> getGrantedAuthoritiesAsStrList() {
         return authorities.stream()
                 .map(Role::getValue)
                 .toList();
