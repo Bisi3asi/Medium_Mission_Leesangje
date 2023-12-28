@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{global/layout}">
+
+<head>
+    <title>Medium</title>
+</head>
+<body>
+<div layout:fragment="content" class="flex items-center justify-center h-screen">
+    <div class="hero min-h-screen"
+         style="background-image: url(https://cdn.pixabay.com/photo/2012/03/01/01/34/match-20237_1280.jpg);">
+        <div class="hero-overlay bg-opacity-60"></div>
+        <div class="hero-content text-center text-neutral-content">
+            <div class="max-w-md text-white">
+                <div class="flex mb-10 text-5xl text-yellow-400 font-bold">
+                    <i class="fa-solid fa-fire mr-3" style="color: red;"></i>
+                    MEDIUM PRIME
+                </div>
+                <div class="text-left">
+                    <div tabindex="0" class="collapse collapse-plus bg-gray-500 bg-opacity-20">
+                        <div class="collapse-title text-xl font-medium">
+                            1. 메인페이지 포스팅 최상단 노출
+                        </div>
+                        <div class="collapse-content">
+                            <p>메인페이지 PRIME 카테고리 상단에 노출, 노출 빈도 수 증가</p>
+                        </div>
+                    </div>
+                    <div tabindex="0" class="collapse collapse-plus bg-gray-500 bg-opacity-20">
+                        <div class="collapse-title text-xl font-medium">
+                            2. PRIME 게시글 열람, 작성 가능
+                        </div>
+                        <div class="collapse-content">
+                            <p>PRIME 회원 전용 게시글 열람 잠금이 해제됩니다. </p>
+                            <p>PRIME 회원 전용 게시글 작성 잠금이 해제됩니다. </p>
+                        </div>
+                    </div>
+                    <div tabindex="0" class="collapse collapse-plus bg-gray-500 bg-opacity-20">
+                        <div class="collapse-title text-xl font-medium">
+                            3. 포스팅 멤버십 수익 정산
+                        </div>
+                        <div class="collapse-content">
+                            <p>월 1회 작성 PRIME 게시글 수익을 환전해드립니다.</p>
+                            <p>* 수익 정산 비율 : 미디엄 (50%) / PRIME 회원(50%)</p>
+                            <p>* 수익 정산 기준 : 사용자의 모든 PRIME 게시글 조회수 기준</p>
+                            <p>* 수익 정산 기준일시 : 월 15일 0시 0분</p>
+                        </div>
+                    </div>
+                    <div tabindex="0" class="mb-10 collapse collapse-plus bg-gray-500 bg-opacity-20">
+                        <div class="collapse-title text-xl font-medium">
+                            4. 운영자의 총애 획득
+                        </div>
+                        <div class="collapse-content">
+                            <p>많은 관심 부탁드립니다.</p>
+                        </div>
+                    </div>
+                </div>
+                <a sec:authorize="isAnonymous()"
+                   href="/member/login"
+                   class="btn btn-lg btn-outline btn-success">
+                    로그인하고 이용하기
+                </a>
+                <form sec:authorize="isAuthenticated()"
+                      th:if="${currentUser != null and currentUser.paid == false}"
+                      th:action="@{/member/prime/join}" th:method="PUT">
+                    <button type="submit" class="btn btn-lg btn-outline btn-warning">월 2000원으로 시작하기</button>
+                </form>
+                <div sec:authorize="isAuthenticated()"
+                     th:if="${currentUser != null and currentUser.paid == true}">
+                    <div class="mb-3">현재 MEDIUM PRIME을 이용중이세요.</div>
+                    <div class="mb-1 flex items-start pl-1 label-text-alt">잔여 시간</div>
+                    <div class="flex justify-center py-2 mb-5 gap-5 border">
+                        <div>
+                            <span class="countdown font-mono text-3xl">
+                              <span id="days" style="--value:0;"></span>
+                            </span>
+                            일
+                        </div>
+                        <div>
+                            <span class="countdown font-mono text-3xl">
+                              <span id="hours" style="--value:0;"></span>
+                            </span>
+                            시간
+                        </div>
+                        <div>
+                            <span class="countdown font-mono text-3xl">
+                              <span id="minutes" style="--value:0;"></span>
+                            </span>
+                            분
+                        </div>
+                    </div>
+                    <form th:if="${currentUser != null and currentUser.paid != false}"
+                          th:action="@{/member/prime/cancel}" th:method="PUT">
+                        <button class="justify-center w-full btn btn-ghost">해지하기</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block layout:fragment="script">
+    <script>
+        var currentDate = new Date();
+        var expirationDate = new Date("[[${currentUser.primeExpirationDate}]]");
+
+        var timeDiff = expirationDate - currentDate;
+
+        var days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+        /* span 엘리먼트에 동적으로 값을 설정 */
+        var daysElement = document.getElementById("days");
+        daysElement.style.setProperty("--value", days);
+        var daysElement = document.getElementById("hours");
+        daysElement.style.setProperty("--value", hours);
+        var daysElement = document.getElementById("minutes");
+        daysElement.style.setProperty("--value", minutes);
+    </script>
+</th:block>
+</body>
+</html>
