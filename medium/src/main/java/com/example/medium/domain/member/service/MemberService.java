@@ -20,6 +20,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -59,7 +60,7 @@ public class MemberService {
                 .build();
         memberRepository.save(member);
 
-        member.addAuthority(Role.USER);
+        setAuthority(member, Role.USER);
 
         return ResponseData.of("200", "회원가입이 완료되었습니다.", member);
     }
@@ -71,13 +72,26 @@ public class MemberService {
 
     @Transactional
     public void setAuthority(Member member, Role role){
-        member.addAuthority(role);
+        member.getAuthorities().add(role);
+    }
+
+    @Transactional
+    public void deleteAuthority(Member member, Role role){
+        member.getAuthorities().remove(role);
     }
 
     @Transactional
     public void setPrime(Member member) {
         member.setPaid(true);
+        member.setPrimeExpirationDate(LocalDateTime.now().plusDays(30));
         setAuthority(member, Role.PAID);
+    }
+
+    @Transactional
+    public void deletePrime(Member member){
+        member.setPaid(false);
+        member.setPrimeExpirationDate(null);
+        deleteAuthority(member, Role.PAID);
     }
 
     public ResponseData checkUsernameAndPassword(MemberLoginRequestDto memberLoginRequestDto, BindingResult brs) {
@@ -105,7 +119,7 @@ public class MemberService {
                 Map.of(
                         "id", member.getId().toString(),
                         "username", member.getUsername(),
-                        "authorities", member.getAuthoritiesAsStrList()
+                        "authorities", member.getGrantedAuthoritiesAsStrList()
                 ), minute);
     }
 
