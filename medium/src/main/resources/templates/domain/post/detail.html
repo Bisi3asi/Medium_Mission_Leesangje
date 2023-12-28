@@ -12,7 +12,57 @@
         </div>
     </div>
     <!-- title container -->
-    <div class="w-full bg-white">
+    <div th:if="${post.imageFile != null}"
+         th:style="'background-image: url(/images/' + ${post.imageFile.filename} + ');'"
+         class="w-full bg-cover bg-center">
+        <div class="py-24 px-20 pb-2 text-black font-bold">
+            <div class="flex items-center">
+                <div class="mr-2" th:unless="${post.published}">
+                    <i class="fa-solid fa-lock fas fa-5xl" style="color: black;"></i>
+                </div>
+                <div class="mb-6 text-5xl" th:text="${post.title}"></div>
+            </div>
+            <div class="text-xl"></div>
+            <div class="mb-6 text-gray-400">
+                <div class="pt-1 mr-1 flex items-center">
+                    <a th:href="@{|/b/${post.author.username}|}">
+                        <div class="mr-2 btn btn-ghost">
+                            <i class="fa-solid fa-user fas fa-2xl" style="color: black;"></i>
+                        </div>
+                    </a>
+                    <div>
+                        <div class="text-xl" th:text="${post.author.username}"></div>
+                        <div class="flex text-base">
+                            <div class="mr-1" th:text="${post.viewCount + ' min read'}"></div>
+                            <div class="mr-1">·</div>
+                            <div th:text="${#temporals.format(post.createDate, 'yyyy.MM.dd')}"></div>
+                        </div>
+                    </div>
+                    </a>
+                    <div th:if="${currentUser != null and currentUser.username == post.author.username}"
+                         class="dropdown dropdown-right">
+                        <div tabindex="0" role="button" class="btn btn-ghost m-1">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </div>
+                        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-40">
+                            <li><a th:href="@{'/post/' + ${post.id} + '/modify'}">글 수정</a></li>
+                            <li>
+                                <form th:action="@{'/post/' + ${post.id} + '/delete'}" th:method="delete">
+                                    <input type="hidden" name="_method" value="DELETE"/>
+                                    <button type="submit" onclick="return confirmDelete();">
+                                        글 삭제
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div th:unless="${post.imageFile != null}"
+         class="w-full bg-white">
         <div class="py-24 px-20 pb-2 text-black font-bold">
             <div class="flex items-center">
                 <div class="mr-2" th:unless="${post.published}">
@@ -61,6 +111,11 @@
 
     <!-- content -->
     <div class="flex items-center w-full h-14 px-20 border-b-2 border-gray-400">
+        <!--        <div class=mx-auto th:unless="${post.imageFile == null}">-->
+        <!--            <img class="mb-10 w-full h-auto self-center mx-auto"-->
+        <!--                 th:src="@{|/images/${post.imageFile.filename}|}"-->
+        <!--                 alt="Post Image">-->
+        <!--        </div>-->
         <div class="mr-2">
             <i class="fa-solid fa-hands-clapping" style="color: white;"></i>
         </div>
@@ -72,11 +127,6 @@
     </div>
 
     <div class="px-20 mt-10 pb-32 text-2xl">
-        <div class=mx-auto th:unless="${post.imageFile == null}">
-            <img class="mb-10 w-3/4 h-1/2 self-center mx-auto"
-                 th:src="@{|/images/${post.imageFile.filename}|}"
-                 alt="Post Image">
-        </div>
         <div th:unless="${post.imageFile == null}"
              th:text="${post.content}">
             class="w-3/4 h-1/2 self-center mx-auto break-words"
