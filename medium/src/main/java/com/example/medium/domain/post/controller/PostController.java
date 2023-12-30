@@ -101,7 +101,7 @@ public class PostController {
                 postRequestDto, memberService.findByUsername(principal.getName())
         );
 
-        // MultiPartFile은 자동적으로 데이터 바인딩이 안되므로 @RequestPart로 받아온 후 직접 처리
+        // MultiPartFile 은 자동적으로 데이터 바인딩이 안되므로 @RequestPart로 받아온 후 직접 처리
         if (!multipartFile.isEmpty()) {
             ResponseData<ImageFile> imageFileResponseData = imageFileService.create(multipartFile, resp.getData());
         }
@@ -120,9 +120,16 @@ public class PostController {
         Post post = postService.get(id);
         postService.validateAuthor(post, memberService.findByUsername(principal.getName()));
 
-        postRequestDto.setTitle(post.getTitle());
-        postRequestDto.setContent(post.getContent());
-        postRequestDto.setPublished(post.isPublished());
+        postRequestDto.toBuilder()
+                .title(post.getTitle())
+                .content(post.getContent())
+                .isPublished(post.isPublished())
+                .isPrime(post.isPrime())
+                .build();
+//        postRequestDto.setTitle(post.getTitle());
+//        postRequestDto.setContent(post.getContent());
+//        postRequestDto.setPublished(post.isPublished());
+//        postRequestDto.setPrime(post.isPrime());
 
         return "domain/post/modify_form";
     }

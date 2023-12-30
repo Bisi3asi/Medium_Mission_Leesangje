@@ -56,6 +56,7 @@ public class PostService {
                 .title(req.getTitle())
                 .content(req.getContent())
                 .isPublished(req.isPublished())
+                .isPrime(req.isPrime())
                 .build();
 
         postRepository.save(post);
@@ -72,6 +73,7 @@ public class PostService {
                 .title(req.getTitle())
                 .content(req.getContent())
                 .isPublished(req.isPublished())
+                .isPrime(req.isPrime())
                 .build();
 
         postRepository.save(post);

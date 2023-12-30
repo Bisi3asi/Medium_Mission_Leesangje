@@ -28,6 +28,9 @@ public class Post extends BaseEntity {
     @Column(nullable = false)
     private boolean isPublished;
 
+    @Column(nullable = false)
+    private boolean isPrime;
+
     @Column(columnDefinition = "int default 0", nullable = false)
     @Builder.Default
     private int viewCount = 0;

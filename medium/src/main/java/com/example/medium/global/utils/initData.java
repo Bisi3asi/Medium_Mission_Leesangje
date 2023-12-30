@@ -28,6 +28,7 @@ public class initData {
     private final CommentService commentService;
     private final MemberService memberService;
 
+    @Profile("!dev")
     @Bean
     public ApplicationRunner initTestData() {
         return new ApplicationRunner() {
@@ -64,6 +65,7 @@ public class initData {
                     ResponseData<Post> postResp;
                     if (i % 2 == 0) {
                         postResp = postService.create(new PostRequestDto(
+                                        true,
                                         false,
                                         String.format("테스트 글 %d", i),
                                         String.format("테스트 내용 %d", i),
@@ -74,8 +76,9 @@ public class initData {
                     } else {
                         postResp = postService.create(new PostRequestDto(
                                         true,
-                                        String.format("테스트 글 %d", i),
-                                        String.format("테스트 내용 %d", i),
+                                        true,
+                                        String.format("유료 글 %d", i),
+                                        String.format("유료 내용 %d", i),
                                         null
                                 ),
                                 memberService.findByUsername("testuser2")
