@@ -87,7 +87,7 @@
                             분
                         </div>
                     </div>
-                    <form th:if="${currentUser != null and currentUser.paid != false}"
+                    <form th:if="${currentUser != null and currentUser.prime != false}"
                           th:action="@{/prime/cancel}" th:method="PUT">
                         <button class="justify-center w-full btn btn-ghost">해지하기</button>
                     </form>
