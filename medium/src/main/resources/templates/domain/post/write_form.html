@@ -117,7 +117,7 @@
 <script>
     const titleTextarea = document.getElementById('titleTextInput');
     const titleCharCountSpan = document.getElementById('titleInputCount');
-    const contentTextarea = document.getElementById('editor');
+    const contentTextarea = document.getElementById('contentTextInput');
     const contentCharCountSpan = document.getElementById('contentInputCount');
 
     function updateCharCount(textarea, charCountSpan, maxLength) {
@@ -180,14 +180,26 @@
     editor.on('change', function () {
         const contentValue = editor.getMarkdown();
         document.querySelector('#contentTextInput').value = contentValue;
+        // 글자수 세기 업데이트
+        updateCharCount(contentTextarea, contentCharCountSpan, 1000);
     });
 
     // hidden textarea의 값을 확인 후 postform 제출
     document.getElementById('postForm').addEventListener('submit', function () {
+        // 마크다운 기준 아무것도 입력 안했을 시 error를 발생시킴
         const contentValue = editor.getMarkdown();
-        document.querySelector('#contentTextInput').value = contentValue;
+        // 공백 제거
+        const trimmedContent = contentValue.replace(/\s/g, ''); // 모든 공백을 제거
+
+        if (trimmedContent.length < 1) {
+            document.querySelector('#contentTextInput').value = null;
+            throw new Error('글 내용이 없습니다.');
+        }
+        else {
+            document.querySelector('#contentTextInput').value = editor.getHTML();
+        }
     });
 </script>
-<!--ToastUI JS CDN-->
+<!--ToastUI JS CDN 끝-->
 </body>
 </html>
