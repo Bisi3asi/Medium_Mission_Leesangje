@@ -152,9 +152,7 @@
     <!-- ! prime -->
     <div th:unless="${post.prime == true and (currentUser == null or currentUser.prime == false)}">
         <div class="px-20 mt-10 pb-32 text-2xl">
-            <div th:text="${post.content}"
-                 class="break-words">
-            </div>
+            <div id="postContent" th:text="${post.content}" class="break-words"></div>
         </div>
         <!-- comment -->
         <div class="px-20 border-b-2 border-gray-400 bg-gray-700">
@@ -310,6 +308,7 @@
             });
         });
 
+        // 삭제 확인 함수
         function confirmDelete() {
             var result = confirm('정말로 삭제하시겠습니까?');
             if (result) {
@@ -318,6 +317,15 @@
                 return false;
             }
         }
+
+
+        // 본문 뷰 값으로 마크다운 문법 적용된 내용으로 변환 -> innerHTML
+        // todo : 테일윈드에서 지우는 #, h1, h2, ul, li 엘리먼트 등의 호환 해결
+        document.addEventListener("DOMContentLoaded", function () {
+            const postContentElement = document.getElementById('postContent');
+            postContentElement.innerHTML = marked.parse(postContentElement.textContent);
+        });
+
 
         // 댓글 수정 폼 토글 함수
         function toggleCommentModifyForm(commentId) {
