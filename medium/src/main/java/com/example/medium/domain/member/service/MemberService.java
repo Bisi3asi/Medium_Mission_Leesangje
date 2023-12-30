@@ -56,7 +56,7 @@ public class MemberService {
         Member member = Member.builder()
                 .username(memberRequestDto.getUsername())
                 .password(passwordEncoder.encode(memberRequestDto.getPassword()))
-                .isPaid(false)
+                .isPrime(false)
                 .build();
         memberRepository.save(member);
 
@@ -82,26 +82,26 @@ public class MemberService {
 
     @Transactional
     public ResponseData<Member> setPrime(Member member) {
-        if (member.isPaid()) {
+        if (member.isPrime()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 MEDIUM PRIME에 가입되어 있는 회원입니다.");
         }
 
-        member.setPaid(true);
+        member.setPrime(true);
         member.setPrimeExpirationDate(LocalDateTime.now().plusDays(30));
-        setAuthority(member, Role.PAID);
+        setAuthority(member, Role.PRIME);
 
         return ResponseData.of("200", "MEDIUM PRIME 가입에 성공하였습니다.", member);
     }
 
     @Transactional
     public ResponseData<Member> deletePrime(Member member){
-        if (!member.isPaid()) {
+        if (!member.isPrime()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MEDIUM PRIME에 가입되어 있지 않은 회원입니다.");
         }
 
-        member.setPaid(false);
+        member.setPrime(false);
         member.setPrimeExpirationDate(null);
-        deleteAuthority(member, Role.PAID);
+        deleteAuthority(member, Role.PRIME);
         return ResponseData.of("200", "MEDIUM PRIME 해지에 성공하였습니다.", member);
     }
 

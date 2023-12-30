@@ -9,7 +9,7 @@ public enum Role {
 
     USER("ROLE_USER"),
     ADMIN("ROLE_ADMIN"),
-    PAID("ROLE_PAID");
+    PRIME("ROLE_PRIME");
 
     private final String value;
 }

@@ -59,12 +59,12 @@
                     로그인하고 이용하기
                 </a>
                 <form sec:authorize="isAuthenticated()"
-                      th:if="${currentUser != null and currentUser.paid == false}"
+                      th:if="${currentUser != null and currentUser.prime == false}"
                       th:action="@{/prime/join}" th:method="PUT">
                     <button type="submit" class="btn btn-lg btn-outline btn-warning">월 2000원으로 시작하기</button>
                 </form>
                 <div sec:authorize="isAuthenticated()"
-                     th:if="${currentUser != null and currentUser.paid == true}">
+                     th:if="${currentUser != null and currentUser.prime == true}">
                     <div class="mb-3">현재 MEDIUM PRIME을 이용중이세요.</div>
                     <div class="mb-1 flex items-start pl-1 label-text-alt">잔여 시간</div>
                     <div class="flex justify-center py-2 mb-5 gap-5 border">

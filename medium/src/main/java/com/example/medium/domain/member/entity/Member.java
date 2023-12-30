@@ -30,7 +30,7 @@ public class Member extends BaseEntity {
 
     @Setter
     @Column(nullable = false)
-    private boolean isPaid;
+    private boolean isPrime;
 
     @Setter
     private LocalDateTime primeExpirationDate;
