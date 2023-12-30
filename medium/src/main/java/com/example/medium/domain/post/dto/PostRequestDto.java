@@ -9,7 +9,6 @@ import org.springframework.web.multipart.MultipartFile;
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder(toBuilder = true)
 public class PostRequestDto {
     @NotNull
     private boolean isPublished = true;

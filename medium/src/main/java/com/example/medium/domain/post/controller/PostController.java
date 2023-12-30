@@ -120,16 +120,10 @@ public class PostController {
         Post post = postService.get(id);
         postService.validateAuthor(post, memberService.findByUsername(principal.getName()));
 
-        postRequestDto.toBuilder()
-                .title(post.getTitle())
-                .content(post.getContent())
-                .isPublished(post.isPublished())
-                .isPrime(post.isPrime())
-                .build();
-//        postRequestDto.setTitle(post.getTitle());
-//        postRequestDto.setContent(post.getContent());
-//        postRequestDto.setPublished(post.isPublished());
-//        postRequestDto.setPrime(post.isPrime());
+        postRequestDto.setTitle(post.getTitle());
+        postRequestDto.setContent(post.getContent());
+        postRequestDto.setPublished(post.isPublished());
+        postRequestDto.setPrime(post.isPrime());
 
         return "domain/post/modify_form";
     }
