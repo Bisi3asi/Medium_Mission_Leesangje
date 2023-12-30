@@ -51,15 +51,33 @@
         <!-- form -->
         <div class="px-20 bg-white">
             <div class="form-control mx-auto mb-2">
+                <div th:if="${currentUser.prime == true}"
+                     class="flex items-center">
+                    <label class="label-cursor-pointer">
+                        <span class="label-text flex items-center pl-1">
+                            <input type="checkbox"
+                                   class="checkbox checkbox-error checkbox-sm mr-2"
+                                   th:field="*{prime}"/>
+                                PRIME 게시글로 등록하기
+                        </span>
+                    </label>
+                    <span class="tooltip tooltip-right bg-white text-gray-400"
+                          data-html="true"
+                          data-tip="PRIME 게시글은 MEDIUM PRIME 전용 기능으로,
+                          PRIME 게시글 등록 시 게시글 조회수 기준 수익 정산,
+                          PRIME 회원 한정 게시글 열람 기능을 제공합니다.">
+                        <span class="btn btn-ghost btn-xs">
+                            <i class="fa-solid fa-fire" style="color:red"></i>
+                        </span>
+                    </span>
+                </div>
                 <label class="label cursor-pointer">
-
                     <span class="label-text flex items-center">
                         <input type="checkbox"
                                class="checkbox checkbox-success checkbox-sm mr-2"
                                checked="checked"
-                               th:field="*{published}"
-                        />
-                        게시글을 공개하겠습니다
+                               th:field="*{published}"/>
+                        게시글을 공개하기
                     </span>
                     <span class="label-text-alt" id="titleInputCount">0 / 50</span>
                 </label>
