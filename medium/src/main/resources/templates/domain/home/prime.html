@@ -96,7 +96,7 @@
         </div>
     </div>
 </div>
-<th:block layout:fragment="script">
+<th:block layout:fragment="script" th:if="${currentUser != null}">
     <script>
         var currentDate = new Date();
         var expirationDate = new Date("[[${currentUser.primeExpirationDate}]]");
