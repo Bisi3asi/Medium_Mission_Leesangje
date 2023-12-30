@@ -109,7 +109,8 @@
         </div>
     </div>
 
-    <!-- content -->
+    <!-- content container -->
+    <!-- post 추천, 댓글 수  -->
     <div class="flex items-center w-full h-14 px-20 border-b-2 border-gray-400">
         <!--        <div class=mx-auto th:unless="${post.imageFile == null}">-->
         <!--            <img class="mb-10 w-full h-auto self-center mx-auto"-->
@@ -126,146 +127,159 @@
         <div th:text="${post.commentList.size}"></div>
     </div>
 
-    <div class="px-20 mt-10 pb-32 text-2xl">
-        <div th:unless="${post.imageFile == null}"
-             th:text="${post.content}">
-            class="w-3/4 h-1/2 self-center mx-auto break-words"
-        </div>
-        <div th:if="${post.imageFile == null}"
-             th:text="${post.content}"
-             class="break-words">
-
+    <!-- prime 글 전용  -->
+    <div th:if="${post.prime == true and (currentUser == null or currentUser.prime == false)}">
+        <div class="hero h-128 flex items-center justify-center">
+            <div class="hero-content text-center">
+                <div class="py-20 max-w-md">
+                    <h1 class="text-5xl font-bold text-yellow-500">MEDIUM PRIME</h1>
+                    <p class="py-6 text-3xl">MEDIUM PRIME 전용 게시글입니다.</p>
+                    <p class="py-6 text-xl">프리미엄 게시글 & 게시글 수익 정산 혜택을<br>MEDIUM PRIME과 함께 시작해보세요!</p>
+                    <a class="btn btn-outline btn-warning btn-lg" href="/prime">
+                        <i class="fa-solid fa-fire" style="color: red;"></i>
+                        지금 시작하기
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- comment -->
-    <div class="px-20 border-b-2 border-gray-400 bg-gray-700">
-        <ul th:each="comment : ${post.commentList}">
-            <li class="py-2 text-xl">
-                <div class="text-gray-400">
-                    <div class="pt-1 mr-1 mb-6 flex items-center">
-                        <a th:href="@{|/b/${comment.author.username}|}">
-                            <div class="mr-2 btn btn-ghost">
-                                <i class="fa-solid fa-user fas fa-2xl" style="color: white;"></i>
+    <!-- ! prime -->
+    <div th:unless="${post.prime == true and (currentUser == null or currentUser.prime == false)}">
+        <div class="px-20 mt-10 pb-32 text-2xl">
+            <div th:text="${post.content}"
+                 class="break-words">
+            </div>
+        </div>
+        <!-- comment -->
+        <div class="px-20 border-b-2 border-gray-400 bg-gray-700">
+            <ul th:each="comment : ${post.commentList}">
+                <li class="py-2 text-xl">
+                    <div class="text-gray-400">
+                        <div class="pt-1 mr-1 mb-6 flex items-center">
+                            <a th:href="@{|/b/${comment.author.username}|}">
+                                <div class="mr-2 btn btn-ghost">
+                                    <i class="fa-solid fa-user fas fa-2xl" style="color: white;"></i>
+                                </div>
+                            </a>
+                            <div>
+                                <div class="text-xl" th:text="${comment.author.username}"></div>
+                                <div class="flex text-base">
+                                    <div th:text="${#temporals.format(comment.createDate, 'yyyy.MM.dd')}"></div>
+                                </div>
                             </div>
-                        </a>
-                        <div>
-                            <div class="text-xl" th:text="${comment.author.username}"></div>
-                            <div class="flex text-base">
-                                <div th:text="${#temporals.format(comment.createDate, 'yyyy.MM.dd')}"></div>
+                            <div th:if="${currentUser != null and comment.author.username == currentUser.username}"
+                                 class="dropdown dropdown-right">
+                                <div th:attr="tabindex=0, role='button'" class="btn btn-ghost m-1">
+                                    <i class="fa-solid fa-ellipsis"></i></div>
+                                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-44">
+                                    <li>
+                                        <button th:onclick="toggleCommentModifyForm([[${comment.id}]])">댓글 수정</button>
+                                    </li>
+                                    <li>
+                                        <form th:action="@{'/comment/delete/' + ${comment.id}}" th:method="delete">
+                                            <button type="submit" onclick="return confirmDelete();">댓글 삭제</button>
+                                        </form>
+                                    </li>
+                                </ul>
                             </div>
                         </div>
-                        <div th:if="${currentUser != null and comment.author.username == currentUser.username}"
-                             class="dropdown dropdown-right">
-                            <div th:attr="tabindex=0, role='button'" class="btn btn-ghost m-1">
-                                <i class="fa-solid fa-ellipsis"></i></div>
-                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-44">
-                                <li>
-                                    <button th:onclick="toggleCommentModifyForm([[${comment.id}]])">댓글 수정</button>
-                                </li>
-                                <li>
-                                    <form th:action="@{'/comment/delete/' + ${comment.id}}" th:method="delete">
-                                        <button type="submit" onclick="return confirmDelete();">댓글 삭제</button>
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div th:id="'commentTextArea-'+${comment.id}">
-                        <!-- 비공개 댓글 (작성자, 본인인 경우)-->
-                        <div th:if="${currentUser != null
+                        <div th:id="'commentTextArea-'+${comment.id}">
+                            <!-- 비공개 댓글 (작성자, 본인인 경우)-->
+                            <div th:if="${currentUser != null
                         and comment.published == false
                         and (comment.author.username == currentUser.username
                         or post.author.username == currentUser.username)}"
-                             class="flex">
-                            <i class="fa-solid fa-lock" style="color:grey"></i>
-                            <div th:text="${comment.content}" class="pl-4 mb-4 text-gray-400 break-words"></div>
-                        </div>
-                        <!-- 비공개 댓글 (작성자, 본인 외)-->
-                        <div th:if="${(comment.published == false and currentUser == null)
+                                 class="flex">
+                                <i class="fa-solid fa-lock" style="color:grey"></i>
+                                <div th:text="${comment.content}" class="pl-4 mb-4 text-gray-400 break-words"></div>
+                            </div>
+                            <!-- 비공개 댓글 (작성자, 본인 외)-->
+                            <div th:if="${(comment.published == false and currentUser == null)
                         or (comment.published == false and currentUser != null
                             and comment.author.username != currentUser.username
                             and post.author.username != currentUser.username)}"
-                             class="flex">
-                            <i class="fa-solid fa-lock" style="color:grey"></i>
-                            <div class="pl-4 mb-4 text-gray-400">비공개 댓글입니다.</div>
+                                 class="flex">
+                                <i class="fa-solid fa-lock" style="color:grey"></i>
+                                <div class="pl-4 mb-4 text-gray-400">비공개 댓글입니다.</div>
+                            </div>
+                            <!-- 공개 댓글 -->
+                            <div th:if="${comment.published == true}"
+                                 th:text="${comment.content}"
+                                 class="pl-4 mb-4 text-white break-words"></div>
                         </div>
-                        <!-- 공개 댓글 -->
-                        <div th:if="${comment.published == true}"
-                             th:text="${comment.content}"
-                             class="pl-4 mb-4 text-white break-words"></div>
-                    </div>
-                    <!-- 토글 시 활성화 댓글 수정 영역 -->
-                    <form th:action="@{|/comment/modify/${comment.id}|}"
-                          th:object="${commentRequestDto}"
-                          th:method="PUT"
-                          th:id="'commentModifyForm-'+${comment.id}"
-                          class="flex-col hidden">
-                        <div class="label">
-                            <span class="label-text">&nbsp;</span>
-                            <span class="label-text-alt" id="charCount2">0 / 300</span>
-                        </div>
-                        <div class="form-control">
+                        <!-- 토글 시 활성화 댓글 수정 영역 -->
+                        <form th:action="@{|/comment/modify/${comment.id}|}"
+                              th:object="${commentRequestDto}"
+                              th:method="PUT"
+                              th:id="'commentModifyForm-'+${comment.id}"
+                              class="flex-col hidden">
+                            <div class="label">
+                                <span class="label-text">&nbsp;</span>
+                                <span class="label-text-alt" id="charCount2">0 / 300</span>
+                            </div>
+                            <div class="form-control">
                             <textarea th:field="*{content}"
                                       id="textInput2"
                                       class="mb-2 textarea textarea-lg textarea-primary"
                                       maxlength="300" rows="6"></textarea>
-                            <div class="flex justify-end">
-                                <div class="btn btn-sm btn-ghost mr-1"
-                                     th:onclick="toggleCommentModifyForm([[${comment.id}]])">
-                                    수정 취소
+                                <div class="flex justify-end">
+                                    <div class="btn btn-sm btn-ghost mr-1"
+                                         th:onclick="toggleCommentModifyForm([[${comment.id}]])">
+                                        수정 취소
+                                    </div>
+                                    <input class="btn btn-sm btn-primary" value="수정 완료" type="submit">
                                 </div>
-                                <input class="btn btn-sm btn-primary" value="수정 완료" type="submit">
                             </div>
-                        </div>
 
-                    </form>
-                    <!-- 댓글 추천, 대댓글 todo  -->
-                    <div class="flex items-center w-full h-10 text-lg">
-                        <div class="mr-2">
-                            <i class="fa-solid fa-hands-clapping" style="color: white;"></i>
+                        </form>
+                        <!-- 댓글 추천, 대댓글 todo  -->
+                        <div class="flex items-center w-full h-10 text-lg">
+                            <div class="mr-2">
+                                <i class="fa-solid fa-hands-clapping" style="color: white;"></i>
+                            </div>
+                            <div class="mr-7">2K</div>
+                            <div class="mr-2">
+                                <i class="fa-solid fa-comment" style="color: white;"></i>
+                            </div>
+                            <div th:text="${post.commentList.size}"></div>
                         </div>
-                        <div class="mr-7">2K</div>
-                        <div class="mr-2">
-                            <i class="fa-solid fa-comment" style="color: white;"></i>
+                    </div>
+                </li>
+            </ul>
+            <!-- comment form -->
+            <form th:action="@{|/comment/write/${post.id}|}" th:object="${commentRequestDto}" method="post">
+                <div sec:authorize="isAuthenticated()" class="form-control">
+                    <div class="label">
+                        <span class="label-text">&nbsp;</span>
+                        <span class="label-text-alt" id="charCount1">0 / 300</span>
+                    </div>
+                    <textarea th:field="*{content}"
+                              class="mb-2 textarea textarea-lg textarea-primary"
+                              id="textInput1"
+                              maxlength="300" rows="6"
+                              placeholder="댓글을 남겨주세요!"></textarea>
+                    <div class="flex justify-between pb-10">
+                        <div class="flex justify-items-center">
+                            <input th:field="*{published}"
+                                   type="checkbox"
+                                   checked="checked"
+                                   class="checkbox mr-2"/>
+                            <span>공개 댓글로 등록</span>
                         </div>
-                        <div th:text="${post.commentList.size}"></div>
+                        <input class="btn btn-primary" value="등록하기" type="submit">
                     </div>
                 </div>
-            </li>
-        </ul>
-        <!-- comment form -->
-        <form th:action="@{|/comment/write/${post.id}|}" th:object="${commentRequestDto}" method="post">
-            <div sec:authorize="isAuthenticated()" class="form-control">
-                <div class="label">
-                    <span class="label-text">&nbsp;</span>
-                    <span class="label-text-alt" id="charCount1">0 / 300</span>
-                </div>
-                <textarea th:field="*{content}"
-                          class="mb-2 textarea textarea-lg textarea-primary"
-                          id="textInput1"
-                          maxlength="300" rows="6"
-                          placeholder="댓글을 남겨주세요!"></textarea>
-                <div class="flex justify-between pb-10">
-                    <div class="flex justify-items-center">
-                        <input th:field="*{published}"
-                               type="checkbox"
-                               checked="checked"
-                               class="checkbox mr-2"/>
-                        <span>공개 댓글로 등록</span>
-                    </div>
-                    <input class="btn btn-primary" value="등록하기" type="submit">
-                </div>
-            </div>
-            <div sec:authorize="isAnonymous()" class="form-control">
+                <div sec:authorize="isAnonymous()" class="form-control">
             <textarea class="mb-2 textarea textarea-lg textarea-primary"
                       maxlength="300" rows="6" disabled
                       placeholder="로그인 후 댓글 작성이 가능합니다."></textarea>
-                <div class="flex justify-end pb-10">
-                    <a href="/member/login" class="btn btn-primary mr-1">로그인</a>
+                    <div class="flex justify-end pb-10">
+                        <a href="/member/login" class="btn btn-primary mr-1">로그인</a>
+                    </div>
                 </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
 </div>
 <th:block layout:fragment="script">
