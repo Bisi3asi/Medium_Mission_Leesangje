@@ -18,9 +18,14 @@
         <div class="py-24 px-20 pb-2 text-black font-bold">
             <div class="flex items-center">
                 <div class="mr-2" th:unless="${post.published}">
-                    <i class="fa-solid fa-lock fas fa-5xl" style="color: black;"></i>
+                    <i class="fa-solid fa-lock fas fa-2x" style="color: black;"></i>
                 </div>
-                <div class="mb-6 text-5xl" th:text="${post.title}"></div>
+                <div class="flex items-center">
+                    <i th:if="${post.prime == true}"
+                       class="fa-solid fa-fire mr-2 pb-4 fas fa-2x" style="color:red">
+                    </i>
+                    <div class="mb-6 text-5xl" th:text="${post.title}"></div>
+                </div>
             </div>
             <div class="text-xl"></div>
             <div class="mb-6 text-gray-400">

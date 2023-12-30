@@ -45,8 +45,11 @@
                             </div>
                         </a>
                         <a th:href="@{|/post/${post.id}|}">
-                            <div class="mb-2 text-3xl line-clamp-2"
-                                 th:text="${post.title}">
+                            <div class="flex items-center">
+                                <i th:if="${post.prime == true}"
+                                   class="fa-solid fa-fire mr-2" style="color:red">
+                                </i>
+                                <div class="mb-2 text-3xl line-clamp-2" th:text="${post.title}"></div>
                             </div>
                             <div class="mb-1 text-gray-400 line-clamp-1"
                                  th:text="${post.content}">
