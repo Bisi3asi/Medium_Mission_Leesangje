@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="/global.css">
     <!-- import fontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <!-- import toastUI -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 </head>
-<body class="bg-white">
+<body class="bg-white text-black">
 <!-- import daisyUI -->
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.0.8/dist/full.min.css" rel="stylesheet" type="text/css"/>
 <!-- import tailwind -->
@@ -16,7 +18,7 @@
 
 <div class="bg-white text-black">
     <!-- navbar -->
-    <form th:action="@{/post/write}" th:object="${postRequestDto}" method="post" enctype="multipart/form-data">
+    <form id="postForm" th:action="@{/post/write}" th:object="${postRequestDto}" method="post" enctype="multipart/form-data">
         <!-- error -->
         <div th:if="${#fields.hasAnyErrors()}">
             <div class="toast toast-top toast-end mt-20">
@@ -86,13 +88,15 @@
                           th:field="*{title}"></textarea>
             </div>
             <div class="form-control mx-auto">
-            <textarea class="form-input w-full p-4 bg-white text-black" id="contentTextInput" maxlength=1000
-                      placeholder="글 내용" rows="20"
-                      th:field="*{content}"></textarea>
+                <!-- toastUiEditor, todo 아이콘 안 보이는 이유 찾기 -->
+                <div id="editor"></div>
                 <label class="label">
                     <span class="label-text"></span>
                     <span class="label-text-alt" id="contentInputCount">0 / 1000</span>
                 </label>
+                <!-- toastUiEditor의 값을 입력받아 form으로 전달하는 textArea -->
+                <textarea class="form-input hidden" id="contentTextInput"
+                      th:field="*{content}"></textarea>
             </div>
             <div class="pb-10 flex items-center">
                 <div class="btn btn-ghost mr-1">
@@ -113,7 +117,7 @@
 <script>
     const titleTextarea = document.getElementById('titleTextInput');
     const titleCharCountSpan = document.getElementById('titleInputCount');
-    const contentTextarea = document.getElementById('contentTextInput');
+    const contentTextarea = document.getElementById('editor');
     const contentCharCountSpan = document.getElementById('contentInputCount');
 
     function updateCharCount(textarea, charCountSpan, maxLength) {
@@ -158,4 +162,32 @@
         }
     });
 </script>
+
+<!--ToastUI JS CDN-->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script>
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        height: '600px',
+        initialEditType: 'markdown',
+        initialValue: '## 글 내용\n\n 본 에디터는 마크다운 기능을 지원합니다.',
+        previewStyle: 'tab',
+        usageStatistics : 'false',
+        theme : "dark"
+    });
+
+    // 에디터의 값이 변경될 때마다 hidden textarea 업데이트
+    editor.on('change', function () {
+        const contentValue = editor.getMarkdown();
+        document.querySelector('#contentTextInput').value = contentValue;
+    });
+
+    // hidden textarea의 값을 확인 후 postform 제출
+    document.getElementById('postForm').addEventListener('submit', function () {
+        const contentValue = editor.getMarkdown();
+        document.querySelector('#contentTextInput').value = contentValue;
+    });
+</script>
+<!--ToastUI JS CDN-->
 </body>
+</html>
