@@ -1,6 +1,14 @@
 <html lang="ko" layout:decorate="~{global/layout}">
 <head>
     <title>Medium-Mission</title>
+    <!-- import toastUI CSS -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
+    <!-- import highlight.css (used in toastUI) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/styles/default.min.css">
+    <!-- import cod.mirror.css (used in toastUI) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.css"/>
+    <!-- import toastUI syntax-highlight.js syntax plugin -->
+    <script src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight.min.js"></script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -152,7 +160,7 @@
     <!-- ! prime -->
     <div th:unless="${post.prime == true and (currentUser == null or currentUser.prime == false)}">
         <div class="px-20 mt-10 pb-32 text-2xl">
-            <div id="postContent" th:text="${post.content}" class="break-words"></div>
+            <div id="postContent" th:text="${post.content}" class="break-words markdown"></div>
         </div>
         <!-- comment -->
         <div class="px-20 border-b-2 border-gray-400 bg-gray-700">
@@ -286,6 +294,10 @@
     </div>
 </div>
 <th:block layout:fragment="script">
+    <!-- import toastUI JS -->
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <!-- import highlight.js (used in toastUI) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/highlight.min.js"></script>
     <script>
         // comment form 글자수 세기 script
         document.querySelectorAll('textarea[id^="textInput"]').forEach(function (textarea) {
@@ -318,14 +330,13 @@
             }
         }
 
-
         // 본문 뷰 값으로 마크다운 문법 적용된 내용으로 변환 -> innerHTML
         // todo : 테일윈드에서 지우는 #, h1, h2, ul, li 엘리먼트 등의 호환 해결
+        // todo : toastUI viewer 활용은 못하나..?
         document.addEventListener("DOMContentLoaded", function () {
             const postContentElement = document.getElementById('postContent');
             postContentElement.innerHTML = marked.parse(postContentElement.textContent);
         });
-
 
         // 댓글 수정 폼 토글 함수
         function toggleCommentModifyForm(commentId) {

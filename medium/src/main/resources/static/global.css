@@ -9,3 +9,173 @@ html > body {
     font-family: "SUIT-Regular";
     color : whitesmoke;
 }
+
+.markdown h1,
+.markdown h2,
+.markdown h3,
+.markdown h4,
+.markdown h5,
+.markdown h6 {
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.markdown h1,
+.markdown h2,
+.markdown h3 {
+    padding-bottom: 1rem;
+    border-bottom: #949494 1px groove;
+}
+
+.markdown h1 {
+    font-size: 2.25rem;
+}
+
+.markdown h2 {
+    font-size: 1.875rem;
+}
+
+.markdown h3 {
+    font-size: 1.5rem;
+}
+
+.markdown h4 {
+    font-size: 1.25rem;
+}
+
+.markdown h5 {
+    font-size: 1.125rem;
+}
+
+.markdown h6 {
+    font-size: 1rem;
+}
+
+.markdown p {
+    margin-top: 0;
+    margin-bottom: 1rem;
+}
+
+.markdown a {
+    color: #3490dc;
+    text-decoration: none;
+}
+
+.markdown a:hover {
+    color: #2779bd;
+}
+
+.markdown blockquote {
+    border-left: 5px solid #303135;
+    margin: 1rem 0;
+    padding-left: 1rem;
+    font-style: italic;
+    color: rgb(148, 148, 148);
+}
+
+.markdown code {
+    background-color: rgb(53, 38, 42);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.2rem;
+    font-size: 87.5%;
+    color: #bf788a;
+}
+
+.markdown pre {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    font-size: 87.5%;
+}
+
+.markdown pre code {
+    display: block;
+    padding: 1.5rem;
+    overflow-x: auto;
+    background-color: rgba(90, 91, 101, 0.65);
+    border-radius: 0.375rem;
+    color: #ffffff;
+}
+
+.markdown hr {
+    border: 1px solid #e2e8f0;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+}
+
+.markdown ul,
+.markdown ol {
+    align-items: center;
+}
+
+.markdown ul li,
+.markdown ol li {
+    display: flex;
+}
+
+.markdown ul li:before {
+    content: "\2022"; /* 특수 문자 추가 (여기서는 점 모양) */
+    color: #4299e1; /* 특수 문자 색상 설정 */
+    margin-right: 0.5rem; /* 특수 문자와 텍스트 사이의 간격 조절 */
+}
+
+.markdown ol {
+    counter-reset: item;
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.markdown ol li {
+    counter-increment: item;
+    margin-bottom: 0.5rem;
+}
+
+.markdown ol li::before {
+    content: counter(item) ". ";
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+.markdown ul li.task-list-item {
+    position: relative;
+    padding-left: 1.5em;
+    margin-bottom: 0.5rem; /* 조절 가능한 여백 */
+}
+
+.markdown ul li.task-list-item::before {
+    content: "☐";
+    position: absolute;
+    left: 0;
+    font-size: 1.2em;
+}
+
+.markdown ul li.task-list-item.checked::before {
+    content: "☑";
+}
+
+.markdown p {
+    margin-bottom: 0;
+}
+
+.markdown img {
+    max-width: 100%;
+    height: auto;
+}
+
+.markdown table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1rem; /* 조절 가능한 여백 */
+}
+
+.markdown th, .markdown td {
+    padding: 0.75rem;
+    border: 2px solid rgba(90, 99, 119, 0.56);
+    text-align: left;
+}
+
+.markdown th {
+    background-color: rgb(58, 60, 65);
+    text-align: center;
+}
