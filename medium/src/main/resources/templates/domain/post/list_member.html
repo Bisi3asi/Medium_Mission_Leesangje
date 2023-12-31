@@ -36,7 +36,7 @@
                                         <div class="mb-2 text-3xl line-clamp-2" th:text="${post.title}"></div>
                                     </div>
                                     <div class="mb-1 text-gray-400 line-clamp-1"
-                                         th:text="${post.content}">
+                                         th:utext="${#strings.replace(#strings.replace(post.content, '<.*?>', ''), '&lt;br&gt;', '\n')}">
                                     </div>
                                     <div class="flex text-xs text-gray-400">
                                         <div class="mr-1"
