@@ -51,11 +51,17 @@
                 <span class="label-text">&nbsp;</span>
                 <span class="label-text-alt">이미 medium에 가입하셨나요?</span>
             </label>
-            <div class="flex">
+            <div class="flex mb-2">
                 <input type="submit" value="회원가입" class="flex-1 btn btn-primary mr-1">
                 <a href="/member/login"
                    class="flex-1 btn btn-success">
                     로그인
+                </a>
+            </div>
+            <div class="justify-center text-center">
+                <span class="label-text-alt">간편 회원가입</span>
+                <a href="/oauth2/authorization/kakao" class="mt-2 flex btn btn-warning w-full">
+                    <i class="fa-solid fa-comment"></i>카카오톡으로 회원가입
                 </a>
             </div>
         </form>
