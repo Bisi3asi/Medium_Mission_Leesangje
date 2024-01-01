@@ -42,13 +42,13 @@ public class SecurityConfig {
                 .oauth2Login(
                         oauth2Login -> oauth2Login
                                 .loginPage("/member/login")
+                        // todo SuccessHandler, failureHandler 로 로그인, 회원가입 성공 실패 제어
                 )
-                .formLogin(AbstractHttpConfigurer::disable) // 기본 로그인 비활성화(JSESSIONID 생성 억제)
-                .logout(AbstractHttpConfigurer::disable) // 기본 로그아웃 비활성화(JSESSIONID 생성 억제)
+                .formLogin(AbstractHttpConfigurer::disable) // 기본 로그인 비활성화
+                .logout(AbstractHttpConfigurer::disable) // 기본 로그아웃 비활성화
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
 
     @Bean
     public static PasswordEncoder passwordEncoder() {

@@ -162,4 +162,25 @@ public class MemberService {
 
         return new SecurityUser(id, username, "", authorities);
     }
+
+    @Transactional
+    public ResponseData<Member> whenSocialLogin(String providerTypeCode,
+                                                String username,
+                                                String nickname,
+                                                String profileImgUrl) {
+        Optional<Member> opMember = memberRepository.findByUsername(username);
+        if (opMember.isPresent()) {
+            setupTokenWhenLogin(opMember.get());
+
+            ResponseData<Member> resp = ResponseData.of(
+                    "200",
+                    String.format("환영합니다, %s님!", nickname),
+                    opMember.get()
+            );
+            return resp;
+            // todo : 웰컴 메시지
+        }
+        return create(new MemberJoinRequestDto(username, nickname, "", ""), null);
+    }
+
 }
