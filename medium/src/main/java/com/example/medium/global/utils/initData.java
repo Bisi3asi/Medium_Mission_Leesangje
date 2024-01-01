@@ -42,6 +42,7 @@ public class initData {
             public void run(ApplicationArguments args) {
                 memberService.create(new MemberJoinRequestDto(
                                 "mediumadmin",
+                                "운영자",
                                 "12345678",
                                 "12345678")
                         , brs
@@ -52,11 +53,13 @@ public class initData {
 
                 memberService.create(new MemberJoinRequestDto(
                                 "testuser1",
+                                "testuser1",
                                 "12345678",
                                 "12345678")
                         , brs
                 );
                 memberService.create(new MemberJoinRequestDto(
+                                "testuser2",
                                 "testuser2",
                                 "12345678",
                                 "12345678")
@@ -65,6 +68,7 @@ public class initData {
 
                 for (int i = 1; i <= 100; i++) {
                     ResponseData<Member> resp = memberService.create(new MemberJoinRequestDto(
+                                    String.format("primeuser%s", i),
                                     String.format("primeuser%s", i),
                                     "12345678",
                                     "12345678")
@@ -129,8 +133,7 @@ public class initData {
                                     ),
                                     memberService.findByUsername(String.format("primeuser%s", new Random().nextInt(100) + 1))
                             );
-                        }
-                        else {
+                        } else {
                             commentService.create(post, new CommentRequestDto(
                                             "testuser1",
                                             false,
@@ -143,7 +146,6 @@ public class initData {
                 }
             }
         }
-
                 ;
     }
 }

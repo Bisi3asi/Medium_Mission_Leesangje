@@ -55,6 +55,7 @@ public class MemberService {
 
         Member member = Member.builder()
                 .username(memberRequestDto.getUsername())
+                .nickname(memberRequestDto.getNickname())
                 .password(passwordEncoder.encode(memberRequestDto.getPassword()))
                 .isPrime(false)
                 .build();

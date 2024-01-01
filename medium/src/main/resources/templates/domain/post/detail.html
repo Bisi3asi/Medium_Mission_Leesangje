@@ -92,7 +92,7 @@
                         </div>
                     </a>
                     <div>
-                        <div class="text-xl" th:text="${post.author.username}"></div>
+                        <div class="text-xl" th:text="${post.author.nickname}"></div>
                         <div class="flex text-base">
                             <div class="mr-1" th:text="${post.viewCount + ' min read'}"></div>
                             <div class="mr-1">·</div>
@@ -174,7 +174,7 @@
                                 </div>
                             </a>
                             <div>
-                                <div class="text-xl" th:text="${comment.author.username}"></div>
+                                <div class="text-xl" th:text="${comment.author.nickname}"></div>
                                 <div class="flex text-base">
                                     <div th:text="${#temporals.format(comment.createDate, 'yyyy.MM.dd')}"></div>
                                 </div>

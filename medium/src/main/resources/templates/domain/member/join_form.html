@@ -25,6 +25,14 @@
             </div>
             <div class="form-control mx-auto m-6">
                 <label class="label">
+                    <span class="label-text">사용자 이름</span>
+                    <span class="label-text-alt">길이 : 20자 이하</span>
+                </label>
+                <input type="text" th:field="*{nickname}" placeholder="사용자 이름을 입력해주세요."
+                       class="form-input w-full p-4"/>
+            </div>
+            <div class="form-control mx-auto m-6">
+                <label class="label">
                     <span class="label-text">비밀번호</span>
                     <span class="label-text-alt">길이 : 8 ~ 20자</span>
                 </label>
