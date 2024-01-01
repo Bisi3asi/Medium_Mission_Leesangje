@@ -8,7 +8,7 @@
     <div class="flex mx-20">
         <div class="mr-5">
             <div>
-                <h1 class="my-16 pb-2 text-3xl text-yellow-500 font-bold" th:text="${currentUser.nickname}"></h1>
+                <h1 class="my-16 pb-2 text-3xl text-yellow-500 font-bold" th:text="${nickname}"></h1>
                 <h2 class="mb-5 pb-3 text-xl text-white border-b border-gray-700">Posts</h2>
                 <div>
                     <ul id="postList">
@@ -30,6 +30,9 @@
                                 </div>
                                 <a th:href="@{|/post/${post.id}|}">
                                     <div class="flex items-center">
+                                        <i th:if="${post.published == false}"
+                                           class="fa-solid fa-lock mr-2" style="color:grey">
+                                        </i>
                                         <i th:if="${post.prime == true}"
                                            class="fa-solid fa-fire mr-2" style="color:red">
                                         </i>

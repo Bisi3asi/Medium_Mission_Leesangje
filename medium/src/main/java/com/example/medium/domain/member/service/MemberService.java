@@ -123,7 +123,7 @@ public class MemberService {
             return ResponseData.of("400", "login failed");
         }
 
-        return ResponseData.of("200", String.format("환영합니다, %s님!", member.getUsername()), member);
+        return ResponseData.of("200", String.format("환영합니다, %s님!", member.getNickname()), member);
     }
 
     public String makeToken(Member member, int minute) {
