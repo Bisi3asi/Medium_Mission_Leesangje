@@ -11,15 +11,18 @@ import com.example.medium.global.response.ResponseData;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.Objects;
 import java.util.Random;
 
 @Controller
@@ -37,6 +40,7 @@ public class PostController {
     }
 
     // Get : /post/list *전체 글 리스트, 공개된 글만 노출
+    // todo : category 별로 다른 페이징,
     @GetMapping("/post/list")
     public String showTotalList(Model model, @RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = postService.getTotalList(page, 10);
@@ -53,22 +57,37 @@ public class PostController {
     // Get : /post/mylist *내 글 리스트
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/post/mylist")
-    public String showMyList(Model model,
-                             @RequestParam(defaultValue = "0") int page,
-                             Principal principal) {
+    public String showMyList(@RequestParam(defaultValue = "0") int page,
+                             Principal principal,
+                             Model model) {
 
-        model.addAttribute(
-                "paging",
-                postService.getMemberList(page, 10, principal.getName())
-        );
+        model.addAttribute("paging", postService.getMyList(page, 10, principal.getName()));
+        model.addAttribute("nickname", memberService.findByUsername(principal.getName()).getNickname());
+        return "domain/post/list_member";
+    }
+
+    // Get: /b/{userid} *유저의 전체 글 리스트
+    @GetMapping("/b/{username}")
+    public String showMemberPostList(@PathVariable String username,
+                                     @RequestParam(defaultValue = "0") int page,
+                                     Model model) {
+
+        model.addAttribute("paging", postService.getMemberList(page, 10, username));
+        model.addAttribute("nickname", memberService.findByUsername(username).getNickname());
+
         return "domain/post/list_member";
     }
 
     // Get: /post/{id} *글 상세보기
     @GetMapping("/post/{id}")
-    public String showDetail(Model model, @PathVariable Long id) {
+    public String showDetail(Model model, @PathVariable Long id, Principal principal) {
+        // 비공개 글에 접근하는 경우 에러 발생
         Post post = postService.get(id);
+        if (!post.isPublished() && !Objects.equals(post.getAuthor().getUsername(), principal.getName())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "접근 권한이 없습니다.");
+        }
 
+        // 조회수 증가
         postService.incrViewCount(post);
 
         model.addAttribute("post", post);
@@ -168,16 +187,5 @@ public class PostController {
 
         attr.addFlashAttribute("msg", resp.getMsg());
         return "redirect:/post/list";
-    }
-
-    // Get: /b/{userid} *유저의 전체 글 리스트
-    @GetMapping("/b/{username}")
-    public String showMemberPostList(@PathVariable String username,
-                                     @RequestParam(defaultValue = "0") int page,
-                                     Model model) {
-
-        model.addAttribute("paging", postService.getMemberList(page, 10, username));
-
-        return "domain/post/list_member";
     }
 }

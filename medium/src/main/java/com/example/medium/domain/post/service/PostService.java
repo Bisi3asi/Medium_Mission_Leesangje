@@ -48,6 +48,14 @@ public class PostService {
         return postRepository.findAllByAuthorUsernameAndIsPublishedTrue(username, pageable);
     }
 
+    public Page<Post> getMyList(int page, int pageSize, String username) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
+
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
+        return postRepository.findAllByAuthorUsername(username, pageable);
+    }
+
     @Transactional
     public ResponseData<Post> create(PostRequestDto req, Member member) {
 

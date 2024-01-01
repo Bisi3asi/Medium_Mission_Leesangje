@@ -19,21 +19,19 @@
             <span th:text="${msg}"></span>
         </div>
     </div>
-    <!-- title container -->
+    <!-- title container(이미지 있음) -->
     <div th:if="${post.imageFile != null}"
          th:style="'background-image: url(/images/' + ${post.imageFile.filename} + ');'"
          class="w-full bg-cover bg-center">
         <div class="py-24 px-20 pb-2 text-black font-bold">
             <div class="flex items-center">
-                <div class="mr-2" th:unless="${post.published}">
-                    <i class="fa-solid fa-lock fas fa-2x" style="color: black;"></i>
+                <div class="mr-2" th:if="${post.published == false}">
+                    <i class="fa-solid fa-lock pb-4 fas fa-2x" style="color: grey;"></i>
                 </div>
-                <div class="flex items-center">
-                    <i th:if="${post.prime == true}"
-                       class="fa-solid fa-fire mr-2 pb-4 fas fa-2x" style="color:red">
-                    </i>
-                    <div class="mb-6 text-5xl" th:text="${post.title}"></div>
-                </div>
+                <i th:if="${post.prime == true}"
+                   class="fa-solid fa-fire mr-2 pb-4 fas fa-2x" style="color:red">
+                </i>
+                <div class="mb-6 text-5xl" th:text="${post.title}"></div>
             </div>
             <div class="text-xl"></div>
             <div class="mb-6 text-gray-400">
@@ -73,14 +71,17 @@
             </div>
         </div>
     </div>
-
+    <!-- title container(이미지 없음) -->
     <div th:unless="${post.imageFile != null}"
          class="w-full bg-white">
         <div class="py-24 px-20 pb-2 text-black font-bold">
             <div class="flex items-center">
-                <div class="mr-2" th:unless="${post.published}">
-                    <i class="fa-solid fa-lock fas fa-5xl" style="color: black;"></i>
+                <div class="mr-2" th:if="${post.published == false}">
+                    <i class="fa-solid fa-lock pb-4 fas fa-2x" style="color: grey;"></i>
                 </div>
+                <i th:if="${post.prime == true}"
+                   class="fa-solid fa-fire mr-2 pb-4 fas fa-2x" style="color:red">
+                </i>
                 <div class="mb-6 text-5xl" th:text="${post.title}"></div>
             </div>
             <div class="text-xl"></div>
@@ -88,7 +89,7 @@
                 <div class="pt-1 mr-1 flex items-center">
                     <a th:href="@{|/b/${post.author.username}|}">
                         <div class="mr-2 btn btn-ghost">
-                            <i class="fa-solid fa-user fas fa-2xl" style="color: black;"></i>
+                            <i class="fa-solid fa-user fas fa-2x" style="color: black;"></i>
                         </div>
                     </a>
                     <div>
