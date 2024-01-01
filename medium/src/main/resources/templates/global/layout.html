@@ -81,7 +81,7 @@
             <li>
                 <div sec:authorize="isAuthenticated()"
                      class="dropdown dropdown-bottom dropdown-end">
-                    <span th:text="${currentUser.nickname}"></span>
+                    <span th:text="${currentUser.nickname}" class="text-lg font-bold"></span>
                     <div tabindex="0" class="flex btn-ghost btn no-animation">
                         <i class="fa-solid fa-user" style="color: white;"></i>
                     </div>
