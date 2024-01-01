@@ -89,13 +89,8 @@ public class MemberController {
         }
         Member member = responseData.getData();
 
-        // 로그인 시에 accessToken, refreshToken 재생산, DB에도 업데이트
-        String accessToken = memberService.makeToken(member, 10);
-        String refreshToken = memberService.makeToken(member, 60 * 24 * 7);
-        memberService.setRefreshToken(member, refreshToken);
-
-        rq.setAccessTokenToCookie(accessToken);
-        rq.setRefreshTokenToCookie(refreshToken);
+        // 로그인 시에 accessToken, refreshToken 재생산
+        memberService.setupTokenWhenLogin(member);
 
         attr.addFlashAttribute("msg", responseData.getMsg());
         return "redirect:/";

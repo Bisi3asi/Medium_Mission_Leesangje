@@ -6,6 +6,7 @@ import com.example.medium.domain.member.entity.Member;
 import com.example.medium.domain.member.entity.Role;
 import com.example.medium.domain.member.repository.MemberRepository;
 import com.example.medium.global.response.ResponseData;
+import com.example.medium.global.rq.Rq;
 import com.example.medium.global.security.SecurityUser;
 import com.example.medium.global.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -31,6 +32,7 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Rq rq;
 
     public Member findByUsername(String username) {
         return memberRepository.findByUsername(username).orElseThrow(
@@ -133,6 +135,15 @@ public class MemberService {
                         "username", member.getUsername(),
                         "authorities", member.getGrantedAuthoritiesAsStrList()
                 ), minute);
+    }
+
+    public void setupTokenWhenLogin(Member member) {
+        String accessToken = makeToken(member, 10);
+        String refreshToken = makeToken(member, 60 * 24 * 7);
+        setRefreshToken(member, refreshToken);
+
+        rq.setAccessTokenToCookie(accessToken);
+        rq.setRefreshTokenToCookie(refreshToken);
     }
 
     public SecurityUser getUserFromAccessToken(String accessToken) {
