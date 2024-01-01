@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.SessionManagementConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -25,7 +26,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.
                 csrf(AbstractHttpConfigurer::disable) // CSRF 보호 비활성화
-                .sessionManagement(s -> s.sessionCreationPolicy(STATELESS)) // 세션 생성 비활성화
+                .sessionManagement(s ->
+                        s.sessionCreationPolicy(STATELESS)
+                                .sessionFixation(SessionManagementConfigurer.SessionFixationConfigurer::none)) // 세션 생성 비활성화
                 .authorizeRequests(authorizeRequests ->
                         authorizeRequests.requestMatchers("/**").permitAll()
                 )
@@ -35,6 +38,10 @@ public class SecurityConfig {
                                         frameOptions ->
                                                 frameOptions.sameOrigin()
                                 )
+                )
+                .oauth2Login(
+                        oauth2Login -> oauth2Login
+                                .loginPage("member/login")
                 )
                 .formLogin(AbstractHttpConfigurer::disable) // 기본 로그인 비활성화(JSESSIONID 생성 억제)
                 .logout(AbstractHttpConfigurer::disable) // 기본 로그아웃 비활성화(JSESSIONID 생성 억제)
