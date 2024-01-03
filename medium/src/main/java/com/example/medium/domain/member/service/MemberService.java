@@ -1,5 +1,6 @@
 package com.example.medium.domain.member.service;
 
+import com.example.medium.domain.member.dto.MemberInfoModifyRequestDto;
 import com.example.medium.domain.member.dto.MemberJoinRequestDto;
 import com.example.medium.domain.member.dto.MemberLoginRequestDto;
 import com.example.medium.domain.member.entity.Member;
@@ -69,6 +70,16 @@ public class MemberService {
         return ResponseData.of("200", "회원가입이 완료되었습니다.", member);
     }
 
+    @Transactional
+    public ResponseData<Member> modify(Member member, MemberInfoModifyRequestDto memberInfoModifyRequestDto) {
+        member = member.toBuilder()
+                .nickname(memberInfoModifyRequestDto.getNickname())
+                .profileMsg(memberInfoModifyRequestDto.getProfileMsg())
+                .build();
+
+        memberRepository.save(member);
+        return ResponseData.of("200", "사용자 정보가 수정되었습니다.", member);
+    }
     @Transactional
     public void setRefreshToken(Member member, String refreshToken) {
         member.setRefreshToken(refreshToken);
@@ -188,5 +199,4 @@ public class MemberService {
         }
         return create(new MemberJoinRequestDto(username, nickname, "", ""), null);
     }
-
 }

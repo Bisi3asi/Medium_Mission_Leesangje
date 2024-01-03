@@ -1,5 +1,6 @@
 package com.example.medium.domain.member.controller;
 
+import com.example.medium.domain.member.dto.MemberInfoModifyRequestDto;
 import com.example.medium.domain.member.dto.MemberJoinRequestDto;
 import com.example.medium.domain.member.dto.MemberLoginRequestDto;
 import com.example.medium.domain.member.entity.Member;
@@ -8,13 +9,11 @@ import com.example.medium.global.response.ResponseData;
 import com.example.medium.global.rq.Rq;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
@@ -97,6 +96,7 @@ public class MemberController {
     }
 
     // Get: /member/logout
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/logout")
     public String logout(RedirectAttributes attr,
                          Principal principal) {
@@ -111,11 +111,36 @@ public class MemberController {
         return "redirect:/";
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/mypage")
-    public String showMyPage(Principal principal) {
+    public String showMyPage(@ModelAttribute MemberInfoModifyRequestDto memberInfoModifyRequestDto,
+                             Principal principal) {
         if (principal == null) {
             return "redirect:/";
         }
         return "domain/member/mypage";
     }
+
+    @PreAuthorize("isAuthenticated()")
+    @PutMapping("/mypage/modify")
+    public String modifyMemberInfo(@Valid @ModelAttribute MemberInfoModifyRequestDto memberInfoModifyRequestDto,
+                                   BindingResult brs,
+                                   RedirectAttributes attr,
+                                   Principal principal) {
+        if (principal == null) {
+            return "redirect:/";
+        }
+        if (brs.hasErrors()){
+            return "domain/member/mypage";
+        }
+
+        ResponseData<Member> resp = memberService.modify(
+                memberService.findByUsername(principal.getName()),
+                memberInfoModifyRequestDto
+        );
+
+        attr.addFlashAttribute("msg", resp.getMsg());
+        return "redirect:/member/mypage";
+    }
+
 }

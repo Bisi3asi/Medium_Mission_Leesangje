@@ -26,15 +26,38 @@
 
         <div class="divider">유저 정보</div>
         <div class="card-body">
-            <div class="mb-4">
-                <h1 class="text-lg" th:text="${currentUser.nickname}"></h1>
-                <h2 class="text-mg text-gray-400" th:text="${currentUser.username}"></h2>
-            </div>
-            <div class="mb-4">
-                <h1 class="text-lg">프로필 메시지</h1>
-                <h2 class="text-mg text-gray-400" th:text="${currentUser.profileMsg}"></h2>
-            </div>
-            <div class="btn btn-success btn-sm justify-end">수정하기</div>
+            <form action="/member/mypage/modify" th:object="${memberInfoModifyRequestDto}" th:method="PUT">
+                <!-- error -->
+                <div th:if="${#fields.hasAnyErrors()}">
+                    <div class="toast toast-top toast-end mt-20">
+                        <div th:each="error : ${#fields.allErrors()}" class="alert alert-error mb-1">
+                            <span th:text="${error}"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <div class="flex justify-end">
+                        <div id="toggleModify" class="btn btn-success btn-outline btn-xs w-auto"
+                             onclick="toggleModify()">
+                            수정하기
+                        </div>
+                    </div>
+                    <h1 id="nickname" class="text-lg" th:text="${currentUser.nickname}"></h1>
+                    <input id="nicknameInput" type="text" th:field="*{nickname}"
+                           class="input input-bordered input-primary input-sm w-full max-w-xs hidden mt-2">
+                    <h2 class="text-mg text-gray-400" th:text="${currentUser.username}"></h2>
+                </div>
+                <div class="mb-4">
+                    <h1 class="text-lg">프로필 메시지</h1>
+                    <h2 id="profileMsg" class="text-mg text-gray-400" th:text="${currentUser.profileMsg}"></h2>
+                    <input id="profileMsgInput" type="text" th:field="*{profileMsg}"
+                           class="input input-bordered input-primary input-sm w-full max-w-xs hidden">
+                </div>
+                <div id="submitModify" class="flex hidden">
+                    <div id="cancelModify" class="btn btn-ghost btn-sm w-1/2" onclick="cancelModify()">수정취소</div>
+                    <button class="btn btn-success btn-sm w-1/2">수정완료</button>
+                </div>
+            </form>
 
             <div class="divider">권한 관련</div>
             <div>
@@ -87,22 +110,68 @@
 </div>
 <th:block layout:fragment="script">
     <script>
-        var currentDate = new Date();
-        var expirationDate = new Date("[[${currentUser.primeExpirationDate}]]");
+        function calculateTimeDifference() {
+            var currentDate = new Date();
+            var expirationDate = new Date("[[${currentUser.primeExpirationDate}]]");
 
-        var timeDiff = expirationDate - currentDate;
+            var timeDiff = expirationDate - currentDate;
 
-        var days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
-        var hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        var minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+            var days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+            var hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            var minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 
-        /* span 엘리먼트에 동적으로 값을 설정 */
-        var daysElement = document.getElementById("days");
-        daysElement.style.setProperty("--value", days);
-        var hoursElement = document.getElementById("hours");
-        hoursElement.style.setProperty("--value", hours);
-        var minutesElement = document.getElementById("minutes");
-        minutesElement.style.setProperty("--value", minutes);
+            updateCountdown(days, hours, minutes);
+        }
+
+        function updateCountdown(days, hours, minutes) {
+            var daysElement = document.getElementById("days");
+            daysElement.style.setProperty("--value", days);
+
+            var hoursElement = document.getElementById("hours");
+            hoursElement.style.setProperty("--value", hours);
+
+            var minutesElement = document.getElementById("minutes");
+            minutesElement.style.setProperty("--value", minutes);
+        }
+
+        calculateTimeDifference();
+
+        function toggleModify() {
+            // toggleModify 클릭 시, submitModify와 cancelModify의 hidden 속성 토글
+            document.getElementById("submitModify").classList.toggle("hidden");
+            document.getElementById("cancelModify").classList.toggle("hidden");
+
+            // nickname과 profileMsg의 값을 각각의 Input 엘리먼트에 유지되도록 토글
+            var nicknameElement = document.getElementById("nickname");
+            var nicknameInputElement = document.getElementById("nicknameInput");
+            nicknameElement.classList.toggle("hidden");
+            nicknameInputElement.classList.toggle("hidden");
+
+            var profileMsgElement = document.getElementById("profileMsg");
+            var profileMsgInputElement = document.getElementById("profileMsgInput");
+            profileMsgElement.classList.toggle("hidden");
+            profileMsgInputElement.classList.toggle("hidden");
+
+            // Input 엘리먼트의 값 유지
+            if (!nicknameInputElement.classList.contains("hidden")) {
+                nicknameInputElement.value = nicknameElement.innerText;
+            }
+
+            if (!profileMsgInputElement.classList.contains("hidden")) {
+                profileMsgInputElement.value = profileMsgElement.innerText;
+            }
+        }
+
+        function cancelModify() {
+            // cancelModify 클릭 시, toggleModify 상태를 취소하고 hidden 속성을 다시 원래 상태로 돌려줌
+            document.getElementById("submitModify").classList.add("hidden");
+
+            document.getElementById("nickname").classList.remove("hidden");
+            document.getElementById("nicknameInput").classList.add("hidden");
+
+            document.getElementById("profileMsg").classList.remove("hidden");
+            document.getElementById("profileMsgInput").classList.add("hidden");
+        }
     </script>
 </th:block>
 </body>
