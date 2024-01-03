@@ -31,6 +31,9 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false, length = 20)
+    private String profileMsg;
+
     @Setter
     @Column(nullable = false)
     private boolean isPrime;

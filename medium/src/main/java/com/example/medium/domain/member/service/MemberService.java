@@ -59,6 +59,7 @@ public class MemberService {
                 .username(memberRequestDto.getUsername())
                 .nickname(memberRequestDto.getNickname())
                 .password(passwordEncoder.encode(memberRequestDto.getPassword()))
+                .profileMsg("안녕하세요!")
                 .isPrime(false)
                 .build();
         memberRepository.save(member);

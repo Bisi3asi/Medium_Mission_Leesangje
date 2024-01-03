@@ -62,7 +62,7 @@ public class PostController {
                              Model model) {
 
         model.addAttribute("paging", postService.getMyList(page, 10, principal.getName()));
-        model.addAttribute("nickname", memberService.findByUsername(principal.getName()).getNickname());
+        model.addAttribute("member", memberService.findByUsername(principal.getName()));
         return "domain/post/list_member";
     }
 
@@ -73,7 +73,7 @@ public class PostController {
                                      Model model) {
 
         model.addAttribute("paging", postService.getMemberList(page, 10, username));
-        model.addAttribute("nickname", memberService.findByUsername(username).getNickname());
+        model.addAttribute("member", memberService.findByUsername(username));
 
         return "domain/post/list_member";
     }

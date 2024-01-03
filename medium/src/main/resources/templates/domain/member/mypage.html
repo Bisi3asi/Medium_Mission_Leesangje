@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="ko" layout:decorate="~{global/layout}">
+
+<head>
+    <title>Medium</title>
+</head>
+<body>
+<div layout:fragment="content" class="flex items-center justify-center h-screen mx-4">
+    <!-- message -->
+    <div th:unless="${msg == null}"
+         class="toast toast-top toast-end mt-24">
+        <div class="alert alert-success">
+            <span th:text="${msg}"></span>
+        </div>
+    </div>
+    <div class="card w-100 shadow-xl">
+        <figure>
+            <div class="w-96 h-40 flex justify-center">
+                <div class="w-40 h-40 rounded-full bg-blue-500 flex items-center justify-center">
+                    <div th:text="${currentUser.nickname}"
+                         class="text-3xl text-white text-center">
+                    </div>
+                </div>
+            </div>
+        </figure>
+
+        <div class="divider">유저 정보</div>
+        <div class="card-body">
+            <div class="mb-4">
+                <h1 class="text-lg" th:text="${currentUser.nickname}"></h1>
+                <h2 class="text-mg text-gray-400" th:text="${currentUser.username}"></h2>
+            </div>
+            <div class="mb-4">
+                <h1 class="text-lg">프로필 메시지</h1>
+                <h2 class="text-mg text-gray-400" th:text="${currentUser.profileMsg}"></h2>
+            </div>
+            <div class="btn btn-success btn-sm justify-end">수정하기</div>
+
+            <div class="divider">권한 관련</div>
+            <div>
+                <div class="mb-4">
+                    <div class="flex items-center">
+                        <h1 class="text-lg mr-2">MEDIUM PRIME</h1>
+                        <a th:if="${currentUser.prime == true and currentUser.primeExpirationDate != null}"
+                           class="btn btn-error btn-outline btn-xs" href="/prime">해지하기
+                        </a>
+                    </div>
+                    <div th:if="${currentUser.prime == true and currentUser.primeExpirationDate != null}">
+                        <div class="flex items-center">
+                            <span class="text-md text-green-500 font-bold mr-2">이용중</span>
+                            <div class="text-md text-gray-400">
+                            <span class="countdown text-md">
+                              <span id="days" style="--value:0;"></span>
+                            </span>
+                                일
+                                <span class="countdown text-md">
+                              <span id="hours" style="--value:0;"></span>
+                            </span>
+                                시간
+                                <span class="countdown text-md">
+                              <span id="minutes" style="--value:0;"></span>
+                            </span>
+                                분
+                                남음
+                            </div>
+                        </div>
+                    </div>
+                    <div th:if="${currentUser.prime == false}">
+                        <span class="text-lmdtext-gray-400 mr-2">미가입</span>
+                        <a class="btn btn-warning btn-outline btn-xs" href="/prime">가입하기</a>
+                    </div>
+                </div>
+                <div class="mb-4">
+                    <h1 class="text-md mr-2">MEDIUM CASH</h1>
+                    <h2 class="text-md text-gray-400">0원</h2>
+                </div>
+                <div>
+                    <div class="flex">
+                        <h1 class="text-md mr-2">연결 계좌정보</h1>
+                        <a class="btn btn-success btn-xs" href="/prime">계좌 연동하기</a>
+                    </div>
+                    <h2 class="text-md text-gray-400">없음</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<th:block layout:fragment="script">
+    <script>
+        var currentDate = new Date();
+        var expirationDate = new Date("[[${currentUser.primeExpirationDate}]]");
+
+        var timeDiff = expirationDate - currentDate;
+
+        var days = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+        var hours = Math.floor((timeDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        var minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
+
+        /* span 엘리먼트에 동적으로 값을 설정 */
+        var daysElement = document.getElementById("days");
+        daysElement.style.setProperty("--value", days);
+        var hoursElement = document.getElementById("hours");
+        hoursElement.style.setProperty("--value", hours);
+        var minutesElement = document.getElementById("minutes");
+        minutesElement.style.setProperty("--value", minutes);
+    </script>
+</th:block>
+</body>
+</html>

@@ -110,4 +110,12 @@ public class MemberController {
         attr.addFlashAttribute("msg", "로그아웃 되었습니다.");
         return "redirect:/";
     }
+
+    @GetMapping("/mypage")
+    public String showMyPage(Principal principal) {
+        if (principal == null) {
+            return "redirect:/";
+        }
+        return "domain/member/mypage";
+    }
 }
