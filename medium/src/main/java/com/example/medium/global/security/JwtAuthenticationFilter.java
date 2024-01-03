@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 user = memberService.getUserFromAccessToken(newAccessToken);
                 // newAccessToken으로 accessToken 값 변경
                 rq.setAccessTokenToCookie(newAccessToken);
-                System.out.println("accessToken refresh, update cookie successed");
+                System.out.println("accessToken refresh, update cookie success");
             }
             rq.setAuthentication(user);
         }

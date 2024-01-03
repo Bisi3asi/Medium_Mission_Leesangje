@@ -42,7 +42,7 @@ public class MemberService {
 
     public Member findByRefreshToken(String refreshToken) {
         return memberRepository.findByRefreshToken(refreshToken).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "ERROR: 해당 회원을 찾을 수 없습니다.")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR: 해당 회원을 찾을 수 없습니다.")
         );
     }
 
@@ -72,16 +72,19 @@ public class MemberService {
     @Transactional
     public void setRefreshToken(Member member, String refreshToken) {
         member.setRefreshToken(refreshToken);
+        memberRepository.save(member);
     }
 
     @Transactional
     public void setAuthority(Member member, Role role){
         member.getAuthorities().add(role);
+        memberRepository.save(member);
     }
 
     @Transactional
     public void deleteAuthority(Member member, Role role){
         member.getAuthorities().remove(role);
+        memberRepository.save(member);
     }
 
     @Transactional
@@ -93,6 +96,7 @@ public class MemberService {
         member.setPrime(true);
         member.setPrimeExpirationDate(LocalDateTime.now().plusDays(30));
         setAuthority(member, Role.PRIME);
+        memberRepository.save(member);
 
         return ResponseData.of("200", "MEDIUM PRIME 가입에 성공하였습니다.", member);
     }
@@ -138,6 +142,7 @@ public class MemberService {
                 ), minute);
     }
 
+    @Transactional
     public void setupTokenWhenLogin(Member member) {
         String accessToken = makeToken(member, 10);
         String refreshToken = makeToken(member, 60 * 24 * 7);
