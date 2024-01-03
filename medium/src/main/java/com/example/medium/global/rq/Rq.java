@@ -87,6 +87,14 @@ public class Rq {
         resp.addCookie(cookie);
     }
 
+    public void removeRefreshTokenFromCookie() {
+        Cookie cookie = new Cookie("refreshToken", "");
+        cookie.setPath("/");
+        cookie.setMaxAge(0);
+
+        resp.addCookie(cookie);
+    }
+
     public void setAuthentication(SecurityUser user) {
         Authentication auth = new UsernamePasswordAuthenticationToken(
                 user,

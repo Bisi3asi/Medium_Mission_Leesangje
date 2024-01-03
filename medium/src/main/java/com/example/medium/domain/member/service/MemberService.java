@@ -42,9 +42,15 @@ public class MemberService {
     }
 
     public Member findByRefreshToken(String refreshToken) {
-        return memberRepository.findByRefreshToken(refreshToken).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR: 해당 회원을 찾을 수 없습니다.")
-        );
+        Optional<Member> opMember = memberRepository.findByRefreshToken(refreshToken);
+        if (opMember.isEmpty()) {
+            // refreshToken 없으면 쿠키 전부 삭제
+            rq.removeRefreshTokenFromCookie();
+            rq.removeAccessTokenFromCookie();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR: 해당 회원을 찾을 수 없습니다.");
+        }
+
+        return opMember.get();
     }
 
     @Transactional
@@ -80,6 +86,7 @@ public class MemberService {
         memberRepository.save(member);
         return ResponseData.of("200", "사용자 정보가 수정되었습니다.", member);
     }
+
     @Transactional
     public void setRefreshToken(Member member, String refreshToken) {
         member.setRefreshToken(refreshToken);
@@ -87,13 +94,13 @@ public class MemberService {
     }
 
     @Transactional
-    public void setAuthority(Member member, Role role){
+    public void setAuthority(Member member, Role role) {
         member.getAuthorities().add(role);
         memberRepository.save(member);
     }
 
     @Transactional
-    public void deleteAuthority(Member member, Role role){
+    public void deleteAuthority(Member member, Role role) {
         member.getAuthorities().remove(role);
         memberRepository.save(member);
     }
@@ -113,7 +120,7 @@ public class MemberService {
     }
 
     @Transactional
-    public ResponseData<Member> deletePrime(Member member){
+    public ResponseData<Member> deletePrime(Member member) {
         if (!member.isPrime()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MEDIUM PRIME에 가입되어 있지 않은 회원입니다.");
         }
