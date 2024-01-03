@@ -179,57 +179,57 @@
     <script>
         function changePrevPrimeHotAnchor() {
             // 현재 URL에서 #primeHotPost 뒤에 오는 숫자를 찾아냄
-            var currentPageIndex = window.location.hash.match(/\d+/);
+            var currentPageIndex = window.location.hash.match(/#primeHotPost(\d+)/);
 
             // 숫자가 없거나 0 이하인 경우 #primeHotPost9로 이동
-            if (!currentPageIndex || currentPageIndex.length === 0 || currentPageIndex[0] <= 0) {
+            if (!currentPageIndex || currentPageIndex.length < 2 || currentPageIndex[1] <= 0) {
                 window.location.href = '#primeHotPost9';
             } else {
                 // 현재 페이지 인덱스를 기반으로 이전 페이지 인덱스를 계산하여 새로운 URL 생성
-                var newPageIndex = currentPageIndex[0] - 1;
-                window.location.href = window.location.href.replace(/#primeHotPost\d+/, '#primeHotPost' + newPageIndex);
+                var newPageIndex = parseInt(currentPageIndex[1]) - 1;
+                window.location.href = '#primeHotPost' + newPageIndex;
             }
         }
 
         function changeNextPrimeHotAnchor() {
             // 현재 URL에서 #primeHotPost 뒤에 오는 숫자를 찾아냄
-            var currentPageIndex = window.location.hash.match(/\d+/);
+            var currentPageIndex = window.location.hash.match(/#primeHotPost(\d+)/);
 
             // 숫자가 없거나 9 이상인 경우 #primeHotPost0으로 이동
-            if (!currentPageIndex || currentPageIndex.length === 0 || currentPageIndex[0] >= 9) {
+            if (!currentPageIndex || currentPageIndex.length < 2 || parseInt(currentPageIndex[1]) >= 9) {
                 window.location.href = '#primeHotPost0';
             } else {
                 // 현재 페이지 인덱스를 기반으로 이전 페이지 인덱스를 계산하여 새로운 URL 생성
-                var newPageIndex = (parseInt(currentPageIndex[0]) + 1) % 10;  // 0부터 9까지의 순환
-                window.location.href = window.location.href.replace(/#primeHotPost\d+/, '#primeHotPost' + newPageIndex);
+                var newPageIndex = (parseInt(currentPageIndex[1]) + 1) % 10;  // 0부터 9까지의 순환
+                window.location.href = '#primeHotPost' + newPageIndex;
             }
         }
 
         function changePrevPrimeRecentAnchor() {
             // 현재 URL에서 #primeHotPost 뒤에 오는 숫자를 찾아냄
-            var currentPageIndex = window.location.hash.match(/\d+/);
+            var currentPageIndex = window.location.hash.match(/#primeRecentPost(\d+)/);
 
             // 숫자가 없거나 0 이하인 경우 #primeHotPost9로 이동
-            if (!currentPageIndex || currentPageIndex.length === 0 || currentPageIndex[0] <= 0) {
+            if (!currentPageIndex || currentPageIndex.length < 2|| currentPageIndex[1] <= 0) {
                 window.location.href = '#primeRecentPost9';
             } else {
                 // 현재 페이지 인덱스를 기반으로 이전 페이지 인덱스를 계산하여 새로운 URL 생성
-                var newPageIndex = currentPageIndex[0] - 1;
-                window.location.href = window.location.href.replace(/#primeRecentPost\d+/, '#primeRecentPost' + newPageIndex);
+                var newPageIndex = parseInt(currentPageIndex[1]) - 1;
+                window.location.href = '#primeRecentPost' + newPageIndex;
             }
         }
 
         function changeNextPrimeRecentAnchor() {
             // 현재 URL에서 #primeHotPost 뒤에 오는 숫자를 찾아냄
-            var currentPageIndex = window.location.hash.match(/\d+/);
+            var currentPageIndex = window.location.hash.match(/#primeRecentPost(\d+)/);
 
             // 숫자가 없거나 9 이상인 경우 #primeHotPost0으로 이동
-            if (!currentPageIndex || currentPageIndex.length === 0 || currentPageIndex[0] >= 9) {
+            if (!currentPageIndex || currentPageIndex.length < 2 || parseInt(currentPageIndex[1]) >= 9) {
                 window.location.href = '#primeRecentPost0';
             } else {
                 // 현재 페이지 인덱스를 기반으로 이전 페이지 인덱스를 계산하여 새로운 URL 생성
-                var newPageIndex = (parseInt(currentPageIndex[0]) + 1) % 10;  // 0부터 9까지의 순환
-                window.location.href = window.location.href.replace(/#primeRecentPost\d+/, '#primeRecentPost' + newPageIndex);
+                var newPageIndex = (parseInt(currentPageIndex[1]) + 1) % 10;  // 0부터 9까지의 순환
+                window.location.href = '#primeRecentPost' + newPageIndex;
             }
         }
     </script>
