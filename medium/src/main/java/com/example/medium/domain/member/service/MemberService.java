@@ -162,7 +162,7 @@ public class MemberService {
 
     @Transactional
     public void setupTokenWhenLogin(Member member) {
-        String accessToken = makeToken(member, 10);
+        String accessToken = makeToken(member, 5);
         String refreshToken = makeToken(member, 60 * 24 * 7);
         setRefreshToken(member, refreshToken);
 
@@ -202,7 +202,6 @@ public class MemberService {
                     opMember.get()
             );
             return resp;
-            // todo : 웰컴 메시지
         }
         return create(new MemberJoinRequestDto(username, nickname, "", ""), null);
     }
