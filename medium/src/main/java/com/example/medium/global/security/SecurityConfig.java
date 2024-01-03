@@ -41,8 +41,8 @@ public class SecurityConfig {
                 )
                 .oauth2Login(
                         oauth2Login -> oauth2Login
-                                .loginPage("/member/login")
-                        // todo SuccessHandler, failureHandler 로 로그인, 회원가입 성공 실패 제어
+                                .loginPage("/oauth2/authorization/kakao")
+                                .defaultSuccessUrl("/member/login/oauth2loginsuccess")
                 )
                 .formLogin(AbstractHttpConfigurer::disable) // 기본 로그인 비활성화
                 .logout(AbstractHttpConfigurer::disable) // 기본 로그아웃 비활성화

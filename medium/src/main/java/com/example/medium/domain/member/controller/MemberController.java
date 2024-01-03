@@ -69,6 +69,15 @@ public class MemberController {
         return "domain/member/login_form";
     }
 
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/login/oauth2loginsuccess")
+    public String redirectOauth2LoginSuccess(RedirectAttributes attr, Principal principal) {
+        Member member = memberService.findByUsername(principal.getName());
+
+        attr.addFlashAttribute("msg", String.format("환영합니다, %s님!", member.getNickname()));
+        return "redirect:/";
+    }
+
     // Post: /member/login (JWT token)
     @PostMapping("/login")
     public String login(@ModelAttribute("memberLoginRequestDto") @Valid
@@ -130,7 +139,7 @@ public class MemberController {
         if (principal == null) {
             return "redirect:/";
         }
-        if (brs.hasErrors()){
+        if (brs.hasErrors()) {
             return "domain/member/mypage";
         }
 
