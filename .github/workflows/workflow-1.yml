@@ -7,7 +7,7 @@ on:
       - './medium/build.gradle'
       - './medium/Dockerfile'
     branches:
-      - main
+      - second
 jobs:
   makeTagAndRelease:
     runs-on: ubuntu-latest
