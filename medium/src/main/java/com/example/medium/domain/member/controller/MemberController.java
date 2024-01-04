@@ -98,7 +98,7 @@ public class MemberController {
         Member member = responseData.getData();
 
         // 로그인 시에 accessToken, refreshToken 재생산
-        memberService.setupTokenWhenLogin(member);
+        memberService.setTokenWhenLogin(member);
 
         attr.addFlashAttribute("msg", responseData.getMsg());
         return "redirect:/";
