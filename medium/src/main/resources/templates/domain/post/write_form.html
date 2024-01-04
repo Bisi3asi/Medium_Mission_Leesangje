@@ -8,7 +8,7 @@
     <!-- import fontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
     <!-- import toastUI -->
-    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
 </head>
 <body class="bg-white text-black">
 <!-- import daisyUI -->
@@ -18,7 +18,8 @@
 
 <div class="bg-white text-black">
     <!-- navbar -->
-    <form id="postForm" th:action="@{/post/write}" th:object="${postRequestDto}" method="post" enctype="multipart/form-data">
+    <form id="postForm" th:action="@{/post/write}" th:object="${postRequestDto}" method="post"
+          enctype="multipart/form-data">
         <!-- error -->
         <div th:if="${#fields.hasAnyErrors()}">
             <div class="toast toast-top toast-end mt-20">
@@ -96,19 +97,30 @@
                 </label>
                 <!-- toastUiEditor의 값을 입력받아 form으로 전달하는 textArea -->
                 <textarea class="form-input hidden" id="contentTextInput"
-                      th:field="*{content}"></textarea>
+                          th:field="*{content}"></textarea>
             </div>
             <div class="pb-10 flex items-center">
                 <div class="btn btn-ghost mr-1">
-                    <label for="file"><i class="fa-solid fa-circle-plus fas fa-3x"></i></label>
-                    <input type="file" id="file" class="hidden"
+                    <label for="previewFile"><i class="fa-solid fa-circle-plus fas fa-3x"></i></label>
+                    <input type="file" id="previewFile" class="hidden"
                            th:field="*{multipartFile}"
                            accept=".jpg, .jpeg, .png"
-                           onchange="displayFileName()"/>
+                           onchange="displayPreviewFile()"/>
                 </div>
-                <div>
-                    <div id="fileNameContainer" style="color: black;">미리보기 이미지를 등록해보세요!</div>
-                    <div class="label-text-alt">미리보기 이미지는 1개만 등록 가능하며, 이미지는 jpg, jpeg, gif, png 확장자를 지원합니다.</div>
+                <div class="w-full">
+                    <div class="flex items-center w-full">
+                        <div class="flex-1">
+                            <div id="previewFileAlert" style="color: black;">
+                                미리보기 이미지를 등록해보세요!
+                            </div>
+                            <div class="label-text-alt">
+                                미리보기 이미지는 1개만 등록 가능하며, 이미지는 jpg, jpeg, gif, png 확장자를 지원합니다.
+                            </div>
+                        </div>
+                        <div class="flex grid justify-end">
+                            <div id="previewFileViewer" class="w-20 h-20"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -135,17 +147,26 @@
         updateCharCount(contentTextarea, contentCharCountSpan, 1000);
     });
 
-    // 파일이 선택되었을 때 파일 이름을 표시
-    function displayFileName() {
-        var fileInput = document.getElementById('file');
-        var fileNameContainer = document.getElementById('fileNameContainer');
+    // 미리보기 파일이 선택되었을 때 파일 이름을 표시
+    function displayPreviewFile() {
+        var fileInput = document.getElementById('previewFile');
+        var previewFileAlert = document.getElementById('previewFileAlert');
+        var previewFileViewer = document.getElementById('previewFileViewer')
 
-        if (fileInput.value) {
-            fileNameContainer.innerHTML = 'File Selected: ' + fileInput.files[0].name;
-            fileNameContainer.style.color = 'green';
+        if (fileInput.files.length > 0) {
+            previewFileAlert.innerHTML = '파일이 선택되었습니다!'
+            previewFileAlert.style.color = 'green';
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                previewFileViewer.innerHTML = '<img src="' + e.target.result + '"alt="미리보기">';
+            };
+            reader.readAsDataURL(fileInput.files[0]);
+
         } else {
-            fileNameContainer.innerHTML = 'Add Preview Image';
-            fileNameContainer.style.color = 'black';
+            previewFileAlert.innerHTML = '미리보기 이미지를 등록해보세요.';
+            previewFileAlert.style.color = 'black';
+            previewFileViewer.innerHTML = ''; // 이미지 없음
         }
     }
 
@@ -194,8 +215,7 @@
         if (trimmedContent.length < 1) {
             document.querySelector('#contentTextInput').value = null;
             throw new Error('글 내용이 없습니다.');
-        }
-        else {
+        } else {
             document.querySelector('#contentTextInput').value = editor.getHTML();
         }
     });
