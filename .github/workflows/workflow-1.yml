@@ -3,9 +3,9 @@ on:
   push: # 해당 경로의 파일이 변경되었을 때만 워크플로우가 실행
     paths:
       - '.github/workflows/**'
-      - '${{ github.workspace }}/medium/src/**'
-      - '${{ github.workspace }}/medium/build.gradle'
-      - '${{ github.workspace }}/medium/Dockerfile'
+      - 'medium/src/**'
+      - 'medium/build.gradle'
+      - 'medium/Dockerfile'
     branches:
       - second
 jobs:
