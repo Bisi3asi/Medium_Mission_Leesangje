@@ -30,7 +30,7 @@ public class initData {
     private final CommentService commentService;
     private final MemberService memberService;
 
-    @Profile("!prod")
+    @Profile("!dev")
     @Bean
     public ApplicationRunner initTestData() {
         return new ApplicationRunner() {
