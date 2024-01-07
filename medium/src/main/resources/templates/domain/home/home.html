@@ -6,105 +6,232 @@
 <div layout:fragment="content">
     <!-- message -->
     <div th:unless="${msg == null}"
-         class="toast toast-top toast-end mt-24">
+         class="toast toast-top toast-end mt-1">
         <div class="alert alert-success">
             <span th:text="${msg}"></span>
         </div>
     </div>
-    <div class="w-full h-96 bg-yellow-500 justify-items-center">
-        <div class="py-20 px-20 pb-2 text-black font-bold">
-            <div class="mb-6 text-8xl">Stay Curious.</div>
-            <div class="text-3xl">discover stories, thinking, and expertise</div>
-            <div class="mb-6 text-3xl">from writers on any topic.</div>
-            <a sec:authorize="isAnonymous()"
-               href="/member/login"
-               class="btn btn-lg btn-active rounded-sm">Start reading</a>
-            <a sec:authorize="isAuthenticated()"
-               href="/post/list"
-               class="btn btn-lg btn-active rounded-sm">Start reading</a>
+    <div class="carousel w-full h-96">
+        <div id="slide1" class="carousel-item relative w-full">
+            <div class="w-full bg-yellow-500 justify-items-center">
+                <div class="py-20 px-20 pb-2 text-center text-black font-bold">
+                    <div class="mb-6 text-8xl">긴장하시라,</div>
+                    <div class="text-3xl">최고의 플랫폼이 다가오고 있습니다.</div>
+                    <div class="mb-6 text-3xl">이제는 받아들일 준비만 하면 됩니다.</div>
+                    <a sec:authorize="isAnonymous()"
+                       href="/member/login"
+                       class="btn btn-lg btn-active rounded-sm">시작하기</a>
+                    <a sec:authorize="isAuthenticated()"
+                       href="/post/list"
+                       class="btn btn-lg btn-active rounded-sm">시작하기</a>
+                </div>
+            </div>
+            <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                <a href="#slide4" class="btn btn-circle">❮</a>
+                <a href="#slide2" class="btn btn-circle">❯</a>
+            </div>
+        </div>
+        <div id="slide2" class="carousel-item relative w-full">
+            <img src="https://daisyui.com/images/stock/photo-1609621838510-5ad474b7d25d.jpg" class="w-full"/>
+            <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                <a href="#slide1" class="btn btn-circle">❮</a>
+                <a href="#slide3" class="btn btn-circle">❯</a>
+            </div>
+        </div>
+        <div id="slide3" class="carousel-item relative w-full">
+            <img src="https://daisyui.com/images/stock/photo-1414694762283-acccc27bca85.jpg" class="w-full"/>
+            <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                <a href="#slide2" class="btn btn-circle">❮</a>
+                <a href="#slide4" class="btn btn-circle">❯</a>
+            </div>
+        </div>
+        <div id="slide4" class="carousel-item relative w-full">
+            <img src="https://daisyui.com/images/stock/photo-1665553365602-b2fb8e5d1707.jpg" class="w-full"/>
+            <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
+                <a href="#slide3" class="btn btn-circle">❮</a>
+                <a href="#slide1" class="btn btn-circle">❯</a>
+            </div>
         </div>
     </div>
-    <div class="mx-20">
-        <h1 class="my-10 pb-2 text-3xl font-bold">Recent on Medium</h1>
-        <div class="mx-4">
-            <ul id="postList">
-                <li class="my-2 flex" th:each="post, iterStat : ${paging.content}" th:if="${iterStat.index < 10}">
-                    <div class="flex-none w-96 h-44 p-4">
-                        <a th:href="@{|/b/${post.author.username}|}">
-                            <div class="mb-2 btn btn-ghost flex items-center">
-                                <div class="mr-1">
-                                    <i class="fa-solid fa-user" style="color: white;"></i>
+
+    <div class="mx-5">
+        <!-- Prime 인기 게시글  -->
+        <div class="w-full relative">
+            <h1 class="pl-10 my-10 text-3xl font-bold text-red-400">PRIME 인기 게시글</h1>
+            <div class="carousel carousel-center w-full h-72 items-center relative">
+                <!-- 각 게시물 별로 carousel item 생성 -->
+                <div th:each="primeHotPost, iterStat : ${paging.content}" th:if="${iterStat.index < 10}">
+                    <div th:id="'primeHotPost' + ${iterStat.index}"
+                         class="carousel-item w-full items-center pl-8 bg-base-300">
+                        <div class="flex bg-base-200 p-5 items-center">
+                            <div class="w-96 h-60 p-2 items-center">
+                                <!-- 각 게시물 내용 -->
+                                <a th:href="@{|/b/${primeHotPost.author.username}|}">
+                                    <div class="mb-2 btn btn-ghost flex items-center">
+                                        <div class="mr-1">
+                                            <i class="fa-solid fa-user" style="color: white;"></i>
+                                        </div>
+                                        <div th:text="${primeHotPost.author.nickname}"></div>
+                                    </div>
+                                </a>
+                                <a th:href="@{|/post/${primeHotPost.id}|}">
+                                    <div class="flex items-center">
+                                        <i th:if="${primeHotPost.prime == true}" class="fa-solid fa-fire mr-2"
+                                           style="color:red"></i>
+                                        <div class="mb-2 text-3xl line-clamp-2" th:text="${primeHotPost.title}"></div>
+                                    </div>
+                                    <div class="mb-1 text-gray-400 line-clamp-1"
+                                         th:utext="${#strings.replace(#strings.replace(primeHotPost.content, '<.*?>', ''), '&lt;br&gt;', '\n')}">
+                                    </div>
+                                    <div class="flex text-xs text-gray-400">
+                                        <div class="mr-1"
+                                             th:text="${#temporals.format(primeHotPost.createDate, 'yyyy.MM.dd')}"></div>
+                                        <div class="mr-1">·</div>
+                                        <div th:text="${primeHotPost.viewCount + ' min read'}"></div>
+                                    </div>
+                                </a>
+                            </div>
+                            <a th:href="@{|/post/${primeHotPost.id}|}" class="w-52">
+                                <!-- 각 게시물 이미지 처리 -->
+                                <div th:if="${primeHotPost.imageFile == null}"
+                                     class="h-44 border border-gray-400 flex items-center justify-center">
+                                    <h2 class="text-3xl text-gray-500">이미지 없음</h2>
                                 </div>
-                                <div th:text="${post.author.username}"></div>
-                            </div>
-                        </a>
-                        <a th:href="@{|/post/${post.id}|}">
-                            <div class="mb-2 text-3xl line-clamp-2"
-                                 th:text="${post.title}">
-                            </div>
-                            <div class="mb-1 text-gray-400 line-clamp-1"
-                                 th:text="${post.content}">
-                            </div>
-                            <div class="flex text-xs text-gray-400">
-                                <div class="mr-1"
-                                     th:text="${#temporals.format(post.createDate, 'yyyy.MM.dd')}"></div>
-                                <div class="mr-1">·</div>
-                                <div th:text="${post.viewCount + ' min read'}"></div>
-                            </div>
-                        </a>
+                                <div th:unless="${primeHotPost.imageFile == null}" class="h-44 border border-gray-400">
+                                    <img class="w-full h-full object-cover"
+                                         th:src="@{|/images/${primeHotPost.imageFile.filename}|}"
+                                         alt="Post Image">
+                                </div>
+                            </a>
+                        </div>
                     </div>
-                    <a th:href="@{|/post/${post.id}|}">
-                        <div th:if="${post.imageFile == null}"
-                             class="w-64 h-44 border border-gray-400 flex items-center justify-center">
-                            <h2 class="text-3xl">No images</h2>
+                </div>
+            </div>
+                <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2 pt-20">
+                    <!-- 이전 버튼 -->
+                    <a onclick="changePrevPrimeHotAnchor()" class="btn btn-circle btn-outline">❮</a>
+                    <!-- 다음 버튼 -->
+                    <a onclick="changeNextPrimeHotAnchor()" class="btn btn-circle btn-outline">❯</a>
+                </div>
+        </div>
+        <!-- Prime 최근 게시글  -->
+        <div class="w-full relative">
+            <h1 class="pl-10 my-10 text-3xl font-bold text-red-400">PRIME 최근 게시글</h1>
+            <div class="carousel carousel-center w-full h-72 items-center relative">
+                <!-- 각 게시물 별로 carousel item 생성 -->
+                <div th:each="primeRecentPost, iterStat : ${paging.content}" th:if="${iterStat.index < 10}">
+                    <div th:id="'primeRecentPost' + ${iterStat.index}"
+                         class="carousel-item w-full items-center pl-8 bg-base-300">
+                        <div class="flex bg-base-200 p-5 items-center">
+                            <div class="w-96 h-60 p-2 items-center">
+                                <!-- 각 게시물 내용 -->
+                                <a th:href="@{|/b/${primeRecentPost.author.username}|}">
+                                    <div class="mb-2 btn btn-ghost flex items-center">
+                                        <div class="mr-1">
+                                            <i class="fa-solid fa-user" style="color: white;"></i>
+                                        </div>
+                                        <div th:text="${primeRecentPost.author.nickname}"></div>
+                                    </div>
+                                </a>
+                                <a th:href="@{|/post/${primeRecentPost.id}|}">
+                                    <div class="flex items-center">
+                                        <i th:if="${primeRecentPost.prime == true}" class="fa-solid fa-fire mr-2"
+                                           style="color:red"></i>
+                                        <div class="mb-2 text-3xl line-clamp-2" th:text="${primeRecentPost.title}"></div>
+                                    </div>
+                                    <div class="mb-1 text-gray-400 line-clamp-1"
+                                         th:utext="${#strings.replace(#strings.replace(primeRecentPost.content, '<.*?>', ''), '&lt;br&gt;', '\n')}">
+                                    </div>
+                                    <div class="flex text-xs text-gray-400">
+                                        <div class="mr-1"
+                                             th:text="${#temporals.format(primeRecentPost.createDate, 'yyyy.MM.dd')}"></div>
+                                        <div class="mr-1">·</div>
+                                        <div th:text="${primeRecentPost.viewCount + ' min read'}"></div>
+                                    </div>
+                                </a>
+                            </div>
+                            <a th:href="@{|/post/${primeRecentPost.id}|}" class="w-52">
+                                <!-- 각 게시물 이미지 처리 -->
+                                <div th:if="${primeRecentPost.imageFile == null}"
+                                     class="h-44 border border-gray-400 flex items-center justify-center">
+                                    <h2 class="text-3xl text-gray-500">이미지 없음</h2>
+                                </div>
+                                <div th:unless="${primeRecentPost.imageFile == null}" class="h-44 border border-gray-400">
+                                    <img class="w-full h-full object-cover"
+                                         th:src="@{|/images/${primeRecentPost.imageFile.filename}|}"
+                                         alt="Post Image">
+                                </div>
+                            </a>
                         </div>
-                        <div th:unless="${post.imageFile == null}"
-                             class="flex-none w-64 h-44 border border-gray-400">
-                            <img class="w-full h-full object-cover"
-                                 th:src="@{|/images/${post.imageFile.filename}|}"
-                                 alt="Post Image">
-                        </div>
-                    </a>
-                </li>
-            </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2 pt-20">
+                <!-- 이전 버튼 -->
+                <a onclick="changePrevPrimeRecentAnchor()" class="btn btn-circle btn-outline">❮</a>
+                <!-- 다음 버튼 -->
+                <a onclick="changeNextPrimeRecentAnchor()" class="btn btn-circle btn-outline">❯</a>
+            </div>
         </div>
     </div>
 </div>
 <th:block layout:fragment="script">
-    <script th:inline="javascript">
-        document.addEventListener('DOMContentLoaded', function () {
-            console.log('Script loaded!');  // 확인을 위한 로그 출력
+    <script>
+        function changePrevPrimeHotAnchor() {
+            // 현재 URL에서 #primeHotPost 뒤에 오는 숫자를 찾아냄
+            var currentPageIndex = window.location.hash.match(/#primeHotPost(\d+)/);
 
-            var listItems = document.querySelectorAll('#postList li');
-            var currentIndex = 10;
-
-            // 초기에는 10개의 아이템만 보이도록 설정
-            for (var i = 10; i < listItems.length; i++) {
-                listItems[i].style.display = 'none';
+            // 숫자가 없거나 0 이하인 경우 #primeHotPost9로 이동
+            if (!currentPageIndex || currentPageIndex.length < 2 || currentPageIndex[1] <= 0) {
+                window.location.href = '#primeHotPost9';
+            } else {
+                // 현재 페이지 인덱스를 기반으로 이전 페이지 인덱스를 계산하여 새로운 URL 생성
+                var newPageIndex = parseInt(currentPageIndex[1]) - 1;
+                window.location.href = '#primeHotPost' + newPageIndex;
             }
+        }
 
-            // 스크롤 이벤트 리스너 등록
-            window.addEventListener('scroll', function () {
-                if (isScrollAtBottom()) {
-                    loadMoreItems();
-                }
-            });
+        function changeNextPrimeHotAnchor() {
+            // 현재 URL에서 #primeHotPost 뒤에 오는 숫자를 찾아냄
+            var currentPageIndex = window.location.hash.match(/#primeHotPost(\d+)/);
 
-            // 스크롤이 맨 아래에 도달했는지 확인하는 함수
-            function isScrollAtBottom() {
-                return window.innerHeight + window.scrollY >= document.body.offsetHeight;
+            // 숫자가 없거나 9 이상인 경우 #primeHotPost0으로 이동
+            if (!currentPageIndex || currentPageIndex.length < 2 || parseInt(currentPageIndex[1]) >= 9) {
+                window.location.href = '#primeHotPost0';
+            } else {
+                // 현재 페이지 인덱스를 기반으로 이전 페이지 인덱스를 계산하여 새로운 URL 생성
+                var newPageIndex = (parseInt(currentPageIndex[1]) + 1) % 10;  // 0부터 9까지의 순환
+                window.location.href = '#primeHotPost' + newPageIndex;
             }
+        }
 
-            // 추가 아이템을 로드하고 화면에 보이게 하는 함수
-            function loadMoreItems() {
-                console.log('Scroll at bottom!');  // 확인을 위한 로그 출력
+        function changePrevPrimeRecentAnchor() {
+            // 현재 URL에서 #primeHotPost 뒤에 오는 숫자를 찾아냄
+            var currentPageIndex = window.location.hash.match(/#primeRecentPost(\d+)/);
 
-                for (var i = currentIndex; i < currentIndex + 10 && i < listItems.length; i++) {
-                    listItems[i].style.display = 'block';
-                }
-                currentIndex += 10;
+            // 숫자가 없거나 0 이하인 경우 #primeHotPost9로 이동
+            if (!currentPageIndex || currentPageIndex.length < 2|| currentPageIndex[1] <= 0) {
+                window.location.href = '#primeRecentPost9';
+            } else {
+                // 현재 페이지 인덱스를 기반으로 이전 페이지 인덱스를 계산하여 새로운 URL 생성
+                var newPageIndex = parseInt(currentPageIndex[1]) - 1;
+                window.location.href = '#primeRecentPost' + newPageIndex;
             }
-        });
+        }
+
+        function changeNextPrimeRecentAnchor() {
+            // 현재 URL에서 #primeHotPost 뒤에 오는 숫자를 찾아냄
+            var currentPageIndex = window.location.hash.match(/#primeRecentPost(\d+)/);
+
+            // 숫자가 없거나 9 이상인 경우 #primeHotPost0으로 이동
+            if (!currentPageIndex || currentPageIndex.length < 2 || parseInt(currentPageIndex[1]) >= 9) {
+                window.location.href = '#primeRecentPost0';
+            } else {
+                // 현재 페이지 인덱스를 기반으로 이전 페이지 인덱스를 계산하여 새로운 URL 생성
+                var newPageIndex = (parseInt(currentPageIndex[1]) + 1) % 10;  // 0부터 9까지의 순환
+                window.location.href = '#primeRecentPost' + newPageIndex;
+            }
+        }
     </script>
 </th:block>
 </body>

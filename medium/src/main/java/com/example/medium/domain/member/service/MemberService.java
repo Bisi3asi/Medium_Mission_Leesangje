@@ -1,10 +1,13 @@
 package com.example.medium.domain.member.service;
 
+import com.example.medium.domain.member.dto.MemberInfoModifyRequestDto;
 import com.example.medium.domain.member.dto.MemberJoinRequestDto;
 import com.example.medium.domain.member.dto.MemberLoginRequestDto;
 import com.example.medium.domain.member.entity.Member;
+import com.example.medium.domain.member.entity.Role;
 import com.example.medium.domain.member.repository.MemberRepository;
 import com.example.medium.global.response.ResponseData;
+import com.example.medium.global.rq.Rq;
 import com.example.medium.global.security.SecurityUser;
 import com.example.medium.global.utils.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -19,6 +22,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -29,17 +33,24 @@ import java.util.Optional;
 public class MemberService {
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final Rq rq;
 
     public Member findByUsername(String username) {
         return memberRepository.findByUsername(username).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Member not found")
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR : 해당 회원을 찾을 수 없습니다.")
         );
     }
 
     public Member findByRefreshToken(String refreshToken) {
-        return memberRepository.findByRefreshToken(refreshToken).orElseThrow(
-                () -> new ResponseStatusException(HttpStatus.BAD_REQUEST)
-        );
+        Optional<Member> opMember = memberRepository.findByRefreshToken(refreshToken);
+        if (opMember.isEmpty()) {
+            // refreshToken 없으면 쿠키 전부 삭제
+            rq.removeRefreshTokenFromCookie();
+            rq.removeAccessTokenFromCookie();
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR: 해당 회원을 찾을 수 없습니다.");
+        }
+
+        return opMember.get();
     }
 
     @Transactional
@@ -47,18 +58,77 @@ public class MemberService {
         if (memberRepository.findByUsername(memberRequestDto.getUsername()).isPresent()) {
             brs.addError(
                     new ObjectError(
-                            "username", "username already exists, please try another one."));
+                            "username", "동일한 ID가 존재합니다. 다른 ID로 시도해주세요."));
             return ResponseData.of("400", "join failed");
         }
 
         Member member = Member.builder()
                 .username(memberRequestDto.getUsername())
+                .nickname(memberRequestDto.getNickname())
                 .password(passwordEncoder.encode(memberRequestDto.getPassword()))
-                .authorities("admin".equals(memberRequestDto.getUsername()) ? "ROLE_ADMIN" : "ROLE_USER")
+                .profileMsg("안녕하세요!")
+                .isPrime(false)
+                .build();
+        memberRepository.save(member);
+
+        setAuthority(member, Role.USER);
+
+        return ResponseData.of("200", "회원가입이 완료되었습니다.", member);
+    }
+
+    @Transactional
+    public ResponseData<Member> modify(Member member, MemberInfoModifyRequestDto memberInfoModifyRequestDto) {
+        member = member.toBuilder()
+                .nickname(memberInfoModifyRequestDto.getNickname())
+                .profileMsg(memberInfoModifyRequestDto.getProfileMsg())
                 .build();
 
         memberRepository.save(member);
-        return ResponseData.of("200", "you have successfully joined", member);
+        return ResponseData.of("200", "사용자 정보가 수정되었습니다.", member);
+    }
+
+    @Transactional
+    public void setRefreshToken(Member member, String refreshToken) {
+        member.setRefreshToken(refreshToken);
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void setAuthority(Member member, Role role) {
+        member.getAuthorities().add(role);
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public void deleteAuthority(Member member, Role role) {
+        member.getAuthorities().remove(role);
+        memberRepository.save(member);
+    }
+
+    @Transactional
+    public ResponseData<Member> setPrime(Member member) {
+        if (member.isPrime()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이미 MEDIUM PRIME에 가입되어 있는 회원입니다.");
+        }
+
+        member.setPrime(true);
+        member.setPrimeExpirationDate(LocalDateTime.now().plusDays(30));
+        setAuthority(member, Role.PRIME);
+        memberRepository.save(member);
+
+        return ResponseData.of("200", "MEDIUM PRIME 가입에 성공하였습니다.", member);
+    }
+
+    @Transactional
+    public ResponseData<Member> deletePrime(Member member) {
+        if (!member.isPrime()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "MEDIUM PRIME에 가입되어 있지 않은 회원입니다.");
+        }
+
+        member.setPrime(false);
+        member.setPrimeExpirationDate(null);
+        deleteAuthority(member, Role.PRIME);
+        return ResponseData.of("200", "MEDIUM PRIME 해지에 성공하였습니다.", member);
     }
 
     public ResponseData checkUsernameAndPassword(MemberLoginRequestDto memberLoginRequestDto, BindingResult brs) {
@@ -66,7 +136,7 @@ public class MemberService {
         if (opMember.isEmpty()) {
             brs.addError(
                     new ObjectError(
-                            "login error", "login failed, please check username and password."));
+                            "login error", "로그인에 실패했습니다, ID와 PW를 확인해주세요."));
             return ResponseData.of("400", "login failed");
         }
 
@@ -74,11 +144,11 @@ public class MemberService {
         if (!passwordEncoder.matches(memberLoginRequestDto.getPassword(), member.getPassword())) {
             brs.addError(
                     new ObjectError(
-                            "login error", "login failed, please check username and password."));
+                            "login error", "로그인에 실패했습니다, ID와 PW를 확인해주세요."));
             return ResponseData.of("400", "login failed");
         }
 
-        return ResponseData.of("200", String.format("welcome, %s!", member.getUsername()), member);
+        return ResponseData.of("200", String.format("환영합니다, %s님!", member.getNickname()), member);
     }
 
     public String makeToken(Member member, int minute) {
@@ -86,8 +156,18 @@ public class MemberService {
                 Map.of(
                         "id", member.getId().toString(),
                         "username", member.getUsername(),
-                        "authorities", member.getAuthoritiesAsStrList()
+                        "authorities", member.getGrantedAuthoritiesAsStrList()
                 ), minute);
+    }
+
+    @Transactional
+    public void setTokenWhenLogin(Member member) {
+        String accessToken = makeToken(member, 5);
+        String refreshToken = makeToken(member, 60 * 24 * 7);
+        setRefreshToken(member, refreshToken);
+
+        rq.setAccessTokenToCookie(accessToken);
+        rq.setRefreshTokenToCookie(refreshToken);
     }
 
     public SecurityUser getUserFromAccessToken(String accessToken) {
@@ -108,7 +188,21 @@ public class MemberService {
     }
 
     @Transactional
-    public void setRefreshToken(Member member, String refreshToken) {
-        member.setRefreshToken(refreshToken);
+    public ResponseData<Member> whenSocialLogin(String providerTypeCode,
+                                                String username,
+                                                String nickname,
+                                                String profileImgUrl) {
+        Optional<Member> opMember = memberRepository.findByUsername(username);
+        if (opMember.isPresent()) {
+            setTokenWhenLogin(opMember.get());
+
+            ResponseData<Member> resp = ResponseData.of(
+                    "200",
+                    String.format("환영합니다, %s님!", nickname),
+                    opMember.get()
+            );
+            return resp;
+        }
+        return create(new MemberJoinRequestDto(username, nickname, "", ""), null);
     }
 }

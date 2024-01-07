@@ -1,6 +1,14 @@
 <html lang="ko" layout:decorate="~{global/layout}">
 <head>
     <title>Medium-Mission</title>
+    <!-- import toastUI CSS -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css"/>
+    <!-- import highlight.css (used in toastUI) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/styles/default.min.css">
+    <!-- import cod.mirror.css (used in toastUI) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.58.3/codemirror.min.css"/>
+    <!-- import toastUI syntax-highlight.js syntax plugin -->
+    <script src="https://uicdn.toast.com/editor-plugin-code-syntax-highlight/latest/toastui-editor-plugin-code-syntax-highlight.min.js"></script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -11,13 +19,68 @@
             <span th:text="${msg}"></span>
         </div>
     </div>
-    <!-- title container -->
-    <div class="w-full bg-white">
+    <!-- title container(이미지 있음) -->
+    <div th:if="${post.imageFile != null}"
+         th:style="'background-image: url(/images/' + ${post.imageFile.filename} + ');'"
+         class="w-full bg-cover bg-center">
         <div class="py-24 px-20 pb-2 text-black font-bold">
             <div class="flex items-center">
-                <div class="mr-2" th:unless="${post.published}">
-                    <i class="fa-solid fa-lock fas fa-5xl" style="color: black;"></i>
+                <div class="mr-2" th:if="${post.published == false}">
+                    <i class="fa-solid fa-lock pb-4 fas fa-2x" style="color: grey;"></i>
                 </div>
+                <i th:if="${post.prime == true}"
+                   class="fa-solid fa-fire mr-2 pb-4 fas fa-2x" style="color:red">
+                </i>
+                <div class="mb-6 text-5xl bg-gray-200 bg-opacity-50" th:text="${post.title}"></div>
+            </div>
+            <div class="text-xl"></div>
+            <div class="mb-6 text-black">
+                <div class="pt-1 mr-1 flex items-center w-max bg-gray-200 bg-opacity-50">
+                    <a th:href="@{|/b/${post.author.username}|}">
+                        <div class="mr-2 btn btn-ghost">
+                            <i class="fa-solid fa-user fas fa-2xl" style="color: black;"></i>
+                        </div>
+                    </a>
+                    <div>
+                        <div class="text-xl" th:text="${post.author.nickname}"></div>
+                        <div class="flex text-base">
+                            <div class="mr-1" th:text="${post.viewCount + ' min read'}"></div>
+                            <div class="mr-1">·</div>
+                            <div th:text="${#temporals.format(post.createDate, 'yyyy.MM.dd')}"></div>
+                        </div>
+                    </div>
+                    <div th:if="${currentUser != null and currentUser.username == post.author.username}"
+                         class="dropdown dropdown-right">
+                        <div tabindex="0" role="button" class="btn btn-ghost m-1">
+                            <i class="fa-solid fa-ellipsis"></i>
+                        </div>
+                        <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-gray-200 bg-opacity-50 w-40">
+                            <li><a th:href="@{'/post/' + ${post.id} + '/modify'}">글 수정</a></li>
+                            <li>
+                                <form th:action="@{'/post/' + ${post.id} + '/delete'}" th:method="delete">
+                                    <input type="hidden" name="_method" value="DELETE"/>
+                                    <button type="submit" onclick="return confirmDelete();">
+                                        글 삭제
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- title container(이미지 없음) -->
+    <div th:unless="${post.imageFile != null}"
+         class="w-full bg-white">
+        <div class="py-24 px-20 pb-2 text-black font-bold">
+            <div class="flex items-center">
+                <div class="mr-2" th:if="${post.published == false}">
+                    <i class="fa-solid fa-lock pb-4 fas fa-2x" style="color: grey;"></i>
+                </div>
+                <i th:if="${post.prime == true}"
+                   class="fa-solid fa-fire mr-2 pb-4 fas fa-2x" style="color:red">
+                </i>
                 <div class="mb-6 text-5xl" th:text="${post.title}"></div>
             </div>
             <div class="text-xl"></div>
@@ -25,11 +88,11 @@
                 <div class="pt-1 mr-1 flex items-center">
                     <a th:href="@{|/b/${post.author.username}|}">
                         <div class="mr-2 btn btn-ghost">
-                            <i class="fa-solid fa-user fas fa-2xl" style="color: black;"></i>
+                            <i class="fa-solid fa-user fas fa-2x" style="color: black;"></i>
                         </div>
                     </a>
                     <div>
-                        <div class="text-xl" th:text="${post.author.username}"></div>
+                        <div class="text-xl" th:text="${post.author.nickname}"></div>
                         <div class="flex text-base">
                             <div class="mr-1" th:text="${post.viewCount + ' min read'}"></div>
                             <div class="mr-1">·</div>
@@ -37,16 +100,18 @@
                         </div>
                     </div>
                     </a>
-                    <div class="dropdown dropdown-right">
-                        <div tabindex="0" role="button" class="btn btn-ghost m-1"><i class="fa-solid fa-ellipsis"></i>
+                    <div th:if="${currentUser != null and currentUser.username == post.author.username}"
+                         class="dropdown dropdown-right">
+                        <div tabindex="0" role="button" class="btn btn-ghost m-1">
+                            <i class="fa-solid fa-ellipsis"></i>
                         </div>
                         <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-40">
-                            <li><a th:href="@{'/post/' + ${post.id} + '/modify'}">Update Post</a></li>
+                            <li><a th:href="@{'/post/' + ${post.id} + '/modify'}">글 수정</a></li>
                             <li>
                                 <form th:action="@{'/post/' + ${post.id} + '/delete'}" th:method="delete">
-                                    <input type="hidden" name="_method" value="delete"/>
+                                    <input type="hidden" name="_method" value="DELETE"/>
                                     <button type="submit" onclick="return confirmDelete();">
-                                        Delete Post
+                                        글 삭제
                                     </button>
                                 </form>
                             </li>
@@ -57,8 +122,14 @@
         </div>
     </div>
 
-    <!-- content -->
+    <!-- content container -->
+    <!-- post 추천, 댓글 수  -->
     <div class="flex items-center w-full h-14 px-20 border-b-2 border-gray-400">
+        <!--        <div class=mx-auto th:unless="${post.imageFile == null}">-->
+        <!--            <img class="mb-10 w-full h-auto self-center mx-auto"-->
+        <!--                 th:src="@{|/images/${post.imageFile.filename}|}"-->
+        <!--                 alt="Post Image">-->
+        <!--        </div>-->
         <div class="mr-2">
             <i class="fa-solid fa-hands-clapping" style="color: white;"></i>
         </div>
@@ -69,111 +140,222 @@
         <div th:text="${post.commentList.size}"></div>
     </div>
 
-    <div class="px-20 mt-10 pb-32 text-2xl">
-        <div class=mx-auto th:unless="${post.imageFile == null}">
-            <img class="mb-10 w-3/4 h-1/2 self-center mx-auto"
-                 th:src="@{|/images/${post.imageFile.filename}|}"
-                 alt="Post Image">
-        </div>
-        <div th:unless="${post.imageFile == null}"
-             class="w-3/4 h-1/2 self-center mx-auto"
-             th:text="${post.content}">
-        </div>
-        <div th:if="${post.imageFile == null}"
-             th:text="${post.content}">
+    <!-- prime 글 전용  -->
+    <div th:if="${post.prime == true and (currentUser == null or currentUser.prime == false)}">
+        <div class="hero h-128 flex items-center justify-center">
+            <div class="hero-content text-center">
+                <div class="py-20 max-w-md">
+                    <h1 class="text-5xl font-bold text-yellow-500">MEDIUM PRIME</h1>
+                    <p class="py-6 text-3xl">MEDIUM PRIME 전용 게시글입니다.</p>
+                    <p class="py-6 text-xl">프리미엄 게시글 & 게시글 수익 정산 혜택을<br>MEDIUM PRIME과 함께 시작해보세요!</p>
+                    <a class="btn btn-outline btn-warning btn-lg" href="/prime">
+                        <i class="fa-solid fa-fire" style="color: red;"></i>
+                        지금 시작하기
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- comment -->
-    <div class="px-20 border-b-2 border-gray-400 bg-gray-700">
-        <ul th:each="comment : ${post.commentList}">
-            <li class="py-2 text-xl">
-                <div class="text-gray-400">
-                    <div class="pt-1 mr-1 mb-2 flex items-center">
-                        <a th:href="@{|/b/${comment.author.username}|}">
-                            <div class="mr-2 btn btn-ghost">
-                                <i class="fa-solid fa-user fas fa-2xl" style="color: white;"></i>
-                            </div>
-                        </a>
-                        <div>
-                            <div class="text-xl" th:text="${comment.author.username}"></div>
-                            <div class="flex text-base">
-                                <div th:text="${#temporals.format(comment.createDate, 'yyyy.MM.dd')}"></div>
-                            </div>
-                        </div>
-                        <div class="dropdown dropdown-right">
-                            <div th:attr="tabindex=0, role='button'" class="btn btn-ghost m-1">
-                                <i class="fa-solid fa-ellipsis"></i></div>
-                            <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-44">
-                                <li><a href="@{|/comment/${comment.id}/modify}|}">Update Comment</a></li>
-                                <li><a href="@{/comment/${comment.id}/delete}|}">Delete Comment</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                    <div th:text="${comment.content}" class="mb-2"></div>
-                    <div class="flex items-center w-full h-10 text-lg">
-                        <div class="mr-2">
-                            <i class="fa-solid fa-hands-clapping" style="color: white;"></i>
-                        </div>
-                        <div class="mr-7">2K</div>
-                        <div class="mr-2">
-                            <i class="fa-solid fa-comment" style="color: white;"></i>
-                        </div>
-                        <div th:text="${post.commentList.size}"></div>
-                    </div>
-                </div>
-            </li>
-        </ul>
-        <!-- comment form -->
-        <!--        <form th:action="${/comment/write}" method="post">-->
-        <div class="form-control">
-            <div class="label">
-                <span class="label-text">&nbsp;</span>
-                <span class="label-text-alt" id="charCount">0 / 300</span>
-            </div>
-            <textarea class="mb-2 textarea textarea-lg textarea-primary"
-                      id="textInput"
-                      maxlength="300" rows="6"
-                      placeholder="What are your thoughts?"></textarea>
-            <div class="flex justify-between pb-10">
-                <div class="flex justify-items-center">
-                    <input type="checkbox" checked="checked" class="checkbox mr-2"/>
-                    <span>Also publish to my profile</span>
-                </div>
-                <input class="btn btn-primary" value="Respond" type="submit">
-            </div>
+    <!-- ! prime -->
+    <div th:unless="${post.prime == true and (currentUser == null or currentUser.prime == false)}">
+        <div class="px-20 mt-10 pb-32 text-2xl">
+            <div id="postContent" th:text="${post.content}" class="break-words markdown"></div>
         </div>
-        <!--        </form>-->
+        <!-- comment -->
+        <div class="px-20 border-b-2 border-gray-400 bg-gray-700">
+            <ul th:each="comment : ${post.commentList}">
+                <li class="py-2 text-xl">
+                    <div class="text-gray-400">
+                        <div class="pt-1 mr-1 mb-6 flex items-center">
+                            <a th:href="@{|/b/${comment.author.username}|}">
+                                <div class="mr-2 btn btn-ghost">
+                                    <i class="fa-solid fa-user fas fa-2xl" style="color: white;"></i>
+                                </div>
+                            </a>
+                            <div>
+                                <div class="text-xl" th:text="${comment.author.nickname}"></div>
+                                <div class="flex text-base">
+                                    <div th:text="${#temporals.format(comment.createDate, 'yyyy.MM.dd')}"></div>
+                                </div>
+                            </div>
+                            <div th:if="${currentUser != null and comment.author.username == currentUser.username}"
+                                 class="dropdown dropdown-right">
+                                <div th:attr="tabindex=0, role='button'" class="btn btn-ghost m-1">
+                                    <i class="fa-solid fa-ellipsis"></i></div>
+                                <ul tabindex="0" class="dropdown-content z-[1] menu p-2 shadow bg-base-400 w-44">
+                                    <li>
+                                        <button th:onclick="toggleCommentModifyForm([[${comment.id}]])">댓글 수정</button>
+                                    </li>
+                                    <li>
+                                        <form th:action="@{'/comment/delete/' + ${comment.id}}" th:method="delete">
+                                            <button type="submit" onclick="return confirmDelete();">댓글 삭제</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div th:id="'commentTextArea-'+${comment.id}">
+                            <!-- 비공개 댓글 (작성자, 본인인 경우)-->
+                            <div th:if="${currentUser != null
+                        and comment.published == false
+                        and (comment.author.username == currentUser.username
+                        or post.author.username == currentUser.username)}"
+                                 class="flex">
+                                <i class="fa-solid fa-lock" style="color:grey"></i>
+                                <div th:text="${comment.content}" class="pl-4 mb-4 text-gray-400 break-words"></div>
+                            </div>
+                            <!-- 비공개 댓글 (작성자, 본인 외)-->
+                            <div th:if="${(comment.published == false and currentUser == null)
+                        or (comment.published == false and currentUser != null
+                            and comment.author.username != currentUser.username
+                            and post.author.username != currentUser.username)}"
+                                 class="flex">
+                                <i class="fa-solid fa-lock" style="color:grey"></i>
+                                <div class="pl-4 mb-4 text-gray-400">비공개 댓글입니다.</div>
+                            </div>
+                            <!-- 공개 댓글 -->
+                            <div th:if="${comment.published == true}"
+                                 th:text="${comment.content}"
+                                 class="pl-4 mb-4 text-white break-words"></div>
+                        </div>
+                        <!-- 토글 시 활성화 댓글 수정 영역 -->
+                        <form th:action="@{|/comment/modify/${comment.id}|}"
+                              th:object="${commentRequestDto}"
+                              th:method="PUT"
+                              th:id="'commentModifyForm-'+${comment.id}"
+                              class="flex-col hidden">
+                            <div class="label">
+                                <span class="label-text">&nbsp;</span>
+                                <span class="label-text-alt" id="charCount2">0 / 300</span>
+                            </div>
+                            <div class="form-control">
+                            <textarea th:field="*{content}"
+                                      id="textInput2"
+                                      class="mb-2 textarea textarea-lg textarea-primary"
+                                      maxlength="300" rows="6"></textarea>
+                                <div class="flex justify-end">
+                                    <div class="btn btn-sm btn-ghost mr-1"
+                                         th:onclick="toggleCommentModifyForm([[${comment.id}]])">
+                                        수정 취소
+                                    </div>
+                                    <input class="btn btn-sm btn-primary" value="수정 완료" type="submit">
+                                </div>
+                            </div>
+
+                        </form>
+                        <!-- 댓글 추천, 대댓글 todo  -->
+                        <div class="flex items-center w-full h-10 text-lg">
+                            <div class="mr-2">
+                                <i class="fa-solid fa-hands-clapping" style="color: white;"></i>
+                            </div>
+                            <div class="mr-7">2K</div>
+                            <div class="mr-2">
+                                <i class="fa-solid fa-comment" style="color: white;"></i>
+                            </div>
+                            <div th:text="${post.commentList.size}"></div>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+            <!-- comment form -->
+            <form th:action="@{|/comment/write/${post.id}|}" th:object="${commentRequestDto}" method="post">
+                <div sec:authorize="isAuthenticated()" class="form-control">
+                    <div class="label">
+                        <span class="label-text">&nbsp;</span>
+                        <span class="label-text-alt" id="charCount1">0 / 300</span>
+                    </div>
+                    <textarea th:field="*{content}"
+                              class="mb-2 textarea textarea-lg textarea-primary"
+                              id="textInput1"
+                              maxlength="300" rows="6"
+                              placeholder="댓글을 남겨주세요!"></textarea>
+                    <div class="flex justify-between pb-10">
+                        <div class="flex justify-items-center">
+                            <input th:field="*{published}"
+                                   type="checkbox"
+                                   checked="checked"
+                                   class="checkbox mr-2"/>
+                            <span>공개 댓글로 등록</span>
+                        </div>
+                        <input class="btn btn-primary" value="등록하기" type="submit">
+                    </div>
+                </div>
+                <div sec:authorize="isAnonymous()" class="form-control">
+            <textarea class="mb-2 textarea textarea-lg textarea-primary"
+                      maxlength="300" rows="6" disabled
+                      placeholder="로그인 후 댓글 작성이 가능합니다."></textarea>
+                    <div class="flex justify-end pb-10">
+                        <a href="/member/login" class="btn btn-primary mr-1">로그인</a>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 <th:block layout:fragment="script">
-    <script> // comment form 글자수 세기 script
-    document.addEventListener("DOMContentLoaded", function () {
-        const textarea = document.getElementById('textInput');
-        const charCountSpan = document.getElementById('charCount');
+    <!-- import toastUI JS -->
+    <script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+    <!-- import highlight.js (used in toastUI) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.4.1/highlight.min.js"></script>
+    <script>
+        // comment form 글자수 세기 script
+        document.querySelectorAll('textarea[id^="textInput"]').forEach(function (textarea) {
+            const textareaId = textarea.id;
+            // id에서 "textInput" 이후 부분을 추출
+            const charCountSpanId = 'charCount' + textareaId.substring(9);
+            const charCountSpan = document.getElementById(charCountSpanId);
 
-        textarea.addEventListener('input', function () {
-            const currentLength = textarea.value.length;
-            const maxLength = 300;
+            textarea.addEventListener('input', function () {
+                const currentLength = textarea.value.length;
+                const maxLength = 300;
 
-            charCountSpan.textContent = `${currentLength} / ${maxLength}`;
+                charCountSpan.textContent = `${currentLength} / ${maxLength}`;
 
-            if (currentLength > maxLength) {
-                charCountSpan.classList.add('text-red-500');
-            } else {
-                charCountSpan.classList.remove('text-red-500');
-            }
+                if (currentLength > maxLength) {
+                    charCountSpan.classList.add('text-red-500');
+                } else {
+                    charCountSpan.classList.remove('text-red-500');
+                }
+            });
         });
-    });
 
-    function confirmDelete() {
-        var result = confirm('Are you sure delete your post?');
-        if (result) {
-            return true;
-        } else {
-            return false;
+        // 삭제 확인 함수
+        function confirmDelete() {
+            var result = confirm('정말로 삭제하시겠습니까?');
+            if (result) {
+                return true;
+            } else {
+                return false;
+            }
         }
-    }
+
+        // 본문 뷰 값으로 마크다운 문법 적용된 내용으로 변환 -> innerHTML
+        // todo : 테일윈드에서 지우는 #, h1, h2, ul, li 엘리먼트 등의 호환 해결
+        // todo : toastUI viewer 활용은 못하나..?
+        document.addEventListener("DOMContentLoaded", function () {
+            const postContentElement = document.getElementById('postContent');
+            postContentElement.innerHTML = marked.parse(postContentElement.textContent);
+        });
+
+        // 댓글 수정 폼 토글 함수
+        function toggleCommentModifyForm(commentId) {
+            var commentTextArea = document.getElementById('commentTextArea-' + commentId);
+            var commentModifyForm = document.getElementById('commentModifyForm-' + commentId);
+
+            if (commentTextArea && commentModifyForm) {
+                // 댓글 표시 영역과 댓글 수정 폼의 표시 여부를 토글에 따라 번갈아가면서 변경
+                commentTextArea.classList.toggle('hidden');
+                commentModifyForm.classList.toggle('hidden');
+
+                var textareaInForm = commentModifyForm.querySelector('textarea');
+                var contentInTextArea = commentTextArea.querySelector('.break-words'); // 실제 HTML 구조에 따라 선택자를 조정해야 할 수 있습니다.
+
+                if (textareaInForm && contentInTextArea) {
+                    textareaInForm.value = contentInTextArea.innerText;
+                }
+            }
+        }
     </script>
 </th:block>
 </body>

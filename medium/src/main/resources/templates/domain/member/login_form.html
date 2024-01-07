@@ -2,7 +2,7 @@
 <html lang="ko" layout:decorate="~{global/layout}">
 
 <head>
-    <title>Login Medium</title>
+    <title>Medium</title>
 </head>
 <body>
 <div layout:fragment="content" class="flex items-center justify-center h-screen mx-4">
@@ -23,29 +23,35 @@
             </div>
         </div>
 
-        <h1 class="text-5xl font-bold text-center mb-10 text-yellow-500">Login Medium</h1>
+        <h1 class="text-5xl font-bold text-center mb-10 text-yellow-500">Me, Medium</h1>
         <div class="form-control mx-auto w-96 mb-6">
             <label for="username" class="form-label mb-2">
-                <span class="label-text">Username</span>
+                <span class="label-text">사용자 ID</span>
             </label>
-            <input type="text" id="username" name="username" placeholder="username"
+            <input type="text" id="username" name="username" placeholder="사용자 ID"
                    class="form-input w-100 p-4"/>
         </div>
         <div class="form-control mx-auto w-96 mb-6">
             <label for="password" class="form-label mb-2">
-                <span class="label-text">Password</span>
+                <span class="label-text">비밀번호</span>
             </label>
-            <input type="password" id="password" name="password" placeholder="password"
+            <input type="password" id="password" name="password" placeholder="비밀번호"
                    class="form-input w-96 p-4"/>
         </div>
         <label class="label">
             <span>&nbsp;</span>
-            <span class="label-text-alt">Not a member yet?</span>
+            <span class="label-text-alt">아직 회원이 아니신가요?</span>
         </label>
-        <div class="flex">
-            <input type="submit" class="flex-1 btn btn-primary mr-1" value="Login Medium">
+        <div class="flex mb-2">
+            <input type="submit" class="mr-1 flex-1 btn btn-primary" value="로그인">
             <a href="/member/join" class="flex-1 btn btn-success">
-                Join Medium
+                회원가입
+            </a>
+        </div>
+        <div class="justify-center text-center">
+            <span class="label-text-alt">간편 로그인</span>
+            <a href="/oauth2/authorization/kakao" class="mt-2 flex btn btn-warning w-full">
+                <i class="fa-solid fa-comment"></i>카카오톡 로그인
             </a>
         </div>
     </form>

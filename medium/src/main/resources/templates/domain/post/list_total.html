@@ -14,21 +14,21 @@
     </div>
     <div class="mx-20">
         <div class="flex my-10 pb-2">
-            <h1 class="flex-none mr-20 text-3xl text-yellow-500 font-bold">Total Posts on Medium</h1>
+            <h1 class="flex-none mr-20 text-3xl text-yellow-500 font-bold">모든 게시글</h1>
             <div class="flex-none" th:unless="${paging.isEmpty()}">
                 <a th:classappend="${!paging.hasPrevious} ? 'opacity-50 pointer-events-none' : ''"
                    th:href="|?page=${paging.number-1}|"
                    class="page-link join-item btn btn-lg hover:text-blue-500"
-                   th:text="prev">
+                   th:text="이전">
                 </a>
                 <a th:classappend="${!paging.hasNext} ? 'opacity-50 pointer-events-none' : ''"
                    th:href="|?page=${paging.number+1}|"
                    class="page-link join-item btn btn-lg hover:text-blue-500"
-                   th:text="next">
+                   th:text="다음">
                 </a>
                 <a th:href="|?page=${randomValue}|"
                    class="page-link join-item btn btn-primary btn-lg hover:text-blue-500"
-                   th:text="jump">
+                   th:text="점프">
                 </a>
             </div>
         </div>
@@ -41,15 +41,18 @@
                                 <div class="mr-1">
                                     <i class="fa-solid fa-user fas fa-2xl" style="color: white;"></i>
                                 </div>
-                                <div th:text="${post.author.username}"></div>
+                                <div th:text="${post.author.nickname}"></div>
                             </div>
                         </a>
                         <a th:href="@{|/post/${post.id}|}">
-                            <div class="mb-2 text-3xl line-clamp-2"
-                                 th:text="${post.title}">
+                            <div class="flex items-center">
+                                <i th:if="${post.prime == true}"
+                                   class="fa-solid fa-fire mr-2" style="color:red">
+                                </i>
+                                <div class="mb-2 text-3xl line-clamp-2" th:text="${post.title}"></div>
                             </div>
                             <div class="mb-1 text-gray-400 line-clamp-1"
-                                 th:text="${post.content}">
+                                 th:utext="${#strings.replace(#strings.replace(post.content, '<.*?>', ''), '&lt;br&gt;', '\n')}">
                             </div>
                             <div class="flex text-xs text-gray-400">
                                 <div class="mr-1"
@@ -62,7 +65,7 @@
                     <a th:href="@{|/post/${post.id}|}">
                         <div th:if="${post.imageFile == null}"
                              class="w-64 h-44 border border-gray-400 flex items-center justify-center">
-                            <h2 class="text-3xl">No images</h2>
+                            <h2 class="text-3xl text-gray-500">이미지 없음</h2>
                         </div>
                         <div th:unless="${post.imageFile == null}"
                              class="flex-none w-64 h-44 border border-gray-400">
@@ -80,12 +83,12 @@
         <a th:classappend="${!paging.hasPrevious} ? 'opacity-50 pointer-events-none' : ''"
            th:href="|?page=0|"
            class="page-link join-item btn hover:text-blue-500"
-           th:text="first">
+           th:text="처음">
         </a>
         <a th:classappend="${!paging.hasPrevious} ? 'opacity-50 pointer-events-none' : ''"
            th:href="|?page=${paging.number-1}|"
            class="page-link join-item btn hover:text-blue-500"
-           th:text="prev">
+           th:text="이전">
         </a>
         <a th:each="page: ${#numbers.sequence(0, paging.totalPages-1)}"
            th:if="${page >= paging.number-2 and page <= paging.number+2}"
@@ -97,12 +100,12 @@
         <a th:classappend="${!paging.hasNext} ? 'opacity-50 pointer-events-none' : ''"
            th:href="|?page=${paging.number+1}|"
            class="page-link join-item btn hover:text-blue-500"
-           th:text="next">
+           th:text="다음">
         </a>
         <a th:classappend="${!paging.hasNext} ? 'opacity-50 pointer-events-none' : ''"
            th:href="|?page=${paging.totalPages-1}|"
            class="page-link join-item btn hover:text-blue-500"
-           th:text="end">
+           th:text="마지막">
         </a>
     </div>
     <!-- 페이징처리 끝 -->

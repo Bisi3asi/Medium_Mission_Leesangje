@@ -3,11 +3,11 @@ on:
   push: # 해당 경로의 파일이 변경되었을 때만 워크플로우가 실행
     paths:
       - '.github/workflows/**'
-      - './medium/src/**'
-      - './medium/build.gradle'
-      - './medium/Dockerfile'
+      - 'medium/src/**'
+      - 'medium/build.gradle'
+      - 'medium/Dockerfile'
     branches:
-      - main
+      - second
 jobs:
   makeTagAndRelease:
     runs-on: ubuntu-latest

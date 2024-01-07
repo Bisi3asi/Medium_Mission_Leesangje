@@ -20,6 +20,9 @@ public class Comment extends BaseEntity {
     @Column(nullable = false, length = 300)
     private String content;
 
+    @Column(nullable = false)
+    private boolean isPublished;
+
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
 

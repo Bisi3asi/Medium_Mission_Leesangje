@@ -18,13 +18,19 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class PostService {
     private final PostRepository postRepository;
+
+    public Post getLatest() {
+        return postRepository.findTopByOrderByIdDesc()
+                .orElseThrow(
+                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR: 게시글을 찾을 수 없습니다.")
+                );
+    }
 
     public Page<Post> getTotalList(int page, int pageSize) {
         List<Sort.Order> sorts = new ArrayList<>();
@@ -42,22 +48,12 @@ public class PostService {
         return postRepository.findAllByAuthorUsernameAndIsPublishedTrue(username, pageable);
     }
 
-    @Transactional
-    public Post findById(Long id) {
-        Optional<Post> opPost = postRepository.findById(id);
-        if (opPost.isPresent()){
-            Post post = opPost.get();
-            post.incrViewCount();
-            return post;
-        }
-        else throw new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR: Post not found.");
-    }
+    public Page<Post> getMyList(int page, int pageSize, String username) {
+        List<Sort.Order> sorts = new ArrayList<>();
+        sorts.add(Sort.Order.desc("id"));
 
-    public Post getLatest() {
-        return postRepository.findTopByOrderByIdDesc()
-                .orElseThrow(
-                        () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR: Post not found.")
-                );
+        Pageable pageable = PageRequest.of(page, pageSize, Sort.by(sorts));
+        return postRepository.findAllByAuthorUsername(username, pageable);
     }
 
     @Transactional
@@ -68,46 +64,54 @@ public class PostService {
                 .title(req.getTitle())
                 .content(req.getContent())
                 .isPublished(req.isPublished())
+                .isPrime(req.isPrime())
                 .build();
 
         postRepository.save(post);
-        return ResponseData.of("200", "Your work has been successfully posted.", post);
+        return ResponseData.of("200", "게시글이 등록되었습니다.", post);
     }
 
     @Transactional
     public ResponseData<Post> modify(PostRequestDto req, Long id, Member member) {
-        Post post = postRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "ERROR: Post not found.")
-        );
-        if (!Objects.equals(post.getAuthor().getUsername(), member.getUsername())){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "ERROR: you are not authorized to modify this post."
-            );
-        }
+        Post post = get(id);
+        validateAuthor(post, member);
+
         post = post.toBuilder()
                 .author(member)
                 .title(req.getTitle())
                 .content(req.getContent())
                 .isPublished(req.isPublished())
+                .isPrime(req.isPrime())
                 .build();
 
         postRepository.save(post);
-        return ResponseData.of("200", "Your post has been successfully updated.", post);
+        return ResponseData.of("200", "게시글이 수정되었습니다.", post);
     }
 
     @Transactional
-    public ResponseData<Post> delete(Long id, Member member) {
-        Post post = postRepository.findById(id).orElseThrow(
-                () -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Post not found.")
-        );
-        if (!Objects.equals(post.getAuthor().getUsername(), member.getUsername())){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST, "ERROR: you are not authorized to modify this post"
-            );
-        }
+    public ResponseData delete(Long id, Member member) {
+        Post post = get(id);
+        validateAuthor(post, member);
+
         postRepository.delete(post);
-        return ResponseData.of("200", "Your post has been successfully deleted.", null);
+        return ResponseData.of("200", "게시글이 삭제되었습니다.");
+    }
+
+    @Transactional
+    public void incrViewCount(Post post) {
+        post.incrViewCount();
+        postRepository.save(post);
+    }
+
+    public Post get(Long id) {
+        return postRepository.findById(id).orElseThrow(
+                () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "ERROR: 게시글을 찾을 수 없습니다.")
+        );
+    }
+
+    public void validateAuthor(Post post, Member member) {
+        if (!Objects.equals(post.getAuthor().getUsername(), member.getUsername())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ERROR : 권한이 없는 사용자입니다.");
+        }
     }
 }

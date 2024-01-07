@@ -7,8 +7,10 @@
     <link rel="stylesheet" href="/global.css">
     <!-- import fontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+    <!-- import toastUI -->
+    <link rel="stylesheet" href="https://uicdn.toast.com/editor/latest/toastui-editor.min.css" />
 </head>
-<body class="bg-white">
+<body class="bg-white text-black">
 <!-- import daisyUI -->
 <link href="https://cdn.jsdelivr.net/npm/daisyui@4.0.8/dist/full.min.css" rel="stylesheet" type="text/css"/>
 <!-- import tailwind -->
@@ -16,8 +18,17 @@
 
 <div class="bg-white text-black">
     <!-- navbar -->
-    <form th:action="@{|/post/${id}/modify|}" th:object="${postRequestDto}" th:method="put">
+    <form th:action="@{|/post/${id}/modify|}" th:object="${postRequestDto}" th:method="put" enctype="multipart/form-data">
         <input type="hidden" name="_method" value="put"/>
+        <!-- error -->
+        <div th:if="${#fields.hasAnyErrors()}">
+            <div class="toast toast-top toast-end mt-20">
+                <div th:each="error : ${#fields.allErrors()}" class="alert alert-error mb-1">
+                    <span th:text="${error}"></span>
+                </div>
+            </div>
+        </div>
+
         <div class="navbar">
             <div class="dropdown flex-none">
                 <button class="btn btn-square btn-ghost">
@@ -28,73 +39,83 @@
                     </svg>
                 </button>
                 <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-white w-52">
-                    <li><a href="/">Recent Post</a></li>
-                    <li><a href="/post/list">Total Post</a></li>
-                    <li><a href="/post/write">Write Post</a></li>
+                    <li><a href="/">최신 게시글</a></li>
+                    <li><a href="/post/list">모든 게시글</a></li>
                 </ul>
             </div>
             <div class="flex-1 font-bold">
                 <a href="/" class="btn btn-ghost btn-lg text-2xl font-bold">MEDIUM</a>
                 <span class="mr-2">By</span>
-                <span>user1</span>
+                <span th:text="${currentUser.nickname}"></span>
             </div>
-            <input class="flex-none btn btn-success" type="submit" value="Publish">
-            <div class="flex-none">
-                <ul class="menu menu-horizontal px-1">
-                    <li>
-                        <details>
-                            <summary>
-                                <div tabindex="0" role="button" class="btn btn-ghost btn-circle avatar">
-                                    <div>
-                                        <i class="fa-solid fa-bars"></i>
-                                    </div>
-                                </div>
-                            </summary>
-                            <ul class="p-2 bg-white rounded-t-none w-40">
-                                <li><a>My page</a></li>
-                                <li><a>My article</a></li>
-                            </ul>
-                        </details>
-                    </li>
-                </ul>
-            </div>
+            <input class="mr-16 flex-none btn btn-success" type="submit" value="등록하기">
         </div>
 
         <!-- form -->
         <div class="px-20 bg-white">
             <div class="form-control mx-auto mb-2">
+                <div th:if="${currentUser.prime == true}"
+                     class="flex items-center">
+                    <label class="label-cursor-pointer">
+                        <span class="label-text flex items-center pl-1">
+                            <input type="checkbox"
+                                   class="checkbox checkbox-error checkbox-sm mr-2"
+                                   th:field="*{prime}"/>
+                                PRIME 게시글로 등록하기
+                        </span>
+                    </label>
+                    <span class="tooltip tooltip-right bg-white text-gray-400"
+                          data-html="true"
+                          data-tip="PRIME 게시글은 MEDIUM PRIME 전용 기능으로,
+                          PRIME 게시글 등록 시 게시글 조회수 기준 수익 정산,
+                          PRIME 회원 한정 게시글 열람 기능을 제공합니다.">
+                        <span class="btn btn-ghost btn-xs">
+                            <i class="fa-solid fa-fire" style="color:red"></i>
+                        </span>
+                    </span>
+                </div>
                 <label class="label cursor-pointer">
                     <span class="label-text flex items-center">
                         <input type="checkbox"
                                class="checkbox checkbox-success checkbox-sm mr-2"
-                               th:field="*{published}"
-                               th:checked="${postRequestDto.published}"/>
-                        I'll show this post public
+                               checked="checked"
+                               th:field="*{published}"/>
+                        게시글을 공개하기
                     </span>
                     <span class="label-text-alt" id="titleInputCount">0 / 50</span>
                 </label>
                 <textarea class="form-input w-full p-4 bg-white text-black text-3xl" id="titleTextInput" maxlength=50
-                          placeholder="Title" rows="2"
+                          placeholder="글 제목" rows="2"
                           th:field="*{title}"></textarea>
             </div>
             <div class="form-control mx-auto">
-            <textarea class="form-input w-full p-4 bg-white text-black" id="contentTextInput" maxlength=1000
-                      placeholder="Tell your story.." rows="20"
-                      th:field="*{content}"></textarea>
+                <!-- toastUiEditor, todo 아이콘 안 보이는 이유 찾기 -->
+                <div id="editor"></div>
                 <label class="label">
                     <span class="label-text"></span>
                     <span class="label-text-alt" id="contentInputCount">0 / 1000</span>
                 </label>
+                <!-- toastUiEditor의 값을 입력받아 form으로 전달하는 textArea -->
+                <textarea class="form-input hidden" id="contentTextInput"
+                          th:field="*{content}"></textarea>
             </div>
             <div class="pb-10 flex items-center">
-                <div class="btn btn-ghost mr-1"><i class="fa-solid fa-circle-plus fas fa-3x"></i></div>
-                <div>Add Preview Image</div>
+                <div class="btn btn-ghost mr-1">
+                    <label for="file"><i class="fa-solid fa-circle-plus fas fa-3x"></i></label>
+                    <input type="file" id="file" class="hidden"
+                           th:field="*{multipartFile}"
+                           accept=".jpg, .jpeg, .png"
+                           onchange="displayFileName()"/>
+                </div>
+                <div>
+                    <div id="fileNameContainer" style="color: black;">미리보기 이미지를 등록해보세요!</div>
+                    <div class="label-text-alt">미리보기 이미지는 1개만 등록 가능하며, 이미지는 jpg, jpeg, gif, png 확장자를 지원합니다.</div>
+                </div>
             </div>
         </div>
     </form>
 </div>
 <script>
-    // title, content 글자수 카운팅
     const titleTextarea = document.getElementById('titleTextInput');
     const titleCharCountSpan = document.getElementById('titleInputCount');
     const contentTextarea = document.getElementById('contentTextInput');
@@ -114,5 +135,73 @@
     contentTextarea.addEventListener('input', function () {
         updateCharCount(contentTextarea, contentCharCountSpan, 1000);
     });
+
+    // 파일이 선택되었을 때 파일 이름을 표시
+    function displayFileName() {
+        var fileInput = document.getElementById('file');
+        var fileNameContainer = document.getElementById('fileNameContainer');
+
+        if (fileInput.value) {
+            fileNameContainer.innerHTML = 'File Selected: ' + fileInput.files[0].name;
+            fileNameContainer.style.color = 'green';
+        } else {
+            fileNameContainer.innerHTML = 'Add Preview Image';
+            fileNameContainer.style.color = 'black';
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var messageDiv = document.querySelector('.toast.toast-top.toast-end');
+
+        if (messageDiv) {
+            setTimeout(function () {
+                messageDiv.classList.add('fade-out');
+                setTimeout(function () {
+                    messageDiv.style.display = 'none';
+                }, 3000);
+            }, 3000);
+        }
+    });
 </script>
+
+<!--ToastUI JS CDN-->
+<script src="https://uicdn.toast.com/editor/latest/toastui-editor-all.min.js"></script>
+<script>
+    const editor = new toastui.Editor({
+        el: document.querySelector('#editor'),
+        height: '600px',
+        initialEditType: 'markdown',
+        initialValue: document.querySelector('#contentTextInput').value,
+        previewStyle: 'tab',
+        usageStatistics : 'false',
+        theme : "dark"
+    });
+
+    // 에디터의 값이 변경될 때마다 hidden textarea 업데이트
+    editor.on('change', function () {
+        const contentValue = editor.getMarkdown();
+        // 수정 시 기존 내용을 editor에 init
+        document.querySelector('#contentTextInput').value = contentValue;
+        // 글자수 세기 업데이트
+        updateCharCount(contentTextarea, contentCharCountSpan, 1000);
+    });
+
+    // hidden textarea의 값을 확인 후 postform 제출
+    document.getElementById('postForm').addEventListener('submit', function () {
+        // 마크다운 기준 아무것도 입력 안했을 시 error를 발생시킴
+        const contentValue = editor.getMarkdown();
+        // 공백 제거
+        const trimmedContent = contentValue.replace(/\s/g, ''); // 모든 공백을 제거
+
+        if (trimmedContent.length < 1) {
+            document.querySelector('#contentTextInput').value = null;
+            throw new Error('글 내용이 없습니다.');
+        }
+        else {
+            document.querySelector('#contentTextInput').value = editor.getHTML();
+        }
+    });
+</script>
+<!--ToastUI JS CDN 끝-->
 </body>
+</html>

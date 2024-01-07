@@ -40,6 +40,7 @@ public class PostController {
     }
 
     // Get : /post/list *전체 글 리스트, 공개된 글만 노출
+    // todo : category 별로 다른 페이징,
     @GetMapping("/post/list")
     public String showTotalList(Model model, @RequestParam(defaultValue = "0") int page) {
         Page<Post> paging = postService.getTotalList(page, 10);
@@ -56,22 +57,40 @@ public class PostController {
     // Get : /post/mylist *내 글 리스트
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/post/mylist")
-    public String showMyList(Model model,
-                             @RequestParam(defaultValue = "0") int page,
-                             Principal principal) {
+    public String showMyList(@RequestParam(defaultValue = "0") int page,
+                             Principal principal,
+                             Model model) {
 
-        model.addAttribute(
-                "paging",
-                postService.getMemberList(page, 10, principal.getName())
-        );
+        model.addAttribute("paging", postService.getMyList(page, 10, principal.getName()));
+        model.addAttribute("member", memberService.findByUsername(principal.getName()));
+        return "domain/post/list_member";
+    }
+
+    // Get: /b/{userid} *유저의 전체 글 리스트
+    @GetMapping("/b/{username}")
+    public String showMemberPostList(@PathVariable String username,
+                                     @RequestParam(defaultValue = "0") int page,
+                                     Model model) {
+
+        model.addAttribute("paging", postService.getMemberList(page, 10, username));
+        model.addAttribute("member", memberService.findByUsername(username));
+
         return "domain/post/list_member";
     }
 
     // Get: /post/{id} *글 상세보기
     @GetMapping("/post/{id}")
-    public String showDetail(Model model, @PathVariable Long id) {
+    public String showDetail(Model model, @PathVariable Long id, Principal principal) {
+        // 비공개 글에 접근하는 경우 에러 발생
+        Post post = postService.get(id);
+        if (!post.isPublished() && !Objects.equals(post.getAuthor().getUsername(), principal.getName())){
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "접근 권한이 없습니다.");
+        }
 
-        model.addAttribute("post", postService.findById(id));
+        // 조회수 증가
+        postService.incrViewCount(post);
+
+        model.addAttribute("post", post);
         model.addAttribute("commentRequestDto", new CommentRequestDto());
         return "domain/post/detail";
     }
@@ -89,22 +108,24 @@ public class PostController {
     public String write(@ModelAttribute("postRequestDto")
                         @Valid PostRequestDto postRequestDto,
                         BindingResult brs,
-                        RedirectAttributes attr,
                         @RequestPart("multipartFile") MultipartFile multipartFile,
+                        RedirectAttributes attr,
                         Principal principal) {
+
         if (brs.hasErrors()) {
             return "domain/post/write_form";
         }
+
         ResponseData<Post> resp = postService.create(
                 postRequestDto, memberService.findByUsername(principal.getName())
         );
-        attr.addFlashAttribute("msg", resp.getMsg());
 
-        // MultiPartFile은 자동적으로 데이터 바인딩이 안되므로 @RequestPart로 받아온 후 직접 처리
+        // MultiPartFile 은 자동적으로 데이터 바인딩이 안되므로 @RequestPart로 받아온 후 직접 처리
         if (!multipartFile.isEmpty()) {
             ResponseData<ImageFile> imageFileResponseData = imageFileService.create(multipartFile, resp.getData());
         }
 
+        attr.addFlashAttribute("msg", resp.getMsg());
         return String.format("redirect:/post/%d", resp.getData().getId());
     }
 
@@ -114,20 +135,14 @@ public class PostController {
     public String showModifyForm(@PathVariable Long id,
                                  @ModelAttribute("postRequestDto") PostRequestDto postRequestDto,
                                  Principal principal) {
-        Post post = postService.findById(id);
 
-        if (!Objects.equals(post.getAuthor().getUsername(), principal.getName())){
-            throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "you are unauthorized to modify this post."
-            );
-        }
+        Post post = postService.get(id);
+        postService.validateAuthor(post, memberService.findByUsername(principal.getName()));
 
-        // 빌더 패턴이 아닌, 모델의 postRequestDto는 Setter로 인한 설정 만이 바인딩 값 유지 가능
-        // 빌더 패턴을 사용할 시 매개변수의 postRequestDto 객체가 아닌 다른 객체가 들어가기 때문 = 바인딩 실패
         postRequestDto.setTitle(post.getTitle());
         postRequestDto.setContent(post.getContent());
         postRequestDto.setPublished(post.isPublished());
+        postRequestDto.setPrime(post.isPrime());
 
         return "domain/post/modify_form";
     }
@@ -138,16 +153,23 @@ public class PostController {
     public String modify(@PathVariable Long id,
                          @ModelAttribute("postRequestDto") @Valid PostRequestDto postRequestDto,
                          BindingResult brs,
+                         @RequestPart("multipartFile") MultipartFile multipartFile,
                          RedirectAttributes attr,
                          Principal principal) {
+
         if (brs.hasErrors()) {
             return "domain/post/modify_form";
         }
+
         ResponseData<Post> resp = postService.modify(
                 postRequestDto,
                 id,
                 memberService.findByUsername(principal.getName())
         );
+
+        if (!multipartFile.isEmpty()) {
+            ResponseData<ImageFile> imageFileResponseData = imageFileService.modify(multipartFile, resp.getData());
+        }
 
         attr.addFlashAttribute("msg", resp.getMsg());
         return String.format("redirect:/post/%d", id);
@@ -159,22 +181,11 @@ public class PostController {
     public String delete(@PathVariable Long id,
                          RedirectAttributes attr,
                          Principal principal) {
-        ResponseData<Post> resp = postService.delete(
-                id,
-                memberService.findByUsername(principal.getName())
+
+        ResponseData<Post> resp = postService.delete(id, memberService.findByUsername(principal.getName())
         );
 
         attr.addFlashAttribute("msg", resp.getMsg());
         return "redirect:/post/list";
-    }
-
-    // Get: /b/{userid} *유저의 전체 글 리스트
-    @GetMapping("/b/{username}")
-    public String showMemberPostList(@PathVariable String username,
-                                     @RequestParam(defaultValue = "0") int page,
-                                     Model model) {
-        model.addAttribute("paging", postService.getMemberList(page, 10, username));
-
-        return "domain/post/list_member";
     }
 }

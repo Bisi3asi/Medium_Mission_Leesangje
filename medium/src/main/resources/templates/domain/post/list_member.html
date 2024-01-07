@@ -8,7 +8,7 @@
     <div class="flex mx-20">
         <div class="mr-5">
             <div>
-                <h1 class="my-16 pb-2 text-3xl text-yellow-500 font-bold" th:text="${currentUser.username}"></h1>
+                <h1 class="my-16 pb-2 text-3xl text-yellow-500 font-bold" th:text="${nickname}"></h1>
                 <h2 class="mb-5 pb-3 text-xl text-white border-b border-gray-700">Posts</h2>
                 <div>
                     <ul id="postList">
@@ -26,14 +26,20 @@
                                     <div class="pt-1 mr-1">
                                         <i class="fa-solid fa-user fas fa-md" style="color: white;"></i>
                                     </div>
-                                    <div th:text="${post.author.username}"></div>
+                                    <div th:text="${post.author.nickname}"></div>
                                 </div>
                                 <a th:href="@{|/post/${post.id}|}">
-                                    <div class="mb-2 text-3xl line-clamp-2"
-                                         th:text="${post.title}">
+                                    <div class="flex items-center">
+                                        <i th:if="${post.published == false}"
+                                           class="fa-solid fa-lock mr-2" style="color:grey">
+                                        </i>
+                                        <i th:if="${post.prime == true}"
+                                           class="fa-solid fa-fire mr-2" style="color:red">
+                                        </i>
+                                        <div class="mb-2 text-3xl line-clamp-2" th:text="${post.title}"></div>
                                     </div>
                                     <div class="mb-1 text-gray-400 line-clamp-1"
-                                         th:text="${post.content}">
+                                         th:utext="${#strings.replace(#strings.replace(post.content, '<.*?>', ''), '&lt;br&gt;', '\n')}">
                                     </div>
                                     <div class="flex text-xs text-gray-400">
                                         <div class="mr-1"
@@ -46,7 +52,7 @@
                             <a th:href="@{|/post/${post.id}|}">
                                 <div th:if="${post.imageFile == null}"
                                      class="w-64 h-44 border border-gray-400 flex items-center justify-center">
-                                    <h2 class="text-3xl">No images</h2>
+                                    <h2 class="text-3xl text-gray-500">이미지 없음</h2>
                                 </div>
                                 <div th:unless="${post.imageFile == null}"
                                      class="flex-none w-64 h-44 border border-gray-400">
@@ -95,8 +101,8 @@
         <div class="pb-2 pl-6 border-l border-gray-700">
             <div class="my-20">
                 <i class="p-7 mb-2 fa-solid fa-user fas fa-4x border rounded-3xl" style="color: white;"></i>
-                <h1 class="mb-5 text-3xl text-yellow-500 font-bold" th:text="${username}"></h1>
-                <h2 class="text-xl text-white">welcome to testuser1 post page.</h2>
+                <h1 class="mb-5 text-3xl text-yellow-500 font-bold" th:text="${member.nickname}"></h1>
+                <h2 class="text-xl text-white" th:text="${member.profileMsg}"></h2>
             </div>
             <h2 class="mb-5 pb-3 text-xl text-white border-b border-gray-700">Trending</h2>
         </div>

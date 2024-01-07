@@ -8,15 +8,19 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class MemberJoinRequestDto {
-    @NotBlank(message = "please input username.")
-    @Size(min = 8, max = 20, message = "username length should be 8 ~ 20.")
+    @NotBlank(message = "ID를 입력해주세요.")
+    @Size(min = 8, max = 20, message = "ID를 8 ~ 20자 이내로 입력해주세요.")
     private String username;
 
-    @NotBlank(message = "please input password.")
-    @Size(min = 8, max = 20, message = "password length should be 8 ~ 20.")
+    @NotBlank(message = "사용자 이름을 입력해주세요.")
+    @Size(min = 2, max = 20, message = "사용자 이름을 2 ~ 20자 이내로 입력해주세요.")
+    private String nickname;
+
+    @NotBlank(message = "비밀번호를 입력해주세요.")
+    @Size(min = 8, max = 20, message = "비밀번호를 8 ~ 20자 이내로 입력해주세요.")
     private String password;
 
-    @NotBlank(message = "please input password confirm.")
-    @Size(min = 8, max = 20, message = "password length should be 8 ~ 20.")
+    @NotBlank(message = "비밀번호 확인을 입력해주세요.")
+    @Size(min = 8, max = 20, message = "비밀번호 확인을 8 ~ 20자 이내로 입력해주세요.")
     private String passwordConfirm;
 }

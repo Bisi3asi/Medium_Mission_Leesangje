@@ -23,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = rq.getAccessTokenFromCookie(null);
         String refreshToken = rq.getRefreshTokenFromCookie(null);
 
-        if (accessToken != null) {
+        if (accessToken != null && refreshToken != null) {
             SecurityUser user = memberService.getUserFromAccessToken(accessToken);
             if (user == null) { // user == null 일 때 : accessToken이 만료난 경우
                 Member member = memberService.findByRefreshToken(refreshToken);
@@ -33,7 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 user = memberService.getUserFromAccessToken(newAccessToken);
                 // newAccessToken으로 accessToken 값 변경
                 rq.setAccessTokenToCookie(newAccessToken);
-                System.out.println("accessToken refresh, update cookie successed");
+                System.out.println("accessToken refresh, update cookie success");
             }
             rq.setAuthentication(user);
         }
